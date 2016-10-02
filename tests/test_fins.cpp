@@ -1,12 +1,30 @@
 #include "communication/fins/paskage.h"
 #include "communication/fins/endpoint.h"
 #include "communication/fins/command.h"
+#include <cstring>
+#include <stdexcept>
+#include <vector>
 
 namespace test
 {
 
 namespace
 {
+//класс который знает
+//код области
+//диапазон адресов
+//размер элемента и умеет его читать писать
+
+class DataInfo
+{
+public:
+    DataInfo()
+    {}
+    virtual uint8_t MemCode() = 0;
+    virtual uint8_t ElementSize() = 0;
+    virtual size_t ReadElement( uint8_t const* buf, size_t size ) = 0;
+    virtual size_t WriteElement( uint8_t const* buf, size_t size ) = 0;
+};
 
 class TestPaskage
 {
@@ -24,9 +42,9 @@ public:
         }
         virtual uint8_t GetICF() override
         {
-            return Command::REQUEST_WITHOUT_RESPONCE;
+            return Command::REQUEST_WITH_RESPONCE;
         }
-        virtual size_t Write( uint8_t* buf, size_t size ) override
+        virtual size_t WriteImpl( uint8_t* buf, size_t size ) override
         {
             if ( size < 48 )
                 return size;
@@ -34,14 +52,20 @@ public:
             uint8_t* head = buf;
             *(head++) = mMemCode;
             auto addr = reinterpret_cast<uint8_t*>(&mAddrWord);
-            *(head++) = addr[0];
             *(head++) = addr[1];
+            *(head++) = addr[0];
             *(head++) = mAddrBit;
             *(head++) = mCount;
             return head - buf;
         }
-        virtual size_t Read( uint8_t const* /*buf*/, size_t size, bool& res ) override
+        virtual size_t ReadImpl( uint8_t const* buf, size_t size, bool& res ) override
         {
+            if ( size%mElementSize )
+                throw std::runtime_error("unexpected end of data");
+            mData.clear();
+            mData.reserve( size/mElementSize );
+
+            for
             res = true;
             return size;
         }
@@ -51,6 +75,9 @@ public:
         uint16_t mAddrWord = 0;
         uint8_t  mAddrBit = 0;
         uint16_t mCount = 0;
+
+        uint8_t mElementSize = 1;
+        std::vector<bool> mData;
     };
 
     TestPaskage()
@@ -63,6 +90,17 @@ public:
         test_Command c;
         Paskage p( dest, source, c, 15 );
         auto* data = p.Data();
+        uint8_t request[] = {Command::REQUEST_WITH_RESPONCE,0,2,
+                             EndPoint::NA_LOCAL,26,EndPoint::A2_CPU,
+                             EndPoint::NA_LOCAL,55,EndPoint::A2_COMPUTER,15,
+                             0x1,0x1,30,0x0d,0xF0,10,1};
+        if (memcmp(data, request, sizeof(request)))
+            throw std::runtime_error("wrong request");
+        uint8_t responce[] = {Command::RESPONCE,0,2,
+                              EndPoint::NA_LOCAL,55,EndPoint::A2_COMPUTER,
+                              EndPoint::NA_LOCAL,26,EndPoint::A2_CPU,15,
+                              0x1,0x1,0,0,1};
+
     }
 
 

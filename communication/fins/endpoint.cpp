@@ -15,7 +15,7 @@ size_t EndPoint::Write( uint8_t* buf, size_t size ) const
         return 0;
     buf[0] = mNA;
     buf[1] = mA1;
-    buf[3] = mA2;
+    buf[2] = mA2;
     return 3ul;
 }
 size_t EndPoint::Check( uint8_t const* buf, size_t size, bool& res ) const
@@ -24,7 +24,7 @@ size_t EndPoint::Check( uint8_t const* buf, size_t size, bool& res ) const
         return 0;
     res =  buf[0] == mNA
         && buf[1] == mA1
-        && buf[3] == mA2;
+        && buf[2] == mA2;
     return 3ul;
 }
 
