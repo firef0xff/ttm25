@@ -13,8 +13,15 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        main_window.cpp
+        main_window.cpp \
+    communication/fins/endpoint.cpp \
+    communication/fins/paskage.cpp \
+    communication/fins/command.cpp \
+    tests/test_fins.cpp
 
-HEADERS  += main_window.h
+HEADERS  += main_window.h \
+    communication/fins/endpoint.h \
+    communication/fins/paskage.h \
+    communication/fins/command.h
 
 FORMS    += main_window.ui
