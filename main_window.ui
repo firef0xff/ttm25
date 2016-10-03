@@ -27,7 +27,7 @@
         </property>
         <layout class="QGridLayout" name="gridLayout_2">
          <item row="5" column="1" colspan="3">
-          <widget class="QLineEdit" name="lineEdit">
+          <widget class="QLineEdit" name="eManufaktureNumber">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -44,10 +44,10 @@
           </widget>
          </item>
          <item row="9" column="2" colspan="2">
-          <widget class="QSpinBox" name="spinBox"/>
+          <widget class="QSpinBox" name="eTemperature"/>
          </item>
          <item row="3" column="1" colspan="3">
-          <widget class="QComboBox" name="comboBox_7"/>
+          <widget class="QComboBox" name="eTitleKKT"/>
          </item>
          <item row="0" column="0">
           <widget class="QLabel" name="lTitleTire">
@@ -71,10 +71,10 @@
           </widget>
          </item>
          <item row="4" column="1" colspan="3">
-          <widget class="QComboBox" name="comboBox_8"/>
+          <widget class="QComboBox" name="eTestingMethod"/>
          </item>
          <item row="0" column="4">
-          <widget class="QToolButton" name="toolButton">
+          <widget class="QToolButton" name="bTitleTire">
            <property name="text">
             <string>...</string>
            </property>
@@ -119,10 +119,10 @@
           </widget>
          </item>
          <item row="2" column="1" colspan="3">
-          <widget class="QComboBox" name="comboBox_6"/>
+          <widget class="QComboBox" name="eMark"/>
          </item>
          <item row="13" column="3" colspan="2">
-          <widget class="QLineEdit" name="lineEdit_6">
+          <widget class="QLineEdit" name="eMP">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -149,7 +149,7 @@
           </widget>
          </item>
          <item row="7" column="1" colspan="3">
-          <widget class="QLineEdit" name="lineEdit_3">
+          <widget class="QLineEdit" name="eSerialNumber">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -159,10 +159,10 @@
           </widget>
          </item>
          <item row="1" column="1" colspan="3">
-          <widget class="QComboBox" name="comboBox_5"/>
+          <widget class="QComboBox" name="eTitleModel"/>
          </item>
          <item row="6" column="1" colspan="3">
-          <widget class="QLineEdit" name="lineEdit_2">
+          <widget class="QLineEdit" name="eMass">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -172,45 +172,45 @@
           </widget>
          </item>
          <item row="2" column="4">
-          <widget class="QToolButton" name="toolButton_4">
+          <widget class="QToolButton" name="bMark">
            <property name="text">
             <string>...</string>
            </property>
           </widget>
          </item>
          <item row="1" column="4">
-          <widget class="QToolButton" name="toolButton_3">
+          <widget class="QToolButton" name="bTitleModel">
            <property name="text">
             <string>...</string>
            </property>
           </widget>
          </item>
          <item row="0" column="1" colspan="3">
-          <widget class="QComboBox" name="comboBox_3"/>
+          <widget class="QComboBox" name="eTitleTire"/>
          </item>
          <item row="3" column="4">
-          <widget class="QToolButton" name="toolButton_5">
+          <widget class="QToolButton" name="bTitleKKT">
            <property name="text">
             <string>...</string>
            </property>
           </widget>
          </item>
          <item row="4" column="4">
-          <widget class="QToolButton" name="toolButton_6">
+          <widget class="QToolButton" name="bTestingMethod">
            <property name="text">
             <string>...</string>
            </property>
           </widget>
          </item>
          <item row="14" column="0" colspan="3">
-          <widget class="QLabel" name="label_19">
+          <widget class="QLabel" name="lTUB">
            <property name="text">
             <string>Проводить испытания до разрушения</string>
            </property>
           </widget>
          </item>
          <item row="8" column="1" colspan="3">
-          <widget class="QLineEdit" name="lineEdit_4">
+          <widget class="QLineEdit" name="eTPNumbet">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -220,7 +220,7 @@
           </widget>
          </item>
          <item row="14" column="3" colspan="2">
-          <widget class="QCheckBox" name="checkBox">
+          <widget class="QCheckBox" name="eTUB">
            <property name="text">
             <string/>
            </property>
@@ -230,14 +230,14 @@
           </widget>
          </item>
          <item row="13" column="0" colspan="3">
-          <widget class="QLabel" name="label_17">
+          <widget class="QLabel" name="lMP">
            <property name="text">
             <string>Максимальное давления для обода, МПа</string>
            </property>
           </widget>
          </item>
          <item row="12" column="3" colspan="2">
-          <widget class="QLineEdit" name="lineEdit_5">
+          <widget class="QLineEdit" name="eCBP">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -247,24 +247,24 @@
           </widget>
          </item>
          <item row="12" column="0" colspan="3">
-          <widget class="QLabel" name="label_16">
+          <widget class="QLabel" name="lCBP">
            <property name="text">
             <string>Контрольно - разрушаюшее давление, МПа</string>
            </property>
           </widget>
          </item>
          <item row="15" column="0" colspan="3">
-          <widget class="QLabel" name="label_20">
+          <widget class="QLabel" name="lTWP">
            <property name="text">
             <string>Время выдержки под давлением, мин</string>
            </property>
           </widget>
          </item>
          <item row="15" column="3" colspan="2">
-          <widget class="QSpinBox" name="spinBox_2"/>
+          <widget class="QSpinBox" name="eTWP"/>
          </item>
          <item row="16" column="3" colspan="2">
-          <widget class="QLineEdit" name="lineEdit_7">
+          <widget class="QLineEdit" name="eNP">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -274,14 +274,14 @@
           </widget>
          </item>
          <item row="16" column="0" colspan="3">
-          <widget class="QLabel" name="label_21">
+          <widget class="QLabel" name="lNP">
            <property name="text">
             <string>Норматив, МПа</string>
            </property>
           </widget>
          </item>
          <item row="17" column="3" colspan="2">
-          <widget class="QLineEdit" name="lineEdit_8">
+          <widget class="QLineEdit" name="eBP">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -291,7 +291,7 @@
           </widget>
          </item>
          <item row="17" column="0" colspan="3">
-          <widget class="QLabel" name="label_22">
+          <widget class="QLabel" name="lBP">
            <property name="text">
             <string>Давление разрушения, МПа</string>
            </property>

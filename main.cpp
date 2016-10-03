@@ -2,7 +2,7 @@
 #include <QApplication>
 #include <QFileInfo>
 #include <QDir>
-
+#include "users/login.h"
 int main(int argc, char *argv[])
 {
     QStringList paths = QApplication::libraryPaths();
@@ -12,7 +12,8 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     MainWindow w;
-    w.show();
+    Login login( &w );
+    login.show();
 
     return a.exec();
 }

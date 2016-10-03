@@ -63,9 +63,15 @@ public:
             if ( size%mElementSize )
                 throw std::runtime_error("unexpected end of data");
             mData.clear();
-            mData.reserve( size/mElementSize );
+            size_t elements_count = size/mElementSize;
+            mData.reserve( elements_count );
 
-            for
+            uint8_t const* head = buf;
+            for( size_t i = 0; i < elements_count; ++ i )
+            {
+                mData.push_back( static_cast<bool>( *(head) ) );
+                head += mElementSize;
+            }
             res = true;
             return size;
         }
