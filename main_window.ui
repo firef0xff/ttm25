@@ -970,16 +970,17 @@
      <string>Файл</string>
     </property>
     <addaction name="action"/>
-    <addaction name="action_2"/>
+    <addaction name="a_avia"/>
     <addaction name="separator"/>
-    <addaction name="action_4"/>
+    <addaction name="a_exit"/>
+    <addaction name="a_proto"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
      <string>Параметры</string>
     </property>
     <addaction name="action_5"/>
-    <addaction name="action_6"/>
+    <addaction name="a_options"/>
     <addaction name="separator"/>
     <addaction name="a_users"/>
    </widget>
@@ -992,12 +993,12 @@
     <string>Авто</string>
    </property>
   </action>
-  <action name="action_2">
+  <action name="a_avia">
    <property name="text">
     <string>Авиа</string>
    </property>
   </action>
-  <action name="action_4">
+  <action name="a_exit">
    <property name="text">
     <string>Выход</string>
    </property>
@@ -1007,7 +1008,7 @@
     <string>Установить связь</string>
    </property>
   </action>
-  <action name="action_6">
+  <action name="a_options">
    <property name="text">
     <string>Опции</string>
    </property>
@@ -1017,8 +1018,30 @@
     <string>Пользователи</string>
    </property>
   </action>
+  <action name="a_proto">
+   <property name="text">
+    <string>Протокол испытания</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>a_exit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>459</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

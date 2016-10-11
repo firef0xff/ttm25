@@ -27,7 +27,7 @@ void Viewer::Init()
 
 
     test::CURRENT_PARAMS.Draw( painter, rc, CompareWidth );
-    test::Test* test =  test::CURRENT_PARAMS.TestCase();
+    if ( test::Test* test =  test::CURRENT_PARAMS.TestCase() )
     {
         test->ResetDrawLine();
 
