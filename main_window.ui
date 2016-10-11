@@ -903,7 +903,7 @@
             </sizepolicy>
            </property>
            <attribute name="horizontalHeaderVisible">
-            <bool>true</bool>
+            <bool>false</bool>
            </attribute>
            <attribute name="horizontalHeaderCascadingSectionResizes">
             <bool>false</bool>
@@ -980,6 +980,8 @@
     </property>
     <addaction name="action_5"/>
     <addaction name="action_6"/>
+    <addaction name="separator"/>
+    <addaction name="a_users"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
@@ -1008,6 +1010,11 @@
   <action name="action_6">
    <property name="text">
     <string>Опции</string>
+   </property>
+  </action>
+  <action name="a_users">
+   <property name="text">
+    <string>Пользователи</string>
    </property>
   </action>
  </widget>
