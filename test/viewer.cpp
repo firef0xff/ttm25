@@ -10,8 +10,8 @@ Viewer::Viewer(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Viewer),
     mPageNo( 0 ),
-    header_logo( "./img/logo1.png", "PNG" ),
-    footer_logo( "./img/logo2.png", "PNG" )
+    header_logo( "./img/kb.png", "PNG" ),
+    footer_logo( "./img/vershina.png", "PNG" )
 {
     ui->setupUi(this);
 
@@ -139,22 +139,22 @@ void Viewer::on_SavePDF_clicked()
 
         test::CURRENT_PARAMS.Draw( painter, rc, CompareWidth );
         test::Test* test= test::CURRENT_PARAMS.TestCase();
-        {
-            test->ResetDrawLine();
+//        {
+//            test->ResetDrawLine();
 
-            bool draw = false;
-            while( !draw )
-            {
-                draw = test->Draw( painter, rc, CompareWidth );
-                if ( !draw )
-                {
-                    printer.newPage();
-                    rc = PreparePage( painter, printer.paperRect() );
-                }
-                QFontMetrics m (painter.font());
-                rc.setTop( rc.top() + m.height() );
-            }
-        }
+//            bool draw = false;
+//            while( !draw )
+//            {
+//                draw = test->Draw( painter, rc, CompareWidth );
+//                if ( !draw )
+//                {
+//                    printer.newPage();
+//                    rc = PreparePage( painter, printer.paperRect() );
+//                }
+//                QFontMetrics m (painter.font());
+//                rc.setTop( rc.top() + m.height() );
+//            }
+//        }
         if ( test::CURRENT_PARAMS.HasResults() )
         {
             printer.newPage();
@@ -179,8 +179,8 @@ QRect Viewer::PreparePage( QPainter& painter, QRect const& page_rect )
     QRect work_area( 76, 76, 698, 1010 );// 698 x 1010 19 = 5мм
     QRect print_area( work_area.left() + 38, work_area.top() + 10, work_area.width() - ( 38 + 19 ), work_area.height() - 19 );
 
-    QRect header_rect( 0, 0, 150, 30 );
-    QRect footer_rect( 0, 0, 200, 30 );
+    QRect header_rect( 0, 0, 86/1.5, 77/1.5 );
+    QRect footer_rect( 0, 0, 220, 55 );
     header_rect.setHeight( header_logo.height() * header_rect.width() / header_logo.width() );
     footer_rect.setHeight( footer_logo.height() * footer_rect.width() / footer_logo.width() );
 
@@ -188,6 +188,11 @@ QRect Viewer::PreparePage( QPainter& painter, QRect const& page_rect )
     QPoint header_point( work_area.right() - header_rect.width(), work_area.top() - header_rect.height() - 2 );
     painter.translate( header_point );
     painter.drawPixmap( header_rect, header_logo );
+    painter.restore();
+    painter.save();
+    QPoint footer_point( work_area.right() - header_rect.width() - footer_rect.width(), work_area.top() - footer_rect.height() - 2 );
+    painter.translate( footer_point );
+    painter.drawPixmap( footer_rect, footer_logo );
     painter.restore();
 
     {
@@ -199,7 +204,7 @@ QRect Viewer::PreparePage( QPainter& painter, QRect const& page_rect )
         QFontMetrics m( font );
         QPoint text_point( work_area.left(), work_area.top() - 3 * m.height() );
 //        painter.translate( text_point );
-        painter.drawText( text_point, "Центр \"ПРОМСЕРВИС\"" );
+        painter.drawText( text_point, "Шинный испытательный центр ВЕРШИНА" );
         painter.restore();
     }
 
@@ -212,7 +217,7 @@ QRect Viewer::PreparePage( QPainter& painter, QRect const& page_rect )
         QFontMetrics m( font );
         QPoint text_point( work_area.left(), work_area.top() - 2 * m.height() );
 //        painter.translate( text_point );
-        painter.drawText( text_point, "Ремонтное производство" );
+        painter.drawText( text_point, "Испытание производилось на" );
         painter.restore();
     }
 
@@ -225,27 +230,9 @@ QRect Viewer::PreparePage( QPainter& painter, QRect const& page_rect )
         QFontMetrics m( font );
         QPoint text_point( work_area.left(), work_area.top() - 1 * m.height() );
 //        painter.translate( text_point );
-        painter.drawText( text_point, "ЦРПО участок ТОиР ГО" );
+        painter.drawText( text_point, "стенде испытательном КБ «ПОЛИМЕРМАШ»" );
         painter.restore();
     }
-
-    painter.save();
-    QPoint footer_point( work_area.right() - footer_rect.width(), work_area.bottom() + 4 );
-    painter.translate( footer_point );
-    painter.drawPixmap( footer_rect, footer_logo );
-    painter.restore();
-
-    painter.save();
-    QFont font = painter.font();
-    font.setFamily("Calibri");
-    font.setPointSize( 11 );
-    painter.setFont( font );
-    QFontMetrics m( font );
-    QPoint footer_text( work_area.left(), work_area.bottom() + m.height() + 2 );
-
-    painter.drawText( footer_text, "Испытание производилось на стенде испытательном ООО «ПНЕВМАКС»" );
-    painter.restore();
-
     painter.drawRect( work_area );
 
 //    painter.drawRect( print_area );
