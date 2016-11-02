@@ -1,0 +1,463 @@
+#include "inside_pressure.h"
+#include <QJsonObject>
+#include <QJsonArray>
+#include <GraphBuilder/graph_builder.h>
+#include "../test_params.h"
+
+namespace test
+{
+
+namespace
+{
+
+QJsonArray ToJson( InsidePressure::DataSet const& data )
+{
+    QJsonArray arr;
+    foreach ( InsidePressure::Point const& d, data )
+    {
+        arr.insert( arr.end(), d.Serialise() );
+    }
+    return std::move( arr );
+}
+InsidePressure::DataSet FromJson( QJsonArray const& arr )
+{
+    InsidePressure::DataSet data;
+
+    foreach (QJsonValue const& v, arr)
+    {
+        InsidePressure::Point d;
+        if ( d.Deserialize( v.toObject() ) )
+            data.insert( data.end(), d );
+    }
+    return std::move( data );
+}
+
+ff0x::NoAxisGraphBuilder::LinePoints Process( InsidePressure::DataSet const& src, QPointF& x_range, QPointF& y_range )
+{
+    ff0x::NoAxisGraphBuilder::LinePoints result;
+
+    for ( int i = 0; i < src.size(); ++i )
+    {
+        double const& y = src[i].Y();
+        double const& x = src[i].X();
+        if ( !i )
+        {
+            x_range.setX( x );
+            x_range.setY( x );
+            y_range.setX( y );
+            y_range.setY( y );
+        }
+        else
+        {
+            if ( x > x_range.x() )
+                x_range.setX( x );
+            if ( x < x_range.y() )
+                x_range.setY( x );
+
+            if ( y > y_range.x() )
+                y_range.setX( y );
+            if ( y < y_range.y() )
+                y_range.setY( y );
+        }
+
+        result.push_back( QPointF( x, y ) );
+    }
+    if ( 0 > x_range.x() )
+        x_range.setX( 0 );
+    if ( 0 < x_range.y() )
+        x_range.setY( 0 );
+
+    if ( 0 > y_range.x() )
+        y_range.setX( 0 );
+    if ( 0 < y_range.y() )
+        y_range.setY( 0 );
+
+
+    return std::move( result );
+}
+}//namespace
+
+InsidePressure::Point::Point( double x, double y ):
+    mX(x),
+    mY(y)
+{}
+double const& InsidePressure::Point::X() const
+{
+    return mX;
+}
+double const& InsidePressure::Point::Y() const
+{
+    return mY;
+}
+
+QJsonObject InsidePressure::Point::Serialise() const
+{
+    QJsonObject obj;
+    obj.insert("x", mX);
+    obj.insert("y", mY);
+    return std::move( obj );
+}
+bool InsidePressure::Point::Deserialize( QJsonObject const& obj )
+{
+    mX = obj.value("x").toDouble();
+    mY = obj.value("y").toDouble();
+}
+
+class InsidePressure::GrapfData
+{
+public:
+    GrapfData( InsidePressure const* test, QString compare_width )
+    {
+        QPointF x_range_e;
+        QPointF y_range_e;
+        //поиск данных теста
+        bool use_etalone = false;
+        foreach (QJsonValue const& val, test::ReadFromFile(compare_width).value("Results").toArray())
+        {
+            auto obj = val.toObject();
+            if ( obj.value("id").toInt() == test->mId )
+            {
+                InsidePressure::DataSet data = FromJson( obj.value("data").toObject().value("Data").toArray() );
+                dataA_e2 = Process( data, x_range_e, y_range_e );
+                use_etalone = true;
+            }
+        }
+
+        dataA = Process( test->mData, x_range, y_range );
+        x_range = ff0x::MergeRanges( x_range, x_range_e, use_etalone );
+        y_range = ff0x::MergeRanges( y_range, y_range_e, use_etalone );
+    }
+
+    ff0x::GraphBuilder::LinePoints dataA;
+    ff0x::GraphBuilder::LinePoints dataA_e2;
+
+    QPointF x_range;
+    QPointF y_range;
+};
+
+
+InsidePressure::InsidePressure( QString const& name, uint8_t id ):
+    Test( "Испытание внутренним гидравлическим давлением", 0 )
+{
+#ifdef DEMO
+#endif
+}
+
+bool InsidePressure::Run()
+{
+    bool work = true;
+    bool done = true;
+
+    Start();
+    Wait( work, done );
+    if ( IsStopped() )
+        return false;
+
+    return Success();
+}
+bool InsidePressure::Success() const
+{
+    return mSuccess;
+}
+
+QJsonObject InsidePressure::Serialise() const
+{
+    QJsonObject obj = TestCommonData::Serialise();
+    obj.insert("Data", ToJson( mData ) );
+
+    return obj;
+}
+bool InsidePressure::Deserialize( QJsonObject const& obj )
+{
+    mData = FromJson( obj.value("Data").toArray() );
+    TestCommonData::Deserialize( obj );
+    return true;
+}
+
+bool InsidePressure::Draw( QPainter& painter, QRect &free_rect, QString  const& compare_width ) const
+{
+    QFont header_font = painter.font();
+    header_font.setFamily("Arial");
+    header_font.setPointSize( 14 );
+    QFont result_font = header_font;
+    result_font.setUnderline(true);
+    QFont text_font = header_font;
+    text_font.setPointSize( 12 );
+
+
+    auto DrawRowCenter = [ &painter, &free_rect ](QRect const& place, QFont const& font, QColor const& color, QString const& text )
+    {
+        painter.save();
+        QFontMetrics metrix( font );
+        QPoint start_point( place.center().x() - metrix.width( text ) / 2, place.center().y() +metrix.height()/2);
+        painter.setFont( font );
+        painter.setPen( color );
+        painter.drawText( start_point, text );
+        painter.restore();
+    };
+    auto DrawRowLeft = [ &painter, &free_rect ](    QRect const& place,
+                                                    QFont const& font,
+                                                    QColor const& color1,
+                                                    QString const& label,
+                                                    QColor const& color2 = Qt::black,
+                                                    QString const& value = "")
+    {
+        painter.save();
+        QFontMetrics metrix( font );
+        QPoint start_point( place.left() , place.center().y()+metrix.height()/2 );
+        QPoint start_point2( place.left() + metrix.width(label), place.center().y() +metrix.height()/2);
+        painter.setFont( font );
+        painter.setPen( color1 );
+        painter.drawText( start_point, label );
+        painter.setPen( color2 );
+        painter.drawText( start_point2, value );
+        painter.restore();
+    };
+
+    QFontMetrics m(text_font);
+    int width = m.width("123456789012345678901234567890123456789012345");
+    char symbol = '.';
+    auto FillToSize = [ width, &m, symbol ]( QString text )
+    {
+        while( m.width( text + symbol ) < width )
+            text += symbol;
+        return text + " ";
+    };
+
+
+    uint32_t num = 0;
+    bool res = DrawLine( num, free_rect, header_font,
+    [ this, &painter, &DrawRowCenter, &header_font ]( QRect const& rect )
+    {
+        DrawRowCenter( rect, header_font, Qt::black, "4.Проверка зависимости расхода «к потребителю»" );
+    }, 1.5 );
+    res = DrawLine( num, free_rect, header_font,
+    [ this, &painter, &DrawRowCenter, &header_font ]( QRect const& rect )
+    {
+        DrawRowCenter( rect, header_font, Qt::black, "от перепада давлений нагрузки" );
+    }, 1.5 );
+
+    res = DrawLine( num, free_rect, text_font, []( QRect const& ){});
+    res = DrawLine( num, free_rect, text_font,
+    [ this, &painter, &DrawRowLeft, &text_font ]( QRect const& rect )
+    {
+        QRect r(rect.left() + 76, rect.top(), rect.width() - 76, rect.height() );
+        DrawRowLeft( r, text_font, Qt::black, "Данные испытания, проводятся для определения характера изменения" );
+    }, 1.5 );
+    res = DrawLine( num, free_rect, text_font,
+    [ this, &painter, &DrawRowLeft, &text_font ]( QRect const& rect )
+    {
+        DrawRowLeft( rect, text_font, Qt::black, "расхода «к потребителю» в зависимости от перепада давлений нагрузки." );
+    }, 1.5 );
+
+
+    res = DrawLine( num, free_rect, text_font,
+    [ this, &painter, &DrawRowLeft, &FillToSize, &text_font ]( QRect const& rect )
+    {
+        DrawRowLeft( rect, text_font, Qt::black, FillToSize("Температура масла во время испытаний, ˚С"), Qt::red, test::ToString(OilTemp) );
+    }, 2 );
+    res = DrawLine( num, free_rect, text_font,
+    [ this, &painter, &DrawRowLeft, &FillToSize, &text_font ]( QRect const& rect )
+    {
+        DrawRowLeft( rect, text_font, Qt::black, FillToSize("Длительность испытания, сек"), Qt::red, test::ToString( TestingTime ) );
+    }, 2 );
+    res = DrawLine( num, free_rect, text_font,
+    [ this, &painter, &DrawRowLeft, &FillToSize, &text_font ]( QRect const& rect )
+    {
+        DrawRowLeft( rect, text_font, Qt::black, FillToSize("Испытание проводилось при подаче 50% управляющего сигнала"), Qt::red, "" );
+    }, 2 );
+
+
+    //----------------
+    QString header = "<html>"
+            "<head>"
+              "<meta charset='utf-8'>"
+              "<style type='text/css'>"
+                   "td { text-align: center;}"
+                   "th { font-weight: normal;}"
+                   "table {border-collapse: collapse; border-style: solid;}"
+             "</style>"
+            "</head>"
+            "<body>"
+            "<table width='100%' border='1.5' cellspacing='-0.5' cellpadding='-0.5'>"
+               "<tr>"
+                   "<th rowspan='2'>Расход<br>л/мин</th>"
+                   "<th colspan='3'>Перепад P-->А</th>"
+                   "<th rowspan='2'>Расход<br>л/мин</th>"
+                   "<th colspan='3'>Перепад P-->B</th>"
+               "</tr>"
+               "<tr>"
+                   "<th>Давление<br>в канале<br>P, бар</th>"
+                   "<th>Давление<br>в канале<br>A, бар</th>"
+                   "<th>Перепад,<br>бар</th>"
+                   "<th>Давление<br>в канале<br>P, бар</th>"
+                   "<th>Давление<br>в канале<br>B, бар</th>"
+                   "<th>Перепад,<br>бар</th>"
+               "</tr>";
+
+    QString footer = "</table>"
+            "</body>"
+            "</html>";
+
+    QString table = header;
+    auto MakeRow = [ &table, this ]( int i ) -> QString
+    {
+        QString row =   "<tr>";
+        if ( mData[i].ChA != Data::Channel() )
+        {
+            row += "<td>" + QString::number( mData[i].ChA.Expenditure ) + "</td>"
+                   "<td>" + QString::number( mData[i].ChA.BP5 ) + "</td>"
+                   "<td>" + QString::number( mData[i].ChA.BP3 ) + "</td>"
+                   "<td>" + QString::number( mData[i].ChA.BP5_3() ) + "</td>";
+        }
+        else
+        {
+            row += "<td></td>"
+                   "<td></td>"
+                   "<td></td>"
+                   "<td></td>";
+        }
+        if ( mData[i].ChB != Data::Channel() )
+        {
+            row += "<td>" + QString::number( mData[i].ChB.Expenditure ) + "</td>"
+                  "<td>" + QString::number( mData[i].ChB.BP5 ) + "</td>"
+                  "<td>" + QString::number( mData[i].ChB.BP3 ) + "</td>"
+                  "<td>" + QString::number( mData[i].ChB.BP5_3() ) + "</td>";
+        }
+        else
+        {
+            row += "<td></td>"
+                   "<td></td>"
+                   "<td></td>"
+                   "<td></td>";
+        }
+        row +=        "</tr>";
+        return row;
+    };
+
+    QTextDocument doc;
+    doc.setUndoRedoEnabled( false );
+    doc.setTextWidth( free_rect.width() );
+    doc.setUseDesignMetrics( true );
+    doc.setDefaultTextOption ( QTextOption (Qt::AlignHCenter )  );
+
+    int rows_prapared = 0;
+    for ( auto i = PrintedRows; i < mData.size(); ++i ) //PrintedRows
+    {
+        QString row = MakeRow( i );
+        QString tmp = table + row + footer;
+        doc.setHtml( tmp );
+        auto h = doc.documentLayout()->documentSize().height();
+        if ( h > free_rect.height() )
+            break;
+        ++rows_prapared;
+        table += row;
+    }
+    if ( PrintedRows && rows_prapared )
+        num += PrintedPage;
+    else if( PrintedPage )
+        num += PrintedPage - 1;
+    PrintedRows += rows_prapared;
+    table += footer;
+
+    doc.setHtml( table );
+    auto h = doc.documentLayout()->documentSize().height();
+
+    res = DrawLine( num, free_rect, text_font,
+    [ this, &painter, &doc, &text_font, &rows_prapared ]( QRect const& rect )
+    {
+        if (!rows_prapared)
+            return;
+        painter.save();
+        QRectF r( 0, 0, rect.width(), rect.height() );
+        painter.translate( rect.topLeft() );
+        doc.drawContents( &painter, r);
+        painter.restore();
+        ++PrintedPage;
+    }, 1, h );
+    ///----------------
+
+    res = DrawLine( num, free_rect, text_font, []( QRect const& ){});
+    res = DrawLine( num, free_rect, text_font,
+    [ this, &painter, &DrawRowLeft, &result_font ]( QRect const& rect )
+    {
+        DrawRowLeft( rect, result_font, Qt::black, "РЕЗУЛЬТАТ:" );
+    }, 3 );
+
+
+    QFontMetrics metrix( text_font );
+    if (!mGrapfs)
+        mGrapfs = new GrapfData( this, compare_width );
+
+    res = DrawLine( num, free_rect, text_font,
+    [ this, &painter, &text_font, &DrawRowCenter, &metrix, &compare_width ]( QRect const& rect )
+    {
+        painter.save();
+
+        QFont f = text_font;
+        f.setPointSize( 12 );
+        int w = (rect.width())*0.98;
+        int h = (rect.height() - metrix.height())*0.98;
+
+        ff0x::NoAxisGraphBuilder builder ( w, h, f );
+        ff0x::NoAxisGraphBuilder::GraphDataLine lines;
+        lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataA, ff0x::NoAxisGraphBuilder::LabelInfo( "Испытуемый аппарат", Qt::blue ) ) );
+        if ( !mGrapfs->dataA_e2.empty() )
+            lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataA_e2, ff0x::NoAxisGraphBuilder::LabelInfo( "Предыдущий результат", Qt::gray ) ) );
+
+        QRect p1(rect.left(), rect.top(), w, h );
+        QRect p1t(p1.left(), p1.bottom(), p1.width(), metrix.height());
+
+        DrawRowCenter( p1t, text_font, Qt::black, "P->A" );
+        {
+            QPointF x_range;
+            QPointF y_range;
+            double x_step = 0;
+            double y_step = 0;
+            ff0x::DataLength( mGrapfs->x_range,x_range, x_step );
+            ff0x::DataLength( mGrapfs->y_range,y_range, y_step );
+
+            painter.drawPixmap( p1, builder.Draw( lines, x_range, y_range, x_step, y_step, "Δ Р (бар)", "Расход (л/мин)", true ) );
+        }
+
+        painter.restore();
+    }, 1, 480  );
+    res = DrawLine( num, free_rect, text_font,
+    [ this, &painter, &text_font, &DrawRowCenter, &metrix, &compare_width ]( QRect const& rect )
+    {
+        painter.save();
+
+        QFont f = text_font;
+        f.setPointSize( 12 );
+        int w = (rect.width())*0.98;
+        int h = (rect.height() - metrix.height())*0.98;
+
+        ff0x::NoAxisGraphBuilder builder ( w, h, f );
+        ff0x::NoAxisGraphBuilder::GraphDataLine lines;
+        lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataB, ff0x::NoAxisGraphBuilder::LabelInfo( "Испытуемый аппарат", Qt::blue ) ) );
+        if ( !mGrapfs->dataB_e2.empty() )
+            lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataB_e2, ff0x::NoAxisGraphBuilder::LabelInfo( "Предыдущий результат", Qt::gray ) ) );
+
+        QRect p1(rect.left(), rect.top(), w, h );
+        QRect p1t(p1.left(), p1.bottom(), p1.width(), metrix.height());
+
+        DrawRowCenter( p1t, text_font, Qt::black, "P->B" );
+        {
+            QPointF x_range;
+            QPointF y_range;
+            double x_step = 0;
+            double y_step = 0;
+            ff0x::DataLength( mGrapfs->x_range,x_range, x_step );
+            ff0x::DataLength( mGrapfs->y_range,y_range, y_step );
+            painter.drawPixmap( p1, builder.Draw( lines, x_range, y_range, x_step, y_step, "Δ Р (бар)", "Расход (л/мин)", true ) );
+
+        }
+
+        painter.restore();
+    }, 1, 480  );
+
+    free_rect.setHeight( 0 );
+    return res;
+}
+
+}
