@@ -26,4 +26,5 @@ protected:
 //    cpu::data::DB31& mCommand;
 private:
     void ShowErrors( QString const& err );
+};
 }

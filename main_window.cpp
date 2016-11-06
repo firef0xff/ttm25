@@ -3,6 +3,7 @@
 #include "users/users.h"
 #include "settings/settings_wnd.h"
 #include "test/viewer.h"
+#include "test/test_params.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -13,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QObject::connect( &Updater, SIGNAL(update()), this, SLOT(onUpdateControls()) );
     Updater.start();
+    test::CURRENT_PARAMS.TestCase( mTest );
 }
 
 MainWindow::~MainWindow()

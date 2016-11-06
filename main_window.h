@@ -2,6 +2,7 @@
 #include <QMainWindow>
 #include <memory>
 #include <QThread>
+#include "test/impl/inside_pressure.h"
 
 namespace Ui {
 class MainWindow;
@@ -50,4 +51,5 @@ private:
     ChildPtr mChildWindow;
     //Поток обновления данных датчиков
     ControlsUpdater Updater;
+    test::InsidePressure mTest;
 };

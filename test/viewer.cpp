@@ -138,32 +138,29 @@ void Viewer::on_SavePDF_clicked()
         QRect rc = PreparePage( painter, printer.paperRect() );
 
         test::CURRENT_PARAMS.Draw( painter, rc, CompareWidth );
-        test::Test* test= test::CURRENT_PARAMS.TestCase();
-//        {
-//            test->ResetDrawLine();
+        if( test::Test* test= test::CURRENT_PARAMS.TestCase() )
+        {
+            test->ResetDrawLine();
 
-//            bool draw = false;
-//            while( !draw )
-//            {
-//                draw = test->Draw( painter, rc, CompareWidth );
-//                if ( !draw )
-//                {
-//                    printer.newPage();
-//                    rc = PreparePage( painter, printer.paperRect() );
-//                }
-//                QFontMetrics m (painter.font());
-//                rc.setTop( rc.top() + m.height() );
-//            }
-//        }
+            bool draw = false;
+            while( !draw )
+            {
+                draw = test->Draw( painter, rc, CompareWidth );
+                if ( !draw )
+                {
+                    printer.newPage();
+                    rc = PreparePage( painter, printer.paperRect() );
+                }
+                QFontMetrics m (painter.font());
+                rc.setTop( rc.top() + m.height() );
+            }
+        }
         if ( test::CURRENT_PARAMS.HasResults() )
         {
             printer.newPage();
             rc = PreparePage( painter, printer.paperRect() );
             test::CURRENT_PARAMS.DrawResults( painter, rc );
         }
-        printer.newPage();
-        rc = PreparePage( painter, printer.paperRect() );
-
         painter.end();
     }
 }

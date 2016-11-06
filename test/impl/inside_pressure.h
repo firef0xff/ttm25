@@ -8,13 +8,14 @@ namespace test
 class InsidePressure: public TestCommonData
 {
 public:
-    InsidePressure( QString const& name, uint8_t id );
+    InsidePressure();
     ~InsidePressure();
 
     class GrapfData;
     class Point
     {
     public:
+        Point();
         Point( double x, double y );
 
         QJsonObject Serialise() const;
@@ -35,8 +36,12 @@ public:
     bool Deserialize( QJsonObject const& obj );
 
     bool Draw( QPainter& painter, QRect &free_rect, QString  const& compare_width ) const;
-
 private:
+
+    bool DrawAuto( uint32_t& num, QPainter& painter, QRect &free_rect ) const;
+    bool DrawAvia( uint32_t& num, QPainter& painter, QRect &free_rect ) const;
+    bool DrawGraph( uint32_t& num, QPainter& painter, QRect &free_rect, QString  const& compare_width ) const;
+
     friend class GrapfData;
     bool mSuccess = false;
     DataSet mData;
