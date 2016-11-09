@@ -36,6 +36,7 @@ public:
     bool Deserialize( QJsonObject const& obj );
 
     bool Draw( QPainter& painter, QRect &free_rect, QString  const& compare_width ) const;
+    void PaintGraph(QPainter& painter, QFont const& font, const QRect &rect, QString  const& compare_width ) const;
 private:
 
     bool DrawAuto( uint32_t& num, QPainter& painter, QRect &free_rect ) const;

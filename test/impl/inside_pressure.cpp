@@ -772,41 +772,11 @@ bool InsidePressure::DrawGraph( uint32_t& num, QPainter& painter, QRect &free_re
     {
     }, 1.5 );
 
-    QFontMetrics metrix( text_font );
-    if (!mGrapfs)
-        mGrapfs.reset( new GrapfData( this, compare_width ) );
 
     res = DrawLine( num, free_rect, text_font,
-    [ this, &painter, &text_font, &DrawRowCenter, &metrix, &compare_width ]( QRect const& rect )
+    [ this, &painter, &text_font, &compare_width ]( QRect const& rect )
     {
-        painter.save();
-
-        QFont f = text_font;
-        f.setPointSize( 12 );
-        int w = (rect.width())*0.98;
-        int h = (rect.height() - metrix.height())*0.98;
-
-        ff0x::NoAxisGraphBuilder builder ( w, h, f );
-        ff0x::NoAxisGraphBuilder::GraphDataLine lines;
-        lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataA, ff0x::NoAxisGraphBuilder::LabelInfo( "Испытуемый аппарат", Qt::blue ) ) );
-        if ( !mGrapfs->dataA_e2.empty() )
-            lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataA_e2, ff0x::NoAxisGraphBuilder::LabelInfo( "Предыдущий результат", Qt::gray ) ) );
-
-        QRect p1(rect.left(), rect.top(), w, h );
-        QRect p1t(p1.left(), p1.bottom(), p1.width(), metrix.height());
-
-        {
-            QPointF x_range;
-            QPointF y_range;
-            double x_step = 0;
-            double y_step = 0;
-            ff0x::DataLength( mGrapfs->x_range,x_range, x_step );
-            ff0x::DataLength( mGrapfs->y_range,y_range, y_step );
-
-            painter.drawPixmap( p1, builder.Draw( lines, x_range, y_range, x_step, y_step, "Время, мин.", "Давление ,кгс\\см2", true ) );
-        }
-
-        painter.restore();
+        PaintGraph( painter, text_font, rect, compare_width );
     }, 1, 480  );
 
     free_rect.setHeight( 0 );
@@ -814,5 +784,40 @@ bool InsidePressure::DrawGraph( uint32_t& num, QPainter& painter, QRect &free_re
     return res;
 }
 
+void InsidePressure::PaintGraph( QPainter& painter, QFont const& font, QRect const &rect, QString  const& compare_width ) const
+{
+    QFontMetrics metrix( font );
+    if (!mGrapfs)
+        mGrapfs.reset( new GrapfData( this, compare_width ) );
+
+    painter.save();
+
+    QFont f = font;
+    f.setPointSize( 12 );
+    int w = (rect.width())*0.98;
+    int h = (rect.height() - metrix.height())*0.98;
+
+    ff0x::NoAxisGraphBuilder builder ( w, h, f );
+    ff0x::NoAxisGraphBuilder::GraphDataLine lines;
+    lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataA, ff0x::NoAxisGraphBuilder::LabelInfo( "Испытуемый аппарат", Qt::blue ) ) );
+    if ( !mGrapfs->dataA_e2.empty() )
+        lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataA_e2, ff0x::NoAxisGraphBuilder::LabelInfo( "Предыдущий результат", Qt::gray ) ) );
+
+    QRect p1(rect.left(), rect.top(), w, h );
+    QRect p1t(p1.left(), p1.bottom(), p1.width(), metrix.height());
+
+    {
+        QPointF x_range;
+        QPointF y_range;
+        double x_step = 0;
+        double y_step = 0;
+        ff0x::DataLength( mGrapfs->x_range,x_range, x_step );
+        ff0x::DataLength( mGrapfs->y_range,y_range, y_step );
+
+        painter.drawPixmap( p1, builder.Draw( lines, x_range, y_range, x_step, y_step, "Время, мин.", "Давление ,кгс\\см2", true ) );
+    }
+
+    painter.restore();
+}
 
 }

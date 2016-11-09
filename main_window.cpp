@@ -36,6 +36,12 @@ void MainWindow::showEvent( QShowEvent *e )
     ui->statusBar->showMessage("Текущий пользователь: " + app::Settings::Instance().User() );
     QMainWindow::showEvent( e );
 }
+void MainWindow::resizeEvent( QResizeEvent *e )
+{
+    QMainWindow::resizeEvent( e );
+    RepaintGraph();
+}
+
 void MainWindow::CheckRights()
 {
     if ( app::Settings::Instance().UserAccess() != app::Admin )
@@ -69,7 +75,17 @@ void MainWindow::ShowChildWindow( ChildPtr child, bool maximized )
 
 void MainWindow::onUpdateControls()
 {
-
+    RepaintGraph();
+}
+void MainWindow::RepaintGraph()
+{
+    QPixmap pixmap( ui->Graph->width()-2, ui->Graph->height()-2 );
+    QPainter painter(&pixmap);
+    QFont font = painter.font();
+    font.setFamily("Arial");
+    font.setPointSize(12);
+    mTest.PaintGraph( painter, font, pixmap.rect(), "");
+    ui->Graph->setPixmap( pixmap );
 }
 
 void MainWindow::on_a_users_triggered()

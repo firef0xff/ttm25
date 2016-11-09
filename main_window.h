@@ -43,9 +43,11 @@ private slots:
 private:
     void closeEvent(QCloseEvent *e);
     void showEvent( QShowEvent *e );
+    void resizeEvent( QResizeEvent *e );
 
     void CheckRights();
     void ShowChildWindow( ChildPtr child, bool maximized = false );
+    void RepaintGraph();
 
     Ui::MainWindow *ui;
     ChildPtr mChildWindow;
