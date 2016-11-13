@@ -782,8 +782,17 @@
          <string>Результаты испытания</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetDefaultConstraint</enum>
+         </property>
          <item>
           <widget class="QLabel" name="label">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="text">
             <string>График нагружения</string>
            </property>
@@ -819,6 +828,9 @@
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <property name="sizeConstraint">
+            <enum>QLayout::SetMinimumSize</enum>
+           </property>
            <item>
             <widget class="QLabel" name="label_2">
              <property name="sizePolicy">
@@ -836,7 +848,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QComboBox" name="comboBox">
+            <widget class="QComboBox" name="puUnits">
              <item>
               <property name="text">
                <string>МПа</string>
@@ -866,7 +878,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QComboBox" name="comboBox_2">
+            <widget class="QComboBox" name="tuUnits">
              <item>
               <property name="text">
                <string>Мин.</string>
@@ -897,7 +909,7 @@
          <item>
           <widget class="QTableWidget" name="ResultsData">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>

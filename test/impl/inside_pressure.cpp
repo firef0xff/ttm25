@@ -133,16 +133,64 @@ public:
         y_range = ff0x::MergeRanges( y_range, y_range_e, use_etalone );
     }
 
+    void SetXscale( double scale )
+    {
+        if (current_x_scale == scale)
+            return;
+
+        x_range.setX( x_range.x()/current_x_scale*scale );
+        x_range.setY( x_range.y()/current_x_scale*scale );
+
+        for ( auto it = dataA.begin(), end = dataA.end(); it != end; ++it )
+        {
+            QPointF& point = *it;
+            point.setX( point.x()/current_x_scale*scale );
+        }
+        for ( auto it = dataA_e2.begin(), end = dataA_e2.end(); it != end; ++it )
+        {
+            QPointF& point = *it;
+            point.setX( point.x()/current_x_scale*scale );
+        }
+
+        current_x_scale = scale;
+    }
+    void SetYscale( double scale )
+    {
+        if (current_y_scale == scale)
+            return;
+
+        y_range.setX( y_range.x()/current_y_scale*scale );
+        y_range.setY( y_range.y()/current_y_scale*scale );
+
+        for ( auto it = dataA.begin(), end = dataA.end(); it != end; ++it )
+        {
+            QPointF& point = *it;
+            point.setY( point.y()/current_y_scale*scale );
+        }
+        for ( auto it = dataA_e2.begin(), end = dataA_e2.end(); it != end; ++it )
+        {
+            QPointF& point = *it;
+            point.setY( point.y()/current_y_scale*scale );
+        }
+
+        current_y_scale = scale;
+    }
+
     ff0x::GraphBuilder::LinePoints dataA;
     ff0x::GraphBuilder::LinePoints dataA_e2;
 
     QPointF x_range;
     QPointF y_range;
+
+private:
+    double current_x_scale = 1.0;
+    double current_y_scale = 1.0;
 };
 
 
-InsidePressure::InsidePressure():
-    TestCommonData( "Испытание внутренним гидравлическим давлением", 1 )
+InsidePressure::InsidePressure(CallBack f):
+    TestCommonData( "Испытание внутренним гидравлическим давлением", 1 ),
+    mOnDataUpdate( f )
 {
 #ifdef DEMO
     for ( auto x = 0; x <100; ++x )
@@ -170,6 +218,11 @@ bool InsidePressure::Run()
 bool InsidePressure::Success() const
 {
     return mSuccess;
+}
+void InsidePressure::UpdateData()
+{
+    if (mOnDataUpdate)
+        mOnDataUpdate();
 }
 
 QJsonObject InsidePressure::Serialise() const
@@ -784,18 +837,40 @@ bool InsidePressure::DrawGraph( uint32_t& num, QPainter& painter, QRect &free_re
     return res;
 }
 
-void InsidePressure::PaintGraph( QPainter& painter, QFont const& font, QRect const &rect, QString  const& compare_width ) const
+void InsidePressure::PaintGraph( QPainter& painter, QFont const& font, QRect const &rect,
+                                 QString  const& compare_width,
+                                 double skale,
+                                 InsidePressure::PressureUnits pu,
+                                 InsidePressure::TimeUnits tu ) const
 {
-    QFontMetrics metrix( font );
     if (!mGrapfs)
         mGrapfs.reset( new GrapfData( this, compare_width ) );
 
     painter.save();
 
+    double x_scale = 1;
+    QString x_msg = "Время, мин.";
+    double y_scale = 1;
+    QString y_msg = "Давление, кгс\\см2";
+
+    if ( pu == puMPA )
+    {
+        y_scale = 10.19716212978;
+        y_msg = "Давление, МПа";
+    }
+    if ( tu == tuSec )
+    {
+        x_scale = 60;
+        x_msg = "Время, сек.";
+    }
+
+    mGrapfs->SetXscale( x_scale );
+    mGrapfs->SetYscale( y_scale );
+
     QFont f = font;
     f.setPointSize( 12 );
-    int w = (rect.width())*0.98;
-    int h = (rect.height() - metrix.height())*0.98;
+    int w = (rect.width())*skale;
+    int h = (rect.height())*skale;
 
     ff0x::NoAxisGraphBuilder builder ( w, h, f );
     ff0x::NoAxisGraphBuilder::GraphDataLine lines;
@@ -804,8 +879,6 @@ void InsidePressure::PaintGraph( QPainter& painter, QFont const& font, QRect con
         lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataA_e2, ff0x::NoAxisGraphBuilder::LabelInfo( "Предыдущий результат", Qt::gray ) ) );
 
     QRect p1(rect.left(), rect.top(), w, h );
-    QRect p1t(p1.left(), p1.bottom(), p1.width(), metrix.height());
-
     {
         QPointF x_range;
         QPointF y_range;
@@ -814,7 +887,7 @@ void InsidePressure::PaintGraph( QPainter& painter, QFont const& font, QRect con
         ff0x::DataLength( mGrapfs->x_range,x_range, x_step );
         ff0x::DataLength( mGrapfs->y_range,y_range, y_step );
 
-        painter.drawPixmap( p1, builder.Draw( lines, x_range, y_range, x_step, y_step, "Время, мин.", "Давление ,кгс\\см2", true ) );
+        painter.drawPixmap( p1, builder.Draw( lines, x_range, y_range, x_step, y_step, x_msg, y_msg, true ) );
     }
 
     painter.restore();

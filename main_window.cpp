@@ -7,13 +7,14 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    mTest( std::bind( &MainWindow::RepaintGraph, this ) )
 {
     ui->setupUi(this);
     ui->ResultsData->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
     QObject::connect( &Updater, SIGNAL(update()), this, SLOT(onUpdateControls()) );
-    Updater.start();
+    Updater.start();    
     test::CURRENT_PARAMS.TestCase( mTest );
 }
 
@@ -75,7 +76,7 @@ void MainWindow::ShowChildWindow( ChildPtr child, bool maximized )
 
 void MainWindow::onUpdateControls()
 {
-    RepaintGraph();
+
 }
 void MainWindow::RepaintGraph()
 {
@@ -84,8 +85,14 @@ void MainWindow::RepaintGraph()
     QFont font = painter.font();
     font.setFamily("Arial");
     font.setPointSize(12);
-    mTest.PaintGraph( painter, font, pixmap.rect(), "");
+    auto r = pixmap.rect();
+    painter.fillRect( r, Qt::white );
+    mTest.PaintGraph( painter, font, pixmap.rect(), "", 1,
+                      static_cast<test::InsidePressure::PressureUnits>( ui->puUnits->currentIndex() ),
+                      static_cast<test::InsidePressure::TimeUnits>( ui->tuUnits->currentIndex() ) );
+    ui->Graph->setScaledContents( true );
     ui->Graph->setPixmap( pixmap );
+    ui->Graph->setMinimumSize( 10, 10 );
 }
 
 void MainWindow::on_a_users_triggered()
@@ -121,6 +128,12 @@ void ControlsUpdater::stop()
     wait();
 }
 
+void MainWindow::on_puUnits_currentIndexChanged(int /*index*/)
+{
+    RepaintGraph();
+}
 
-
-
+void MainWindow::on_tuUnits_currentIndexChanged(int /*index*/)
+{
+    RepaintGraph();
+}

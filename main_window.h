@@ -36,9 +36,15 @@ private slots:
 
     void onUpdateControls();
 
+    void RepaintGraph();
+
     void on_a_options_triggered();
 
     void on_a_proto_triggered();
+
+    void on_puUnits_currentIndexChanged(int index);
+
+    void on_tuUnits_currentIndexChanged(int index);
 
 private:
     void closeEvent(QCloseEvent *e);
@@ -47,7 +53,7 @@ private:
 
     void CheckRights();
     void ShowChildWindow( ChildPtr child, bool maximized = false );
-    void RepaintGraph();
+
 
     Ui::MainWindow *ui;
     ChildPtr mChildWindow;
