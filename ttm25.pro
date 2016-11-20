@@ -37,7 +37,10 @@ SOURCES += main.cpp\
     ../mylib/COMPort/ComPort.cpp \
     test/impl/common_data.cpp \
     settings/strings_source.cpp \
-    settings/textitem.cpp
+    settings/textitem.cpp \
+    communication/acr/current_values.cpp \
+    communication/acr/acr_command.cpp \
+    unit_tests/test_acr.cpp
 
 HEADERS  += main_window.h \
     communication/fins/endpoint.h \
@@ -59,7 +62,10 @@ HEADERS  += main_window.h \
     ../mylib/COMPort/ComPort.h \
     test/impl/common_data.h \
     settings/strings_source.h \
-    settings/textitem.h
+    settings/textitem.h \
+    communication/acr/command.h \
+    communication/acr/current_values.h \
+    communication/swap_endian.h
 
 FORMS    += main_window.ui\
             test/viewer.ui\
