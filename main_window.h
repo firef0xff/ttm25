@@ -3,6 +3,8 @@
 #include <memory>
 #include <QThread>
 #include "test/impl/inside_pressure.h"
+#include <settings/strings_source.h>
+#include <QComboBox>
 
 namespace Ui {
 class MainWindow;
@@ -46,6 +48,16 @@ private slots:
 
     void on_tuUnits_currentIndexChanged(int index);
 
+    void on_bTitleTire_clicked();
+
+    void on_bTitleModel_clicked();
+
+    void on_bMark_clicked();
+
+    void on_bTitleKKT_clicked();
+
+    void on_bTestingMethod_clicked();
+
 private:
     void closeEvent(QCloseEvent *e);
     void showEvent( QShowEvent *e );
@@ -53,11 +65,17 @@ private:
 
     void CheckRights();
     void ShowChildWindow( ChildPtr child, bool maximized = false );
-
+    void SourceToControl( QComboBox& combo, app::StringsSource const& source );
+    void AddItem( QComboBox& combo, app::StringsSource& source );
 
     Ui::MainWindow *ui;
     ChildPtr mChildWindow;
     //Поток обновления данных датчиков
     ControlsUpdater Updater;
     test::InsidePressure mTest;
+    app::StringsSource mTitleTire;
+    app::StringsSource mTitleModel;
+    app::StringsSource mMark;
+    app::StringsSource mTitleKKT;
+    app::StringsSource mTestingMethod;
 };

@@ -4,14 +4,27 @@
 #include "settings/settings_wnd.h"
 #include "test/viewer.h"
 #include "test/test_params.h"
+#include "settings/textitem.h"
+#include <functional>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    mTest( std::bind( &MainWindow::RepaintGraph, this ) )
+    mTest( std::bind( &MainWindow::RepaintGraph, this ) ),
+    mTitleTire( "tires_mark.json" ),
+    mTitleModel( "models.json" ),
+    mMark( "marks.json" ),
+    mTitleKKT( "kkt.json" ),
+    mTestingMethod( "method.json")
 {
     ui->setupUi(this);
     ui->ResultsData->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+
+    SourceToControl( *ui->eTitleTire, mTitleTire );
+    SourceToControl( *ui->eTitleKKT, mTitleKKT );
+    SourceToControl( *ui->eTitleModel, mTitleModel);
+    SourceToControl( *ui->eTestingMethod, mTestingMethod );
+    SourceToControl( *ui->eMark, mMark );
 
     QObject::connect( &Updater, SIGNAL(update()), this, SLOT(onUpdateControls()) );
     Updater.start();    
@@ -136,4 +149,53 @@ void MainWindow::on_puUnits_currentIndexChanged(int /*index*/)
 void MainWindow::on_tuUnits_currentIndexChanged(int /*index*/)
 {
     RepaintGraph();
+}
+
+void MainWindow::SourceToControl( QComboBox& combo, app::StringsSource const& source )
+{
+    QString curr_val = combo.currentText();
+    combo.clear();
+    auto arr = source.Strings();
+    for ( auto it = arr.begin(), end = arr.end(); it != end; ++it )
+    {
+        combo.addItem( *it );
+    }
+    auto item = combo.findText( curr_val );
+    combo.setCurrentIndex( item );
+}
+
+void MainWindow::on_bTitleTire_clicked()
+{
+    AddItem( *ui->eTitleTire, mTitleTire );
+}
+
+void MainWindow::on_bTitleModel_clicked()
+{
+    AddItem( *ui->eTitleModel, mTitleModel);
+}
+
+void MainWindow::on_bMark_clicked()
+{
+    AddItem( *ui->eMark, mMark );
+}
+
+void MainWindow::on_bTitleKKT_clicked()
+{
+    AddItem( *ui->eTitleKKT, mTitleKKT );
+}
+
+void MainWindow::on_bTestingMethod_clicked()
+{
+    AddItem( *ui->eTestingMethod, mTestingMethod );
+}
+
+void MainWindow::AddItem( QComboBox& combo, app::StringsSource& source )
+{
+    ShowChildWindow( ChildPtr( new TextItem(
+    [ &combo, &source, this ]( QString const& item )
+    {
+        source.Strings().push_back( item );
+        source.Save();
+        SourceToControl( combo, source );
+    }) ) );
 }

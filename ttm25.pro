@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui printsupport
+QMAKE_CXXFLAGS += -std=c++11
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -34,7 +35,9 @@ SOURCES += main.cpp\
     ../mylib/Widgets/GraphBuilder/graph_builder.cpp \
     ../mylib/Widgets/RoundDial/round_dial.cpp \
     ../mylib/COMPort/ComPort.cpp \
-    test/impl/common_data.cpp
+    test/impl/common_data.cpp \
+    settings/strings_source.cpp \
+    settings/textitem.cpp
 
 HEADERS  += main_window.h \
     communication/fins/endpoint.h \
@@ -54,13 +57,16 @@ HEADERS  += main_window.h \
     ../mylib/Widgets/GraphBuilder/graph_builder.h\
     ../mylib/Widgets/RoundDial/round_dial.h \
     ../mylib/COMPort/ComPort.h \
-    test/impl/common_data.h
+    test/impl/common_data.h \
+    settings/strings_source.h \
+    settings/textitem.h
 
 FORMS    += main_window.ui\
             test/viewer.ui\
             settings/settings_wnd.ui\
             users/users.ui\
-            users/login.ui
+            users/login.ui \
+    settings/textitem.ui
 
 win32 {
     RC_ICONS += img/Main.ico
@@ -83,3 +89,10 @@ release {
 #DEFINES += WINDOWS
 DEFINES += DEMO
 DEFINES += DEBUG
+
+DISTFILES += \
+    data/kkt.json \
+    data/method.json \
+    data/tires_mark.json \
+    data/marks.json \
+    data/models.json
