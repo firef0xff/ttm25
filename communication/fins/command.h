@@ -14,8 +14,8 @@ public:
         //6: 0 команда 1-ответ
         //0: 0 требуется ответ 1 ответ не требуется
 
-        REQUEST_WITHOUT_RESPONCE = 0b10000000,
-        REQUEST_WITH_RESPONCE = 0b10000001,
+        REQUEST_WITH_RESPONCE = 0b10000000,
+        REQUEST_WITHOUT_RESPONCE = 0b10000001,
         RESPONCE = 0b11000001
     };
     enum

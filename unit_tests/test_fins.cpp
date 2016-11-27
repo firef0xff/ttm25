@@ -1,10 +1,11 @@
 #include "communication/fins/paskage.h"
 #include "communication/fins/endpoint.h"
-#include "communication/fins/command.h"
+#include "communication/fins/funcs/memory_area_read.h"
 #include <cstring>
 #include <stdexcept>
 #include <vector>
-
+#include "communication/fins/udp_communicator.h"
+#include "communication/fins/mem_type.h"
 namespace test
 {
 
@@ -29,60 +30,33 @@ public:
 class TestPaskage
 {
 public:
-    class test_Command :public fins::Command
+    class test_Command :public fins::MemoryAreaRead
     {
     public:
-        test_Command():
-            fins::Command(0x1,0x1)
+        test_Command(fins::MemoryAddr const& addr, uint16_t el_count):
+            MemoryAreaRead( addr, el_count )
         {
-            mMemCode = 30;
-            mAddrWord = 3568;
-            mAddrBit = 10;
-            mCount = 1;
-        }
-        virtual uint8_t GetICF() override
-        {
-            return Command::REQUEST_WITH_RESPONCE;
-        }
-        virtual size_t WriteImpl( uint8_t* buf, size_t size ) override
-        {
-            if ( size < 48 )
-                return size;
 
-            uint8_t* head = buf;
-            *(head++) = mMemCode;
-            auto addr = reinterpret_cast<uint8_t*>(&mAddrWord);
-            *(head++) = addr[1];
-            *(head++) = addr[0];
-            *(head++) = mAddrBit;
-            *(head++) = mCount;
-            return head - buf;
         }
         virtual size_t ReadImpl( uint8_t const* buf, size_t size, bool& res ) override
         {
-            if ( size%mElementSize )
+            if ( size%mAddr.mElementSize )
                 throw std::runtime_error("unexpected end of data");
             mData.clear();
-            size_t elements_count = size/mElementSize;
+            size_t elements_count = size/mAddr.mElementSize;
             mData.reserve( elements_count );
 
             uint8_t const* head = buf;
             for( size_t i = 0; i < elements_count; ++ i )
             {
                 mData.push_back( static_cast<bool>( *(head) ) );
-                head += mElementSize;
+                head += mAddr.mElementSize;
             }
             res = true;
             return size;
         }
 
     private:
-        uint8_t  mMemCode = 0;
-        uint16_t mAddrWord = 0;
-        uint8_t  mAddrBit = 0;
-        uint16_t mCount = 0;
-
-        uint8_t mElementSize = 1;
         std::vector<bool> mData;
     };
 
@@ -90,23 +64,27 @@ public:
     {
         using namespace fins;
 
-        EndPoint source( EndPoint::NA_LOCAL, 55, EndPoint::A2_COMPUTER );
-        EndPoint dest( EndPoint::NA_LOCAL, 26, EndPoint::A2_CPU );
+        EndPoint source( EndPoint::NA_LOCAL, 1, EndPoint::A2_COMPUTER );
+        EndPoint dest( EndPoint::NA_LOCAL, 0, EndPoint::A2_CPU );
 
-        test_Command c;
+        fins::BIT_CIO mem( 3568, 10 );
+        test_Command c( mem, 2 );
         Paskage p( dest, source, c, 15 );
         auto* data = p.Data();
         uint8_t request[] = {Command::REQUEST_WITH_RESPONCE,0,2,
-                             EndPoint::NA_LOCAL,26,EndPoint::A2_CPU,
-                             EndPoint::NA_LOCAL,55,EndPoint::A2_COMPUTER,15,
-                             0x1,0x1,30,0x0d,0xF0,10,1};
+                             EndPoint::NA_LOCAL,0,EndPoint::A2_CPU,
+                             EndPoint::NA_LOCAL,1,EndPoint::A2_COMPUTER,15,
+                             0x1,0x1,0x30,0x0d,0xF0,10,0,2};
         if (memcmp(data, request, sizeof(request)))
             throw std::runtime_error("wrong request");
         uint8_t responce[] = {Command::RESPONCE,0,2,
-                              EndPoint::NA_LOCAL,55,EndPoint::A2_COMPUTER,
-                              EndPoint::NA_LOCAL,26,EndPoint::A2_CPU,15,
+                              EndPoint::NA_LOCAL,1,EndPoint::A2_COMPUTER,
+                              EndPoint::NA_LOCAL,0,EndPoint::A2_CPU,15,
                               0x1,0x1,0,0,1};
 
+
+        UDP_Communicator com( "192.168.0.2" );
+        com.send( p.Data(), p.Size() );
     }
 
 
