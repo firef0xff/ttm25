@@ -2,23 +2,22 @@
 #include "../command.h"
 #include "../memoryaddr.h"
 #include "../data_element.h"
+
 namespace fins
 {
 
-
-
-class MemoryAreaRead : public Command
+class MemoryAreaWrite : public Command
 {
 public:
-    MemoryAreaRead(const MemoryAddr &addr, Elements& data);
+    MemoryAreaWrite( const MemoryAddr &addr, Elements const& data );
 
     virtual uint8_t GetICF() override;
     virtual size_t WriteImpl( uint8_t* buf, size_t size ) override;
     virtual size_t ReadImpl( uint8_t const* buf, size_t size, bool& res ) override;
 
-protected:
+private:
     MemoryAddr const& mAddr;
-    Elements& mElements;
+    Elements const& mElements;
 };
 
 }//namespace fins

@@ -4,10 +4,10 @@
 namespace fins
 {
 
-MemoryAreaRead::MemoryAreaRead( MemoryAddr const& addr, uint16_t el_count ):
+MemoryAreaRead::MemoryAreaRead( MemoryAddr const& addr, Elements& data ):
     fins::Command(0x1,0x1),
     mAddr( addr ),
-    mElCount( el_count )
+    mElements( data )
 {
 
 }
@@ -27,7 +27,8 @@ size_t MemoryAreaRead::WriteImpl( uint8_t* buf, size_t size )
     *(head++) = addr[1];
     *(head++) = addr[0];
     *(head++) = mAddr.mBit;
-    auto count = reinterpret_cast<uint8_t const*>(&mElCount);
+    uint16_t el_count = mElements.size();
+    auto count = reinterpret_cast<uint8_t const*>(&el_count);
     *(head++) = count[1];
     *(head++) = count[0];
     return head - buf;

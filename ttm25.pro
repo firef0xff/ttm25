@@ -43,7 +43,8 @@ SOURCES += main.cpp\
     unit_tests/test_acr.cpp \
     communication/fins/udp_communicator.cpp \
     communication/fins/funcs/memory_area_read.cpp \
-    communication/fins/memoryaddr.cpp
+    communication/fins/memoryaddr.cpp \
+    communication/fins/funcs/memory_area_write.cpp
 
 HEADERS  += main_window.h \
     communication/fins/endpoint.h \
@@ -72,7 +73,9 @@ HEADERS  += main_window.h \
     communication/fins/udp_communicator.h \
     communication/fins/funcs/memory_area_read.h \
     communication/fins/memoryaddr.h \
-    communication/fins/mem_type.h
+    communication/fins/mem_type.h \
+    communication/fins/funcs/memory_area_write.h \
+    communication/fins/data_element.h
 
 FORMS    += main_window.ui\
             test/viewer.ui\

@@ -1,6 +1,7 @@
 #include "communication/fins/paskage.h"
 #include "communication/fins/endpoint.h"
 #include "communication/fins/funcs/memory_area_read.h"
+#include "communication/fins/funcs/memory_area_write.h"
 #include <cstring>
 #include <stdexcept>
 #include <vector>
@@ -11,30 +12,16 @@ namespace test
 
 namespace
 {
-//класс который знает
-//код области
-//диапазон адресов
-//размер элемента и умеет его читать писать
-
-class DataInfo
-{
-public:
-    DataInfo()
-    {}
-    virtual uint8_t MemCode() = 0;
-    virtual uint8_t ElementSize() = 0;
-    virtual size_t ReadElement( uint8_t const* buf, size_t size ) = 0;
-    virtual size_t WriteElement( uint8_t const* buf, size_t size ) = 0;
-};
+using namespace fins;
 
 class TestPaskage
 {
-public:
+public:   
     class test_Command :public fins::MemoryAreaRead
     {
     public:
-        test_Command(fins::MemoryAddr const& addr, uint16_t el_count):
-            MemoryAreaRead( addr, el_count )
+        test_Command(fins::MemoryAddr const& addr, fins::Elements& el):
+            MemoryAreaRead( addr, el )
         {
 
         }
@@ -62,13 +49,21 @@ public:
 
     TestPaskage()
     {
-        using namespace fins;
+        TestBinaryBuild();
+        TestReadWrite();
+    }
 
+    void TestBinaryBuild()
+    {
         EndPoint source( EndPoint::NA_LOCAL, 1, EndPoint::A2_COMPUTER );
         EndPoint dest( EndPoint::NA_LOCAL, 0, EndPoint::A2_CPU );
 
         fins::BIT_CIO mem( 3568, 10 );
-        test_Command c( mem, 2 );
+        Elements els;
+        els.push_back( BOOL_ELEMENT::Create(true) );
+        els.push_back( BOOL_ELEMENT::Create(false) );
+
+        test_Command c( mem, els );
         Paskage p( dest, source, c, 15 );
         auto* data = p.Data();
         uint8_t request[] = {Command::REQUEST_WITH_RESPONCE,0,2,
@@ -82,11 +77,28 @@ public:
                               EndPoint::NA_LOCAL,0,EndPoint::A2_CPU,15,
                               0x1,0x1,0,0,1};
 
-
-        UDP_Communicator com( "192.168.0.2" );
-        com.send( p.Data(), p.Size() );
     }
 
+    void TestReadWrite()
+    {
+        EndPoint source( EndPoint::NA_LOCAL, 1, EndPoint::A2_COMPUTER );
+        EndPoint dest( EndPoint::NA_LOCAL, 0, EndPoint::A2_CPU );
+        fins::BIT_CIO mem( 3568, 10 );
+
+        Elements els;
+        els.push_back( BOOL_ELEMENT::Create(true) );
+        els.push_back( BOOL_ELEMENT::Create(true) );
+
+        MemoryAreaWrite w_cmd( mem, els );
+        Paskage write( dest, source, w_cmd, 15 );
+
+        MemoryAreaRead r_cmd( mem, els );
+        Paskage read( dest, source, r_cmd, 15 );
+
+        UDP_Communicator com( "192.168.0.2" );
+        com.send( write.Data(), write.Size() );
+        com.send( read.Data(), read.Size() );
+    }
 
 } t1;
 
