@@ -1,4 +1,6 @@
 #include "command.h"
+#include <stdexcept>
+#include <sstream>
 
 namespace fins
 {
@@ -32,8 +34,24 @@ size_t Command::Read( uint8_t const* buf, size_t size, bool& res )
     }
     mErrClass = *(head++);
     mErrCode = *(head++);
+
+    if ( mErrClass || mErrCode )
+    {
+        std::stringstream s;
+        s << "Error while execute command "<< mMR << mSR <<
+             " error code: " << mErrCode << " class: " << mErrClass;
+        throw std::runtime_error( s.str() );
+    }
     size_t readed = head - buf;
     return ReadImpl( head, size - readed, res ) + readed;
 }
 
+size_t Command::RequestSize() const
+{
+    return sizeof(mMR) + sizeof(mSR) + RequestSizeImpl();
+}
+size_t Command::ResponseSize() const
+{
+    return sizeof(mErrCode) + sizeof(mErrClass) + ResponseSizeImpl();
+}
 }//namespace fins

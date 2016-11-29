@@ -37,9 +37,22 @@ size_t MemoryAreaWrite::WriteImpl( uint8_t* buf, size_t size )
     }
     return head - buf;
 }
-size_t MemoryAreaWrite::ReadImpl( uint8_t const* buf, size_t size, bool& res )
+size_t MemoryAreaWrite::ReadImpl( uint8_t const* /*buf*/, size_t size, bool& res )
 {
-
+    res = true;
+    return size;
+}
+size_t MemoryAreaWrite::RequestSizeImpl() const
+{
+    return sizeof( mAddr.mMemType ) +
+           sizeof( mAddr.mAddr ) +
+           sizeof( mAddr.mBit ) +
+           sizeof( static_cast<uint16_t>( mElements.size() ) ) +
+           mAddr.mElementSize * mElements.size();
+}
+size_t MemoryAreaWrite::ResponseSizeImpl() const
+{
+    return 0;
 }
 
 }//namespace fins

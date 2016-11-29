@@ -64,17 +64,17 @@ public:
         els.push_back( BOOL_ELEMENT::Create(false) );
 
         test_Command c( mem, els );
-        Paskage p( dest, source, c, 15 );
+        Paskage p( dest, source, c );
         auto* data = p.Data();
         uint8_t request[] = {Command::REQUEST_WITH_RESPONCE,0,2,
                              EndPoint::NA_LOCAL,0,EndPoint::A2_CPU,
-                             EndPoint::NA_LOCAL,1,EndPoint::A2_COMPUTER,15,
+                             EndPoint::NA_LOCAL,1,EndPoint::A2_COMPUTER,p.SID(),
                              0x1,0x1,0x30,0x0d,0xF0,10,0,2};
         if (memcmp(data, request, sizeof(request)))
             throw std::runtime_error("wrong request");
         uint8_t responce[] = {Command::RESPONCE,0,2,
                               EndPoint::NA_LOCAL,1,EndPoint::A2_COMPUTER,
-                              EndPoint::NA_LOCAL,0,EndPoint::A2_CPU,15,
+                              EndPoint::NA_LOCAL,0,EndPoint::A2_CPU,p.SID(),
                               0x1,0x1,0,0,1};
 
     }
@@ -90,14 +90,18 @@ public:
         els.push_back( BOOL_ELEMENT::Create(true) );
 
         MemoryAreaWrite w_cmd( mem, els );
-        Paskage write( dest, source, w_cmd, 15 );
+        Paskage write( dest, source, w_cmd );
 
-        MemoryAreaRead r_cmd( mem, els );
-        Paskage read( dest, source, r_cmd, 15 );
+        Elements els2;
+        els2.push_back( BOOL_ELEMENT::Create(false) );
+        els2.push_back( BOOL_ELEMENT::Create(false) );
+        MemoryAreaRead r_cmd( mem, els2 );
+        Paskage read( dest, source, r_cmd );
 
         UDP_Communicator com( "192.168.0.2" );
-        com.send( write.Data(), write.Size() );
-        com.send( read.Data(), read.Size() );
+        com.send( write );
+        com.send( read );
+        return;
     }
 
 } t1;

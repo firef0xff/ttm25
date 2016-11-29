@@ -6,7 +6,8 @@ namespace fins
 UDP_Communicator::UDP_Communicator( QString host, qint16 port ):
     mHost(host),
     mPort(port),
-    mSocket( this )
+    mSocket( this ),
+    mReaded( 0 )
 {
     mSocket.bind( mHost, mPort );
 
@@ -20,42 +21,31 @@ UDP_Communicator::~UDP_Communicator()
 
 void UDP_Communicator::read()
 {
+    auto data_size = mSocket.pendingDatagramSize();
+    mAnswer.resize( data_size );
+    mSocket.readDatagram( mAnswer.data() + mReaded, mAnswer.size() - mReaded );
+    mReaded += data_size;
 
+    if ( mRequest && mReaded >= mRequest->ResponseSize() )
+    {
+        mRequest->SetResponce( reinterpret_cast<uint8_t const*>( mAnswer.data() ), mAnswer.size() );
+        mAnswer.clear();
+        mReaded = 0;
+        mCond.notify_all();
+    }
 }
 
-void UDP_Communicator::send(uint8_t const* buf, size_t size)
-{
-    mSocket.writeDatagram( reinterpret_cast<char const *>( buf ), size, mHost, mPort );
+void UDP_Communicator::send( Paskage& pkg )
+{    
+//    сохраняем запрос в мапе ожидающих ответа
+    mRequest = &pkg;
+//    шлем запрос
+    mSocket.writeDatagram( reinterpret_cast<char const *>( pkg.Data() ), pkg.Size(), mHost, mPort );
+////    ждем ответ
+    std::unique_lock< std::mutex > lock( mMutex );
+    mCond.wait( lock );
+    mRequest = nullptr;
 }
-
-/*void UDP_Communicator::read()
-{
-  QByteArray datagram;
-  datagram.resize(socket->pendingDatagramSize());
-  QHostAddress *address = new QHostAddress();
-  socket->readDatagram(datagram.data(), datagram.size(), address);
-
-  QDataStream in(&datagram, QIODevice::ReadOnly);
-
-  qint64 size = -1;
-  if(in.device()->size() > sizeof(qint64)) {
-    in >> size;
-  } else return;
-  if (in.device()->size() - sizeof(qint64) < size) return;
-
-  qint8 type = 0;
-  in >> type;
-
-  if (type == USUAL_MESSAGE) {
-    QString str;
-    in >> str;
-    // код по перенаправке сообщения в классы выше //
-  } else if (type == PERSON_ONLINE) {
-    // Добавление пользователя с считанным QHostAddress //
-  } else if (type == WHO_IS_ONLINE) {
-    sending(nickname, qint8(PERSON_ONLINE));
-  }
-}*/
 
 }//namespace fins
 

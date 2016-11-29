@@ -16,6 +16,9 @@ public:
     virtual size_t ReadImpl( uint8_t const* buf, size_t size, bool& res ) override;
 
 private:
+    virtual size_t RequestSizeImpl() const;
+    virtual size_t ResponseSizeImpl() const;
+
     MemoryAddr const& mAddr;
     Elements const& mElements;
 };

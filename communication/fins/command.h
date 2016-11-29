@@ -31,9 +31,15 @@ public:
     size_t Write( uint8_t* buf, size_t size );
     size_t Read( uint8_t const* buf, size_t size, bool& res );
 
+    size_t RequestSize() const;
+    size_t ResponseSize() const;
+
 private:
     virtual size_t WriteImpl( uint8_t* buf, size_t size ) = 0;
     virtual size_t ReadImpl( uint8_t const* buf, size_t size, bool& res ) = 0;
+
+    virtual size_t RequestSizeImpl() const = 0;
+    virtual size_t ResponseSizeImpl() const = 0;
 
     uint8_t mMR = 0;
     uint8_t mSR = 0;

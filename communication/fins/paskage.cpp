@@ -5,8 +5,10 @@
 namespace fins
 {
 
-Paskage::Paskage(EndPoint const& dest, EndPoint const& current, Command& req , uint8_t sid):
-    mSID( sid ),
+std::atomic<uint8_t> Paskage::SID_COUNTER(0);
+
+Paskage::Paskage(EndPoint const& dest, EndPoint const& current, Command& req ):
+    mSID( ++SID_COUNTER ),
     mDestination( dest ),
     mSource( current ),
     mRequest( req )
@@ -71,9 +73,23 @@ size_t Paskage::Size()
     return mSize;
 }
 
+uint8_t Paskage::SID() const
+{
+    return mSID;
+}
+
 bool Paskage::NeedAnsver()
 {
     return mRequest.GetICF() == Command::REQUEST_WITH_RESPONCE;
+}
+
+size_t Paskage::RequestSize() const
+{
+    return HEADER_SIZE + mRequest.RequestSize();
+}
+size_t Paskage::ResponseSize() const
+{
+    return HEADER_SIZE + mRequest.ResponseSize();
 }
 
 }//namespace fins

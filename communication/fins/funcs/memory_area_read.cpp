@@ -18,7 +18,7 @@ uint8_t MemoryAreaRead::GetICF()
 }
 size_t MemoryAreaRead::WriteImpl( uint8_t* buf, size_t size )
 {
-    if ( size < 48 )
+    if ( size < RequestSizeImpl() )
         return size;
 
     uint8_t* head = buf;
@@ -35,7 +35,29 @@ size_t MemoryAreaRead::WriteImpl( uint8_t* buf, size_t size )
 }
 size_t MemoryAreaRead::ReadImpl( uint8_t const* buf, size_t size, bool& res )
 {
+    if ( size < ResponseSizeImpl() )
+        throw std::runtime_error("unexpected end of data");
 
+    uint8_t const* head = buf;
+    for ( auto it = mElements.begin(), end = mElements.end(); it != end; ++it )
+    {
+        Element& element = **it;
+        head = element.Read( head, mAddr.mElementSize );
+    }
+    res = true;
+    return size;
+}
+
+size_t MemoryAreaRead::RequestSizeImpl() const
+{
+    return sizeof( mAddr.mMemType ) +
+           sizeof( mAddr.mAddr ) +
+           sizeof( mAddr.mBit ) +
+           sizeof( static_cast<uint16_t>( mElements.size() ) );
+}
+size_t MemoryAreaRead::ResponseSizeImpl() const
+{
+    return mAddr.mElementSize * mElements.size();
 }
 
 }//namespace fins
