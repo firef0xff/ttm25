@@ -16,7 +16,7 @@ public:
 
         REQUEST_WITH_RESPONCE = 0b10000000,
         REQUEST_WITHOUT_RESPONCE = 0b10000001,
-        RESPONCE = 0b11000001
+        RESPONCE = 0b11000000
     };
     enum
     {

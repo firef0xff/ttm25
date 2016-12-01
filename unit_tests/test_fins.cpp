@@ -5,7 +5,7 @@
 #include <cstring>
 #include <stdexcept>
 #include <vector>
-#include "communication/fins/udp_communicator.h"
+#include "communication/fins/communicator.h"
 #include "communication/fins/mem_type.h"
 namespace test
 {
@@ -81,8 +81,8 @@ public:
 
     void TestReadWrite()
     {
-        EndPoint source( EndPoint::NA_LOCAL, 1, EndPoint::A2_COMPUTER );
-        EndPoint dest( EndPoint::NA_LOCAL, 0, EndPoint::A2_CPU );
+        EndPoint source( EndPoint::NA_LOCAL, 1, EndPoint::A2_CPU );
+        EndPoint dest( EndPoint::NA_LOCAL, 1, EndPoint::A2_CPU );
         fins::BIT_CIO mem( 3568, 10 );
 
         Elements els;
@@ -98,9 +98,9 @@ public:
         MemoryAreaRead r_cmd( mem, els2 );
         Paskage read( dest, source, r_cmd );
 
-        UDP_Communicator com( "192.168.0.2" );
-        com.send( write );
-        com.send( read );
+        Communicator com( "192.168.0.2" );
+        com.slotSendToServer( write );
+        com.slotSendToServer( read );
         return;
     }
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <QUdpSocket>
 #include <QObject>
+#include <QHostAddress>
 #include "paskage.h"
 #include <memory>
 #include <mutex>
@@ -9,12 +10,12 @@
 namespace fins
 {
 
-class UDP_Communicator :public QObject
+class Communicator :public QObject
 {
     Q_OBJECT
 public:
-    UDP_Communicator( QString host = QString("192.168.250.1"), qint16 port = 9600 );
-    ~UDP_Communicator();
+    Communicator( QString host = QString("192.168.250.1"), qint16 port = 9600 );
+    ~Communicator();
 
     void send( Paskage& pkg );
 
@@ -23,14 +24,13 @@ private:
     qint16 mPort;
     QUdpSocket mSocket;
 
-    Paskage* mRequest;
-    QByteArray mAnswer;
-    size_t mReaded = 0;
-
     std::mutex mMutex;
     std::condition_variable mCond;
 private slots:
-    void read();
+    void slotError       (QAbstractSocket::SocketError);
+
+public slots:
+    void slotSendToServer(Paskage &pkg);
 };
 
 }

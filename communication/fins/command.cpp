@@ -52,6 +52,6 @@ size_t Command::RequestSize() const
 }
 size_t Command::ResponseSize() const
 {
-    return sizeof(mErrCode) + sizeof(mErrClass) + ResponseSizeImpl();
+    return sizeof(mMR) + sizeof(mSR) + sizeof(mErrCode) + sizeof(mErrClass) + ResponseSizeImpl();
 }
 }//namespace fins
