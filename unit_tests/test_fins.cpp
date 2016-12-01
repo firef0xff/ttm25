@@ -60,8 +60,8 @@ public:
 
         fins::BIT_CIO mem( 3568, 10 );
         Elements els;
-        els.push_back( BOOL_ELEMENT::Create(true) );
-        els.push_back( BOOL_ELEMENT::Create(false) );
+        els.push_back( BOOL::Create(true) );
+        els.push_back( BOOL::Create(false) );
 
         test_Command c( mem, els );
         Paskage p( dest, source, c );
@@ -83,24 +83,37 @@ public:
     {
         EndPoint source( EndPoint::NA_LOCAL, 1, EndPoint::A2_CPU );
         EndPoint dest( EndPoint::NA_LOCAL, 1, EndPoint::A2_CPU );
-        fins::BIT_CIO mem( 3568, 10 );
+        fins::WORD_CIO mem( 3568, 0 );
 
         Elements els;
-        els.push_back( BOOL_ELEMENT::Create(true) );
-        els.push_back( BOOL_ELEMENT::Create(true) );
+        els.push_back( LREAL::Create(71000404.24800812l) );
+        els.push_back( INT64::Create(51120404.24800812l) );
 
         MemoryAreaWrite w_cmd( mem, els );
         Paskage write( dest, source, w_cmd );
 
         Elements els2;
-        els2.push_back( BOOL_ELEMENT::Create(false) );
-        els2.push_back( BOOL_ELEMENT::Create(false) );
+        els2.push_back( LREAL::Create(0) );
+        els2.push_back( LREAL::Create(0) );
         MemoryAreaRead r_cmd( mem, els2 );
         Paskage read( dest, source, r_cmd );
 
         Communicator com( "192.168.0.2" );
         com.slotSendToServer( write );
         com.slotSendToServer( read );
+
+        for ( auto it = els.begin(),
+                   it2 = els2.begin(),
+                   end = els.end(),
+                   end2 = els2.end(); it != end && it2 != end2; ++it, ++it2 )
+        {
+            INT64 const& e1 = static_cast< INT64 const& >( **it );
+            INT64 const& e2 = static_cast< INT64 const& >( **it2 );
+
+            if ( e1.Data() != e2.Data() )
+                throw std::runtime_error("e1 != e2 ");
+
+        }
         return;
     }
 

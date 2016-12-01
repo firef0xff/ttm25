@@ -27,7 +27,9 @@ size_t MemoryAreaRead::WriteImpl( uint8_t* buf, size_t size )
     *(head++) = addr[1];
     *(head++) = addr[0];
     *(head++) = mAddr.mBit;
-    uint16_t el_count = mElements.size();
+    uint16_t el_count = 0;
+    if ( !mElements.empty() )
+        el_count = ( mElements.begin()->get()->Size() * mElements.size() ) / mAddr.mElementSize;
     auto count = reinterpret_cast<uint8_t const*>(&el_count);
     *(head++) = count[1];
     *(head++) = count[0];
@@ -42,7 +44,7 @@ size_t MemoryAreaRead::ReadImpl( uint8_t const* buf, size_t size, bool& res )
     for ( auto it = mElements.begin(), end = mElements.end(); it != end; ++it )
     {
         Element& element = **it;
-        head = element.Read( head, mAddr.mElementSize );
+        head = element.Read( head, element.Size() );
     }
     res = true;
     return size;
@@ -50,14 +52,18 @@ size_t MemoryAreaRead::ReadImpl( uint8_t const* buf, size_t size, bool& res )
 
 size_t MemoryAreaRead::RequestSizeImpl() const
 {
-    return sizeof( mAddr.mMemType ) +
-           sizeof( mAddr.mAddr ) +
-           sizeof( mAddr.mBit ) +
-           sizeof( static_cast<uint16_t>( mElements.size() ) );
+    static const size_t base_size = sizeof( mAddr.mMemType ) +
+                                    sizeof( mAddr.mAddr ) +
+                                    sizeof( mAddr.mBit ) +
+                                    sizeof( static_cast<uint16_t>( mElements.size() ) );
+    return base_size;
 }
 size_t MemoryAreaRead::ResponseSizeImpl() const
 {
-    return mAddr.mElementSize * mElements.size();
+    if ( mElements.empty() )
+        return 0;
+
+    return mElements.begin()->get()->Size() * mElements.size();
 }
 
 }//namespace fins

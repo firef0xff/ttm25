@@ -71,6 +71,10 @@ public:
     {
         return mData.data;
     }
+    Type const& Data() const
+    {
+        return mData.data;
+    }
     virtual uint8_t Size() const override
     {
         return sizeof( Type );
@@ -88,7 +92,29 @@ private:
     } mData;
 };
 
-typedef ConcreteElement<bool>       BOOL_ELEMENT;
-typedef ConcreteElement<int16_t>    INT16_ELEMENT;
-typedef ConcreteElement<uint16_t>   UINT16_ELEMENT;
+typedef ConcreteElement<bool>       BOOL;
+
+typedef ConcreteElement<int16_t>    INT16;
+typedef ConcreteElement<uint16_t>   UINT16;
+typedef INT16                       INT;
+typedef UINT16                      UIND;
+typedef UINT16                      WORD;
+
+typedef ConcreteElement<int32_t>    INT32;
+typedef ConcreteElement<uint32_t>   UINT32;
+typedef INT32                       DINT;
+typedef UINT32                      UDINT;
+typedef UINT32                      DWORD;
+
+typedef ConcreteElement<int64_t>    INT64;
+typedef ConcreteElement<uint64_t>   UINT64;
+typedef INT64                       LINT;
+typedef UINT64                      ULINT;
+typedef UINT64                      LWORD;
+
+typedef ConcreteElement<float>      FLOAT;
+typedef FLOAT                       REAL;
+
+typedef ConcreteElement<double>     DOUBLE;
+typedef DOUBLE                      LREAL;
 }//namespace fins
