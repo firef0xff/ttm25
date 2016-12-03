@@ -4,6 +4,7 @@
 #include "communication/fins/funcs/memory_area_write.h"
 #include "communication/fins/funcs/memory_area_fill.h"
 #include "communication/fins/funcs/multiple_memory_area_read.h"
+#include "communication/fins/funcs/memory_area_transfer.h"
 #include <cstring>
 #include <stdexcept>
 #include <vector>
@@ -126,6 +127,7 @@ public:
         EndPoint dest( EndPoint::NA_LOCAL, 1, EndPoint::A2_CPU );
         fins::WORD_CIO mem( 3568, 0 );
         fins::WORD_CIO mem2( 3569, 0 );
+        fins::WORD_CIO mem3( 3570, 0 );
 
         auto ElementPtr = INT::Create(10);
 
@@ -145,6 +147,28 @@ public:
 
         for ( auto it2 = els2.begin(),
                    end2 = els2.end(); it2 != end2; ++it2 )
+        {
+            INT const& e1 = static_cast< INT const& >( *ElementPtr );
+            INT const& e2 = static_cast< INT const& >( **it2 );
+
+            if ( e1.Data() != e2.Data() )
+                throw std::runtime_error("e1 != e2 ");
+
+        }
+
+        MemoryAreaTransfer copy( mem, mem3, 2 );
+        Paskage pkg_cp( dest, source, copy );
+        com.slotSendToServer( pkg_cp );
+
+        Elements els3;
+        els3.push_back( INT::Create(0) );
+        els3.push_back( INT::Create(0) );
+        MemoryAreaRead r_cmd2( mem3, els3 );
+        Paskage read2( dest, source, r_cmd2 );
+        com.slotSendToServer( read2 );
+
+        for ( auto it2 = els3.begin(),
+                   end2 = els3.end(); it2 != end2; ++it2 )
         {
             INT const& e1 = static_cast< INT const& >( *ElementPtr );
             INT const& e2 = static_cast< INT const& >( **it2 );
