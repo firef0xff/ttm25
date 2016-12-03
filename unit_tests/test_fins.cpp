@@ -2,6 +2,8 @@
 #include "communication/fins/endpoint.h"
 #include "communication/fins/funcs/memory_area_read.h"
 #include "communication/fins/funcs/memory_area_write.h"
+#include "communication/fins/funcs/memory_area_fill.h"
+#include "communication/fins/funcs/multiple_memory_area_read.h"
 #include <cstring>
 #include <stdexcept>
 #include <vector>
@@ -51,6 +53,7 @@ public:
     {
         TestBinaryBuild();
         TestReadWrite();
+        TestAreaFill();
     }
 
     void TestBinaryBuild()
@@ -87,7 +90,7 @@ public:
 
         Elements els;
         els.push_back( LREAL::Create(71000404.24800812l) );
-        els.push_back( INT64::Create(51120404.24800812l) );
+        els.push_back( LREAL::Create(51120404.24800812l) );
 
         MemoryAreaWrite w_cmd( mem, els );
         Paskage write( dest, source, w_cmd );
@@ -107,8 +110,44 @@ public:
                    end = els.end(),
                    end2 = els2.end(); it != end && it2 != end2; ++it, ++it2 )
         {
-            INT64 const& e1 = static_cast< INT64 const& >( **it );
-            INT64 const& e2 = static_cast< INT64 const& >( **it2 );
+            LREAL const& e1 = static_cast< LREAL const& >( **it );
+            LREAL const& e2 = static_cast< LREAL const& >( **it2 );
+
+            if ( e1.Data() != e2.Data() )
+                throw std::runtime_error("e1 != e2 ");
+
+        }
+        return;
+    }
+
+    void TestAreaFill()
+    {
+        EndPoint source( EndPoint::NA_LOCAL, 1, EndPoint::A2_CPU );
+        EndPoint dest( EndPoint::NA_LOCAL, 1, EndPoint::A2_CPU );
+        fins::WORD_CIO mem( 3568, 0 );
+        fins::WORD_CIO mem2( 3569, 0 );
+
+        auto ElementPtr = INT::Create(10);
+
+        MemoryAreaFill w_cmd( mem, *ElementPtr, 2 );
+        Paskage write( dest, source, w_cmd );
+
+        Elements els2;
+        els2.push_back( INT::Create(0) );
+        els2.push_back( INT::Create(0) );
+        MultipleMemoryAreaRead::Addrs mems = { &mem, &mem2 };
+        MultipleMemoryAreaRead r_cmd( mems, els2 );
+        Paskage read( dest, source, r_cmd );
+
+        Communicator com( "192.168.0.2" );
+        com.slotSendToServer( write );
+        com.slotSendToServer( read );
+
+        for ( auto it2 = els2.begin(),
+                   end2 = els2.end(); it2 != end2; ++it2 )
+        {
+            INT const& e1 = static_cast< INT const& >( *ElementPtr );
+            INT const& e2 = static_cast< INT const& >( **it2 );
 
             if ( e1.Data() != e2.Data() )
                 throw std::runtime_error("e1 != e2 ");

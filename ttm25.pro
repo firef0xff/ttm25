@@ -44,7 +44,9 @@ SOURCES += main.cpp\
     communication/fins/funcs/memory_area_read.cpp \
     communication/fins/memoryaddr.cpp \
     communication/fins/funcs/memory_area_write.cpp \
-    communication/fins/communicator.cpp
+    communication/fins/communicator.cpp \
+    communication/fins/funcs/memory_area_fill.cpp \
+    communication/fins/funcs/multiple_memory_area_read.cpp
 
 HEADERS  += main_window.h \
     communication/fins/endpoint.h \
@@ -75,7 +77,9 @@ HEADERS  += main_window.h \
     communication/fins/mem_type.h \
     communication/fins/funcs/memory_area_write.h \
     communication/fins/data_element.h \
-    communication/fins/communicator.h
+    communication/fins/communicator.h \
+    communication/fins/funcs/memory_area_fill.h \
+    communication/fins/funcs/multiple_memory_area_read.h
 
 FORMS    += main_window.ui\
             test/viewer.ui\

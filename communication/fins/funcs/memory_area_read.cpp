@@ -63,7 +63,13 @@ size_t MemoryAreaRead::ResponseSizeImpl() const
     if ( mElements.empty() )
         return 0;
 
-    return mElements.begin()->get()->Size() * mElements.size();
+    size_t size = 0;
+    for ( auto it = mElements.begin(), end = mElements.end(); it != end; ++it )
+    {
+        Element const& lnk= **it;
+        size += lnk.Size();
+    }
+    return size;
 }
 
 }//namespace fins

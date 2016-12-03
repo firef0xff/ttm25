@@ -16,7 +16,7 @@ uint8_t MemoryAreaWrite::GetICF()
 }
 size_t MemoryAreaWrite::WriteImpl( uint8_t* buf, size_t size )
 {
-    if ( size < 48 + mAddr.mElementSize * mElements.size() )
+    if ( size < RequestSizeImpl() )
         return size;
 
     uint8_t* head = buf;
