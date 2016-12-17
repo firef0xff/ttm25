@@ -12,7 +12,6 @@ Communicator::Communicator( QString host, qint16 port ):
     connect(&mSocket, SIGNAL(error(QAbstractSocket::SocketError)),
                 this, SLOT(slotError(QAbstractSocket::SocketError)));
 
-//    mSocket.bind( mHost, mPort );
     mSocket.connectToHost( mHost, mPort );
 }
 Communicator::~Communicator()
@@ -22,7 +21,7 @@ Communicator::~Communicator()
     mSocket.close();
 }
 
-void Communicator::slotError       ( QAbstractSocket::SocketError e )
+void Communicator::slotError       ( QAbstractSocket::SocketError /*e*/ )
 {
 
 //    QString strError =
@@ -36,7 +35,7 @@ void Communicator::slotError       ( QAbstractSocket::SocketError e )
 //                    );
 //    m_ptxtInfo->append(strError);
 }
-void Communicator::slotSendToServer( Paskage& pkg )
+void Communicator::Send( Paskage& pkg )
 {
     mSocket.waitForConnected();
 //    шлем запрос

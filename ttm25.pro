@@ -47,7 +47,10 @@ SOURCES += main.cpp\
     communication/fins/communicator.cpp \
     communication/fins/funcs/memory_area_fill.cpp \
     communication/fins/funcs/multiple_memory_area_read.cpp \
-    communication/fins/funcs/memory_area_transfer.cpp
+    communication/fins/funcs/memory_area_transfer.cpp \
+    cpu/controls.cpp\
+    cpu/cpu_memory.cpp \
+    main_window_controls.cpp
 
 HEADERS  += main_window.h \
     communication/fins/endpoint.h \
@@ -81,7 +84,9 @@ HEADERS  += main_window.h \
     communication/fins/communicator.h \
     communication/fins/funcs/memory_area_fill.h \
     communication/fins/funcs/multiple_memory_area_read.h \
-    communication/fins/funcs/memory_area_transfer.h
+    communication/fins/funcs/memory_area_transfer.h \
+    cpu/controls.h\
+    cpu/cpu_memory.h
 
 FORMS    += main_window.ui\
             test/viewer.ui\
@@ -111,6 +116,7 @@ release {
 #DEFINES += WINDOWS
 DEFINES += DEMO
 DEFINES += DEBUG
+#DEFINES += TESTS
 
 DISTFILES += \
     data/kkt.json \

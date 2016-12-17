@@ -26,9 +26,11 @@ MainWindow::MainWindow(QWidget *parent) :
     SourceToControl( *ui->eTestingMethod, mTestingMethod );
     SourceToControl( *ui->eMark, mMark );
 
-    QObject::connect( &Updater, SIGNAL(update()), this, SLOT(onUpdateControls()) );
-    Updater.start();    
+    InitUiControls();
+
+    QObject::connect( &Updater, SIGNAL(update()), this, SLOT(onUpdateControls()) ); 
     test::CURRENT_PARAMS.TestCase( mTest );
+    on_tTabs_currentChanged( ui->tTabs->currentIndex() );
 }
 
 MainWindow::~MainWindow()
@@ -87,10 +89,6 @@ void MainWindow::ShowChildWindow( ChildPtr child, bool maximized )
         mChildWindow->show();
 }
 
-void MainWindow::onUpdateControls()
-{
-
-}
 void MainWindow::RepaintGraph()
 {
     QPixmap pixmap( ui->Graph->width()-2, ui->Graph->height()-2 );
@@ -121,36 +119,38 @@ void MainWindow::on_a_proto_triggered()
     ShowChildWindow( ChildPtr( new Viewer() ) );
 }
 
-ControlsUpdater::ControlsUpdater():
-    mStopSignal(false)
-{}
-void ControlsUpdater::run()
+//переключение вкладок
+void MainWindow::on_tTabs_currentChanged(int index)
 {
-    mStopSignal = false;
-    while ( !mStopSignal )
+    Updater.stop();
+    switch (index)
     {
-//        cpu::CpuMemory::Instance().DB50.Read();
-//        cpu::CpuMemory::Instance().I1.Read();
-        emit update();
-        msleep(100);
+    case 0:
+        break;
+    case 1:
+        SynkControls();
+        Updater.start();
+        break;
+    case 2:
+        RepaintGraph();
+        break;
+    default:
+        break;
     }
 }
-void ControlsUpdater::stop()
-{
-    mStopSignal = true;
-    wait();
-}
 
+
+//смена режима едениц измерения
 void MainWindow::on_puUnits_currentIndexChanged(int /*index*/)
 {
     RepaintGraph();
 }
-
 void MainWindow::on_tuUnits_currentIndexChanged(int /*index*/)
 {
     RepaintGraph();
 }
 
+//наполнение комбобоксов
 void MainWindow::SourceToControl( QComboBox& combo, app::StringsSource const& source )
 {
     QString curr_val = combo.currentText();
@@ -163,32 +163,26 @@ void MainWindow::SourceToControl( QComboBox& combo, app::StringsSource const& so
     auto item = combo.findText( curr_val );
     combo.setCurrentIndex( item );
 }
-
 void MainWindow::on_bTitleTire_clicked()
 {
     AddItem( *ui->eTitleTire, mTitleTire );
 }
-
 void MainWindow::on_bTitleModel_clicked()
 {
     AddItem( *ui->eTitleModel, mTitleModel);
 }
-
 void MainWindow::on_bMark_clicked()
 {
     AddItem( *ui->eMark, mMark );
 }
-
 void MainWindow::on_bTitleKKT_clicked()
 {
     AddItem( *ui->eTitleKKT, mTitleKKT );
 }
-
 void MainWindow::on_bTestingMethod_clicked()
 {
     AddItem( *ui->eTestingMethod, mTestingMethod );
 }
-
 void MainWindow::AddItem( QComboBox& combo, app::StringsSource& source )
 {
     ShowChildWindow( ChildPtr( new TextItem(

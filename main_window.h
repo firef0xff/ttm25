@@ -35,28 +35,30 @@ public:
 
 private slots:
     void on_a_users_triggered();
-
     void onUpdateControls();
-
     void RepaintGraph();
-
     void on_a_options_triggered();
-
     void on_a_proto_triggered();
-
     void on_puUnits_currentIndexChanged(int index);
-
     void on_tuUnits_currentIndexChanged(int index);
-
     void on_bTitleTire_clicked();
-
     void on_bTitleModel_clicked();
-
     void on_bMark_clicked();
-
     void on_bTitleKKT_clicked();
-
     void on_bTestingMethod_clicked();
+    void on_tTabs_currentChanged(int index);
+
+    void on_bRegulatingOnOff_clicked(bool checked);
+
+    void on_bUnknownOnOff_clicked(bool checked);
+
+    void on_bResetOnOff_clicked(bool checked);
+
+    void on_bFeedOnOff_clicked(bool checked);
+
+    void on_bAirOnOff_clicked(bool checked);
+
+    void on_bVacuumOnOff_clicked(bool checked);
 
 private:
     void closeEvent(QCloseEvent *e);
@@ -67,6 +69,11 @@ private:
     void ShowChildWindow( ChildPtr child, bool maximized = false );
     void SourceToControl( QComboBox& combo, app::StringsSource const& source );
     void AddItem( QComboBox& combo, app::StringsSource& source );
+
+    void SynkControls();
+    void UpdateMarks();
+    void InitUiControls();
+
 
     Ui::MainWindow *ui;
     ChildPtr mChildWindow;

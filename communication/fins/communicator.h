@@ -30,7 +30,7 @@ private slots:
     void slotError       (QAbstractSocket::SocketError);
 
 public slots:
-    void slotSendToServer(Paskage &pkg);
+    void Send(Paskage &pkg);
 };
 
 }

@@ -92,6 +92,15 @@ private:
     } mData;
 };
 
+template < class ProxyType, class Type>
+void AddElement( fins::Elements& storage, Type ** ptr, Type value )
+{
+    fins::Element::Ptr item = ProxyType::Create( value );
+    auto * real_type = static_cast<ProxyType*>( item.get() );
+    *ptr = &real_type->Data();
+    storage.push_back( std::move( item ) );
+}
+
 typedef ConcreteElement<bool>       BOOL;
 
 typedef ConcreteElement<int16_t>    INT16;

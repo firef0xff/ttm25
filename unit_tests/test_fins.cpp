@@ -103,8 +103,8 @@ public:
         Paskage read( dest, source, r_cmd );
 
         Communicator com( "192.168.0.2" );
-        com.slotSendToServer( write );
-        com.slotSendToServer( read );
+        com.Send( write );
+        com.Send( read );
 
         for ( auto it = els.begin(),
                    it2 = els2.begin(),
@@ -142,8 +142,8 @@ public:
         Paskage read( dest, source, r_cmd );
 
         Communicator com( "192.168.0.2" );
-        com.slotSendToServer( write );
-        com.slotSendToServer( read );
+        com.Send( write );
+        com.Send( read );
 
         for ( auto it2 = els2.begin(),
                    end2 = els2.end(); it2 != end2; ++it2 )
@@ -158,14 +158,14 @@ public:
 
         MemoryAreaTransfer copy( mem, mem3, 2 );
         Paskage pkg_cp( dest, source, copy );
-        com.slotSendToServer( pkg_cp );
+        com.Send( pkg_cp );
 
         Elements els3;
         els3.push_back( INT::Create(0) );
         els3.push_back( INT::Create(0) );
         MemoryAreaRead r_cmd2( mem3, els3 );
         Paskage read2( dest, source, r_cmd2 );
-        com.slotSendToServer( read2 );
+        com.Send( read2 );
 
         for ( auto it2 = els3.begin(),
                    end2 = els3.end(); it2 != end2; ++it2 )
@@ -180,7 +180,10 @@ public:
         return;
     }
 
-} t1;
+};
+#ifdef TESTS
+TestPaskage t1;
+#endif
 
 }//namespace
 
