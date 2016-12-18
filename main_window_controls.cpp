@@ -99,6 +99,7 @@ void MainWindow::on_bRegulatingOnOff_clicked(bool checked)
 {
 //    ChangeName( ui->bRegulatingOnOff, checked );
     auto & controls = cpu::CpuMemory::Instance().Controls;
+    auto lock = controls.Locker();
     controls.RegulatingOnOff( checked );
     controls.Write();
 }
@@ -106,6 +107,7 @@ void MainWindow::on_bUnknownOnOff_clicked(bool checked)
 {
 //    ChangeName( ui->bUnknownOnOff, checked );
     auto & controls = cpu::CpuMemory::Instance().Controls;
+    auto lock = controls.Locker();
     controls.UnknownOnOff( checked );
     controls.Write();
 }
@@ -113,6 +115,7 @@ void MainWindow::on_bResetOnOff_clicked(bool checked)
 {
 //    ChangeName( ui->bResetOnOff, checked );
     auto & controls = cpu::CpuMemory::Instance().Controls;
+    auto lock = controls.Locker();
     controls.ResetOnOff( checked );
     controls.Write();
 }
@@ -120,6 +123,7 @@ void MainWindow::on_bFeedOnOff_clicked(bool checked)
 {
 //    ChangeName( ui->bFeedOnOff, checked );
     auto & controls = cpu::CpuMemory::Instance().Controls;
+    auto lock = controls.Locker();
     controls.FeedOnOff( checked );
     controls.Write();
 }
@@ -127,6 +131,7 @@ void MainWindow::on_bAirOnOff_clicked(bool checked)
 {
 //    ChangeName( ui->bAirOnOff, checked );
     auto & controls = cpu::CpuMemory::Instance().Controls;
+    auto lock = controls.Locker();
     controls.AirOnOff( checked );
     controls.Write();
 }
@@ -134,6 +139,7 @@ void MainWindow::on_bVacuumOnOff_clicked(bool checked)
 {
 //    ChangeName( ui->bVacuumOnOff, checked );
     auto & controls = cpu::CpuMemory::Instance().Controls;
+    auto lock = controls.Locker();
     controls.VacuumOnOff( checked );
     controls.Write();
 }

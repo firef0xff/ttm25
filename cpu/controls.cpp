@@ -1,6 +1,7 @@
 #include "controls.h"
 #include "communication/fins/funcs/memory_area_read.h"
 #include "communication/fins/funcs/memory_area_write.h"
+#include "net_connection.h"
 
 namespace cpu
 {
@@ -15,32 +16,36 @@ Controls::Controls():
 
 void Controls::Write()
 {
-    fins::MemoryAreaWrite w_cmd( mAddr, mData );
+    auto lock = Locker();
+    fins::MemoryAreaWrite cmd( mAddr, mData );
+    NetConnection::Execute( cmd );
 }
 void Controls::Read()
 {
-    fins::MemoryAreaRead r_cmd( mAddr, mData );
+    auto lock = Locker();
+    fins::MemoryAreaRead cmd( mAddr, mData );
+    NetConnection::Execute( cmd );
 }
 
 void Controls::Reset()
 {
     mData.clear();
-    fins::AddElement< fins::BOOL >( mData, &W2_00, true );
+    fins::AddElement< fins::BOOL >( mData, &W2_00, false );
     fins::AddElement< fins::BOOL >( mData, &W2_01, false );
 
     fins::AddElement< fins::BOOL >( mData, &W2_02, false );
-    fins::AddElement< fins::BOOL >( mData, &W2_03, true );
+    fins::AddElement< fins::BOOL >( mData, &W2_03, false );
 
-    fins::AddElement< fins::BOOL >( mData, &W2_04, true );
+    fins::AddElement< fins::BOOL >( mData, &W2_04, false );
     fins::AddElement< fins::BOOL >( mData, &W2_05, false );
 
     fins::AddElement< fins::BOOL >( mData, &W2_06, false );
-    fins::AddElement< fins::BOOL >( mData, &W2_07, true );
+    fins::AddElement< fins::BOOL >( mData, &W2_07, false );
 
-    fins::AddElement< fins::BOOL >( mData, &W2_08, true );
+    fins::AddElement< fins::BOOL >( mData, &W2_08, false );
     fins::AddElement< fins::BOOL >( mData, &W2_09, false );
 
-    fins::AddElement< fins::BOOL >( mData, &W2_10, true );
+    fins::AddElement< fins::BOOL >( mData, &W2_10, false );
     fins::AddElement< fins::BOOL >( mData, &W2_11, false );
 }
 
@@ -106,6 +111,10 @@ bool Controls::VacuumOnOff() const
     return *W2_10 && !*W2_11;
 }
 
+std::unique_lock< std::recursive_mutex > Controls::Locker()
+{
+    return std::unique_lock< std::recursive_mutex >( mMutex );
+}
 } //namespace deta
 
 } //namespace cpu

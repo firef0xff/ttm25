@@ -50,7 +50,8 @@ SOURCES += main.cpp\
     communication/fins/funcs/memory_area_transfer.cpp \
     cpu/controls.cpp\
     cpu/cpu_memory.cpp \
-    main_window_controls.cpp
+    main_window_controls.cpp \
+    cpu/net_connection.cpp
 
 HEADERS  += main_window.h \
     communication/fins/endpoint.h \
@@ -86,7 +87,8 @@ HEADERS  += main_window.h \
     communication/fins/funcs/multiple_memory_area_read.h \
     communication/fins/funcs/memory_area_transfer.h \
     cpu/controls.h\
-    cpu/cpu_memory.h
+    cpu/cpu_memory.h \
+    cpu/net_connection.h
 
 FORMS    += main_window.ui\
             test/viewer.ui\
@@ -98,7 +100,7 @@ FORMS    += main_window.ui\
 win32 {
     RC_ICONS += img/Main.ico
     DEFINES += WINDOWS
-    LIBS += -lole32 -loleaut32
+#    LIBS += -lole32 -loleaut32
 }
 
 unix {
@@ -114,7 +116,8 @@ release {
     DEFINES -= DEBUG
 }
 #DEFINES += WINDOWS
-DEFINES += DEMO
+#DEFINES += DEMO
+DEFINES += LOG
 DEFINES += DEBUG
 #DEFINES += TESTS
 

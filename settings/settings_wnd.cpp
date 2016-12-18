@@ -9,7 +9,7 @@ settings_wnd::settings_wnd(QWidget *parent) :
 {
     ui->setupUi(this);
 
-#ifndef DEBUG
+#ifndef LOG
     ui->label_3->setVisible(false);
     ui->LogLevel->setVisible(false);
 #endif

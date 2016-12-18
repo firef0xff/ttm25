@@ -4,6 +4,7 @@
 #include "../communication/fins/mem_type.h"
 #include <inttypes.h>
 #include <vector>
+#include <mutex>
 
 namespace cpu
 {
@@ -39,6 +40,7 @@ public:
     void VacuumOnOff( bool );
     bool VacuumOnOff() const;
 
+    std::unique_lock<std::recursive_mutex> Locker();
 protected:
     bool* W2_00;
     bool* W2_01;
@@ -66,6 +68,7 @@ private:
 
     fins::Elements mData;
     fins::BIT_WR mAddr;
+    std::recursive_mutex mMutex;
 };
 
 }//namespace data

@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tTabs">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tParams">
        <attribute name="title">
@@ -434,73 +434,6 @@
            <string>Индикация</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_5">
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_6">
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <item>
-              <widget class="QLabel" name="lUnknown">
-               <property name="text">
-                <string>Unknown</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="lRegulatingOnOff">
-               <property name="text">
-                <string>Регулирующий</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="lResetOnOff">
-               <property name="text">
-                <string>Сброс</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="lFeedOnOff">
-               <property name="text">
-                <string>Подача</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="lAirOnOff">
-               <property name="text">
-                <string>Атмосфера</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="lVacuumOnOff">
-               <property name="text">
-                <string>Вакуум</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>

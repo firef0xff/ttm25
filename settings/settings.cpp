@@ -36,7 +36,7 @@ QtMsgType ToMsgType ( QString const& level )
 void myLogHandler(QtMsgType type, const QMessageLogContext &where, const QString &msg)
 {
     (void)type; (void)where; (void)msg;
-#ifdef DEBUG
+#ifdef LOG
     if ( ToMsgType( Settings::Instance().LogLevel() ) < type )
         return;
 

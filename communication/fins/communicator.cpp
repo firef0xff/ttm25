@@ -21,19 +21,18 @@ Communicator::~Communicator()
     mSocket.close();
 }
 
-void Communicator::slotError       ( QAbstractSocket::SocketError /*e*/ )
+void Communicator::slotError       ( QAbstractSocket::SocketError err )
 {
-
-//    QString strError =
-//        "Error: " + (err == QAbstractSocket::HostNotFoundError ?
-//                     "The host was not found." :
-//                     err == QAbstractSocket::RemoteHostClosedError ?
-//                     "The remote host is closed." :
-//                     err == QAbstractSocket::ConnectionRefusedError ?
-//                     "The connection was refused." :
-//                     QString(m_pTcpSocket->errorString())
-//                    );
-//    m_ptxtInfo->append(strError);
+    QString strError =
+        "Error: " + (err == QAbstractSocket::HostNotFoundError ?
+                     "The host was not found." :
+                     err == QAbstractSocket::RemoteHostClosedError ?
+                     "The remote host is closed." :
+                     err == QAbstractSocket::ConnectionRefusedError ?
+                     "The connection was refused." :
+                     QString(mSocket.errorString())
+                    );
+    qCritical() << strError;
 }
 void Communicator::Send( Paskage& pkg )
 {
