@@ -56,7 +56,7 @@ void Login::on_buttonBox_accepted()
 void Login::closeEvent(QCloseEvent *e)
 {
     if (mMainWindow && accept )
-        mMainWindow->showMaximized();
+        mMainWindow->show();
 
     QWidget::closeEvent( e );
 }

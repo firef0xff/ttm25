@@ -45,8 +45,6 @@ private slots:
     void on_bTitleModel_clicked();
     void on_bMark_clicked();
     void on_bTitleKKT_clicked();
-    void on_bTestingMethod_clicked();
-    void on_tTabs_currentChanged(int index);
 
     void on_bRegulatingOnOff_clicked(bool checked);
 
@@ -83,6 +81,5 @@ private:
     app::StringsSource mTitleTire;
     app::StringsSource mTitleModel;
     app::StringsSource mMark;
-    app::StringsSource mTitleKKT;
-    app::StringsSource mTestingMethod;
+    app::StringsSource mTitleKKT;    
 };

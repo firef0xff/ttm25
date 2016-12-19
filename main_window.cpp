@@ -14,23 +14,22 @@ MainWindow::MainWindow(QWidget *parent) :
     mTitleTire( "tires_mark.json" ),
     mTitleModel( "models.json" ),
     mMark( "marks.json" ),
-    mTitleKKT( "kkt.json" ),
-    mTestingMethod( "method.json")
+    mTitleKKT( "kkt.json" )
 {
-    ui->setupUi(this);
-    ui->ResultsData->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->setupUi(this);    
 
     SourceToControl( *ui->eTitleTire, mTitleTire );
     SourceToControl( *ui->eTitleKKT, mTitleKKT );
     SourceToControl( *ui->eTitleModel, mTitleModel);
-    SourceToControl( *ui->eTestingMethod, mTestingMethod );
     SourceToControl( *ui->eMark, mMark );
 
     InitUiControls();
 
     QObject::connect( &Updater, SIGNAL(update()), this, SLOT(onUpdateControls()) ); 
     test::CURRENT_PARAMS.TestCase( mTest );
-    on_tTabs_currentChanged( ui->tTabs->currentIndex() );
+
+    SynkControls();
+    Updater.start();
 }
 
 MainWindow::~MainWindow()
@@ -50,6 +49,7 @@ void MainWindow::showEvent( QShowEvent *e )
 {
     CheckRights();
     ui->statusBar->showMessage("Текущий пользователь: " + app::Settings::Instance().User() );
+    RepaintGraph();
     QMainWindow::showEvent( e );
 }
 void MainWindow::resizeEvent( QResizeEvent *e )
@@ -119,27 +119,6 @@ void MainWindow::on_a_proto_triggered()
     ShowChildWindow( ChildPtr( new Viewer() ) );
 }
 
-//переключение вкладок
-void MainWindow::on_tTabs_currentChanged(int index)
-{
-    Updater.stop();
-    switch (index)
-    {
-    case 0:
-        break;
-    case 1:
-        SynkControls();
-        Updater.start();
-        break;
-    case 2:
-        RepaintGraph();
-        break;
-    default:
-        break;
-    }
-}
-
-
 //смена режима едениц измерения
 void MainWindow::on_puUnits_currentIndexChanged(int /*index*/)
 {
@@ -179,10 +158,7 @@ void MainWindow::on_bTitleKKT_clicked()
 {
     AddItem( *ui->eTitleKKT, mTitleKKT );
 }
-void MainWindow::on_bTestingMethod_clicked()
-{
-    AddItem( *ui->eTestingMethod, mTestingMethod );
-}
+
 void MainWindow::AddItem( QComboBox& combo, app::StringsSource& source )
 {
     ShowChildWindow( ChildPtr( new TextItem(
