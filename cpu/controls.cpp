@@ -49,14 +49,13 @@ void Controls::Reset()
     fins::AddElement< fins::BOOL >( mData, &W2_11, false );
 }
 
-void Controls::UnknownOnOff( bool v )
+void Controls::PumpOnOff( bool v )
 {
     *W2_00 = v;
-    *W2_01 = !v;
 }
-bool Controls::UnknownOnOff() const
+bool Controls::PumpOnOff() const
 {
-    return *W2_00 &&  !*W2_01;
+    return *W2_00;
 }
 
 void Controls::RegulatingOnOff( bool v )

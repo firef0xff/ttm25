@@ -48,7 +48,7 @@ private slots:
 
     void on_bRegulatingOnOff_clicked(bool checked);
 
-    void on_bUnknownOnOff_clicked(bool checked);
+    void on_bPumpOnOff_clicked(bool checked);
 
     void on_bResetOnOff_clicked(bool checked);
 

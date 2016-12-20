@@ -22,8 +22,8 @@ public:
     void Read();
     void Reset();
 
-    void UnknownOnOff( bool );
-    bool UnknownOnOff() const;
+    void PumpOnOff( bool );
+    bool PumpOnOff() const;
 
     void RegulatingOnOff( bool );
     bool RegulatingOnOff() const;
@@ -42,8 +42,8 @@ public:
 
     std::unique_lock<std::recursive_mutex> Locker();
 protected:
-    bool* W2_00;
-    bool* W2_01;
+    bool* W2_00;    //насос вкл/выкл
+    bool* W2_01;    //резерв
 
     bool* W2_02;    //регулирующий закрыть
     bool* W2_03;    //регулирующий открыть

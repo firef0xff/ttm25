@@ -116,7 +116,7 @@ release {
     DEFINES -= DEBUG
 }
 #DEFINES += WINDOWS
-DEFINES += DEMO
+#DEFINES += DEMO
 DEFINES += LOG
 DEFINES += DEBUG
 #DEFINES += TESTS
@@ -126,4 +126,5 @@ DISTFILES += \
     data/method.json \
     data/tires_mark.json \
     data/marks.json \
-    data/models.json
+    data/models.json \
+    data/TODO

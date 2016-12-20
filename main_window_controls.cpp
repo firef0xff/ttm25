@@ -77,7 +77,7 @@ void MainWindow::SynkControls()
 void MainWindow::InitUiControls()
 {
     SetOnOffText( ui->bRegulatingOnOff, "Регулирующий закрыть", "Регулирующий открыть" );
-    SetOnOffText( ui->bUnknownOnOff, "Unknown включить", "Unknown отключить" );
+    SetOnOffText( ui->bPumpOnOff, "Насос включить", "Насос отключить" );
     SetOnOffText( ui->bResetOnOff, "Сброс включить", "Сброс отключить" );
     SetOnOffText( ui->bFeedOnOff, "Подача включить", "Подача отключить" );
     SetOnOffText( ui->bAirOnOff, "Атмосфера включить", "Атмосфера отключить" );
@@ -87,7 +87,7 @@ void MainWindow::InitUiControls()
 void MainWindow::UpdateMarks()
 {
     auto & controls = cpu::CpuMemory::Instance().Controls;
-    UpdateButton( ui->bUnknownOnOff,    controls.UnknownOnOff()      );
+    UpdateButton( ui->bPumpOnOff,       controls.PumpOnOff()      );
     UpdateButton( ui->bRegulatingOnOff, controls.RegulatingOnOff()   );
     UpdateButton( ui->bResetOnOff,      controls.ResetOnOff()        );
     UpdateButton( ui->bFeedOnOff,       controls.FeedOnOff()         );
@@ -103,12 +103,12 @@ void MainWindow::on_bRegulatingOnOff_clicked(bool checked)
     controls.RegulatingOnOff( checked );
     controls.Write();
 }
-void MainWindow::on_bUnknownOnOff_clicked(bool checked)
+void MainWindow::on_bPumpOnOff_clicked(bool checked)
 {
 //    ChangeName( ui->bUnknownOnOff, checked );
     auto & controls = cpu::CpuMemory::Instance().Controls;
     auto lock = controls.Locker();
-    controls.UnknownOnOff( checked );
+    controls.PumpOnOff( checked );
     controls.Write();
 }
 void MainWindow::on_bResetOnOff_clicked(bool checked)

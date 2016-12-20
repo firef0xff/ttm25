@@ -41,6 +41,7 @@ typedef TemplateAddr<0xb0, 6143, 0, 2 > WORD_CIO;
 typedef TemplateAddr<0xb1, 511,  0, 2 > WORD_WR;
 typedef TemplateAddr<0xb2, 511,  0, 2 > WORD_HR;
 typedef TemplateAddr<0xb3, 959,  0, 2 > WORD_AR;
+typedef TemplateAddr<0x82, 32767,0, 2 > WORD_DM;
 typedef TemplateAddr<0xa0, 32767,0, 2 > WORD_EM0;
 typedef TemplateAddr<0xa1, 32767,0, 2 > WORD_EM1;
 typedef TemplateAddr<0xa2, 32767,0, 2 > WORD_EM2;
