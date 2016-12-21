@@ -51,7 +51,8 @@ SOURCES += main.cpp\
     cpu/controls.cpp\
     cpu/cpu_memory.cpp \
     main_window_controls.cpp \
-    cpu/net_connection.cpp
+    cpu/net_connection.cpp \
+    cpu/sensors.cpp
 
 HEADERS  += main_window.h \
     communication/fins/endpoint.h \
@@ -88,7 +89,8 @@ HEADERS  += main_window.h \
     communication/fins/funcs/memory_area_transfer.h \
     cpu/controls.h\
     cpu/cpu_memory.h \
-    cpu/net_connection.h
+    cpu/net_connection.h \
+    cpu/sensors.h
 
 FORMS    += main_window.ui\
             test/viewer.ui\

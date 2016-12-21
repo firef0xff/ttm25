@@ -58,14 +58,22 @@ bool Controls::PumpOnOff() const
     return *W2_00;
 }
 
-void Controls::RegulatingOnOff( bool v )
+void Controls::RegulatingOpen( bool v )
+{
+    *W2_03 = v;
+}
+bool Controls::RegulatingOpen() const
+{
+    return *W2_03;
+}
+
+void Controls::RegulatingClose( bool v )
 {
     *W2_02 = v;
-    *W2_03 = !v;
 }
-bool Controls::RegulatingOnOff() const
+bool Controls::RegulatingClose() const
 {
-    return *W2_02 &&  !*W2_03;
+    return *W2_02;
 }
 
 void Controls::ResetOnOff( bool v )

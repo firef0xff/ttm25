@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>778</width>
-    <height>640</height>
+    <width>970</width>
+    <height>694</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -132,8 +132,15 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="0" column="1">
-                    <widget class="QLabel" name="label_24">
+                   <item row="0" column="4">
+                    <widget class="QLabel" name="label_5">
+                     <property name="text">
+                      <string>V, см3</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="5">
+                    <widget class="QLabel" name="lVolume">
                      <property name="font">
                       <font>
                        <pointsize>9</pointsize>
@@ -147,6 +154,13 @@
                      </property>
                      <property name="alignment">
                       <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="6">
+                    <widget class="QLabel" name="label_14">
+                     <property name="text">
+                      <string>T, сек</string>
                      </property>
                     </widget>
                    </item>
@@ -165,15 +179,8 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="0" column="4">
-                    <widget class="QLabel" name="label_5">
-                     <property name="text">
-                      <string>V, см3</string>
-                     </property>
-                    </widget>
-                   </item>
                    <item row="0" column="3">
-                    <widget class="QLabel" name="label_26">
+                    <widget class="QLabel" name="lExpenditure">
                      <property name="font">
                       <font>
                        <pointsize>9</pointsize>
@@ -190,8 +197,8 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="0" column="5">
-                    <widget class="QLabel" name="label_27">
+                   <item row="0" column="1">
+                    <widget class="QLabel" name="lPressure">
                      <property name="font">
                       <font>
                        <pointsize>9</pointsize>
@@ -202,6 +209,25 @@
                      </property>
                      <property name="text">
                       <string>25.00</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="7">
+                    <widget class="QLabel" name="lTime">
+                     <property name="frameShape">
+                      <enum>QFrame::Box</enum>
+                     </property>
+                     <property name="text">
+                      <string>25.00</string>
+                     </property>
+                     <property name="textFormat">
+                      <enum>Qt::AutoText</enum>
+                     </property>
+                     <property name="scaledContents">
+                      <bool>false</bool>
                      </property>
                      <property name="alignment">
                       <set>Qt::AlignCenter</set>
@@ -222,6 +248,22 @@
                  </property>
                  <item>
                   <layout class="QGridLayout" name="gridLayout">
+                   <item row="2" column="2">
+                    <widget class="QPushButton" name="bFeedOnOff">
+                     <property name="toolTip">
+                      <string>W2.06/W2.07</string>
+                     </property>
+                     <property name="toolTipDuration">
+                      <number>500</number>
+                     </property>
+                     <property name="text">
+                      <string>Подача включить</string>
+                     </property>
+                     <property name="checkable">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
                    <item row="3" column="1">
                     <widget class="QPushButton" name="bAirOnOff">
                      <property name="toolTip">
@@ -232,41 +274,6 @@
                      </property>
                      <property name="text">
                       <string>Атмосфера включить</string>
-                     </property>
-                     <property name="checkable">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="0">
-                    <widget class="QPushButton" name="bPumpOnOff">
-                     <property name="toolTip">
-                      <string>W2.00</string>
-                     </property>
-                     <property name="toolTipDuration">
-                      <number>500</number>
-                     </property>
-                     <property name="text">
-                      <string>Насос включить</string>
-                     </property>
-                     <property name="checkable">
-                      <bool>true</bool>
-                     </property>
-                     <property name="checked">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="3" column="2">
-                    <widget class="QPushButton" name="bVacuumOnOff">
-                     <property name="toolTip">
-                      <string>W2.10/W2.11</string>
-                     </property>
-                     <property name="toolTipDuration">
-                      <number>500</number>
-                     </property>
-                     <property name="text">
-                      <string>Вакуум включить</string>
                      </property>
                      <property name="checkable">
                       <bool>true</bool>
@@ -289,8 +296,8 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="3" column="0">
-                    <widget class="QPushButton" name="bRegulatingOnOff">
+                   <item row="3" column="3">
+                    <widget class="QPushButton" name="bRegulatingClose">
                      <property name="toolTip">
                       <string>W2.02/W2.03</string>
                      </property>
@@ -305,19 +312,48 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="2" column="2">
-                    <widget class="QPushButton" name="bFeedOnOff">
+                   <item row="3" column="2">
+                    <widget class="QPushButton" name="bVacuumOnOff">
                      <property name="toolTip">
-                      <string>W2.06/W2.07</string>
+                      <string>W2.10/W2.11</string>
                      </property>
                      <property name="toolTipDuration">
                       <number>500</number>
                      </property>
                      <property name="text">
-                      <string>Подача включить</string>
+                      <string>Вакуум включить</string>
                      </property>
                      <property name="checkable">
                       <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="3">
+                    <widget class="QPushButton" name="bRegulatingOpen">
+                     <property name="text">
+                      <string>Регулирующий открыть</string>
+                     </property>
+                     <property name="checkable">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="0">
+                    <widget class="QPushButton" name="bPumpOnOff">
+                     <property name="toolTip">
+                      <string>W2.00</string>
+                     </property>
+                     <property name="toolTipDuration">
+                      <number>500</number>
+                     </property>
+                     <property name="text">
+                      <string>Насос включить</string>
+                     </property>
+                     <property name="checkable">
+                      <bool>true</bool>
+                     </property>
+                     <property name="checked">
+                      <bool>false</bool>
                      </property>
                     </widget>
                    </item>
@@ -1112,8 +1148,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>778</width>
-     <height>21</height>
+     <width>970</width>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">

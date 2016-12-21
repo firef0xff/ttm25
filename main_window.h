@@ -46,17 +46,14 @@ private slots:
     void on_bMark_clicked();
     void on_bTitleKKT_clicked();
 
-    void on_bRegulatingOnOff_clicked(bool checked);
-
+    //кнопки управления
     void on_bPumpOnOff_clicked(bool checked);
-
     void on_bResetOnOff_clicked(bool checked);
-
     void on_bFeedOnOff_clicked(bool checked);
-
     void on_bAirOnOff_clicked(bool checked);
-
     void on_bVacuumOnOff_clicked(bool checked);
+    void on_bRegulatingClose_clicked(bool checked);
+    void on_bRegulatingOpen_clicked(bool checked);
 
 private:
     void closeEvent(QCloseEvent *e);
@@ -70,6 +67,7 @@ private:
 
     void SynkControls();
     void UpdateMarks();
+    void UpdateData();
     void InitUiControls();
 
 

@@ -25,8 +25,11 @@ public:
     void PumpOnOff( bool );
     bool PumpOnOff() const;
 
-    void RegulatingOnOff( bool );
-    bool RegulatingOnOff() const;
+    void RegulatingOpen( bool );
+    bool RegulatingOpen() const;
+
+    void RegulatingClose( bool );
+    bool RegulatingClose() const;
 
     void ResetOnOff( bool );
     bool ResetOnOff() const;

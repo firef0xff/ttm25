@@ -1,5 +1,6 @@
 #pragma once
 #include "controls.h"
+#include "sensors.h"
 
 namespace cpu
 {
@@ -11,6 +12,7 @@ public:
     static CpuMemory& Instance();
 
     data::Controls Controls;    //Управление стендом
+    data::Sensors Sensors;      //Датчики стенда
 
 private:
     CpuMemory();
