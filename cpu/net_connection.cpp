@@ -59,4 +59,13 @@ void NetConnection::Execute( fins::Command& cmd )
 #endif
 }
 
+fins::Communicator& NetConnection::Communicator()
+{
+    if ( !NET_CONNECTION )
+        throw std::runtime_error("Connection not inited");
+
+    NetConnection& con = *NET_CONNECTION;
+    return con.mConnection;
+}
+
 }

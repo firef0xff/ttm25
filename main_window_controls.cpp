@@ -1,6 +1,7 @@
 #include "main_window.h"
 #include "ui_main_window.h"
 #include "cpu/cpu_memory.h"
+#include "cpu/net_connection.h"
 
 #include "test/test_params.h"
 
@@ -86,6 +87,12 @@ void MainWindow::InitUiControls()
     SetOnOffText( ui->bFeedOnOff, "Подача включить", "Подача отключить" );
     SetOnOffText( ui->bAirOnOff, "Атмосфера включить", "Атмосфера отключить" );
     SetOnOffText( ui->bVacuumOnOff, "Вакуум включить", "Вакуум отключить" );
+
+    QObject::connect( &cpu::NetConnection::Communicator(), SIGNAL(connected(bool)), this, SLOT(onUpdateConnection(bool)) );
+}
+void MainWindow::onUpdateConnection( bool connected )
+{
+    UpdateMark( ui->lConnect, true , !connected ? Qt::red : Qt::green );
 }
 
 void MainWindow::UpdateMarks()

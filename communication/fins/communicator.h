@@ -19,6 +19,8 @@ public:
 
     void send( Paskage& pkg );
 
+signals:
+    void connected( bool );
 private:
     QHostAddress mHost;
     qint16 mPort;

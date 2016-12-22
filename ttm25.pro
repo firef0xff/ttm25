@@ -107,7 +107,7 @@ win32 {
 
 unix {
     DEFINES -= WINDOWS
-    DEFINES += DEMO
+    #DEFINES += DEMO
 }
 
 debug {

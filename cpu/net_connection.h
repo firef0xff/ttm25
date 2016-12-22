@@ -23,7 +23,7 @@ public:
                         int16_t port = 9600 );
 
     static void Execute(fins::Command &cmd );
-
+    static fins::Communicator& Communicator();
 private:
     NetConnection( fins::EndPoint source, fins::EndPoint dest,
                    QString host,  int16_t port );

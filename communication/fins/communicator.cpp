@@ -46,7 +46,12 @@ void Communicator::Send( Paskage& pkg )
     auto resp_size = pkg.ResponseSize();
     while ( readed < resp_size )
     {
-        mSocket.waitForReadyRead();
+        if ( !mSocket.waitForReadyRead(5) )
+        {
+            emit connected( false );
+            return;
+        }
+        emit connected( true );
         auto data_size = mSocket.bytesAvailable();
         answer.resize( readed + data_size );
         mSocket.read( answer.data() + readed, answer.size() - readed );

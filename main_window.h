@@ -55,6 +55,7 @@ private slots:
     void on_bRegulatingClose_clicked(bool checked);
     void on_bRegulatingOpen_clicked(bool checked);
 
+    void onUpdateConnection( bool connected );
 private:
     void closeEvent(QCloseEvent *e);
     void showEvent( QShowEvent *e );

@@ -2,12 +2,15 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>970</width>
-    <height>694</height>
+    <height>722</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -537,6 +540,16 @@
                      </property>
                     </widget>
                    </item>
+                   <item row="0" column="5">
+                    <widget class="QLabel" name="lConnect">
+                     <property name="text">
+                      <string>ЦПУ</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
+                   </item>
                   </layout>
                  </item>
                 </layout>
@@ -877,6 +890,16 @@
                      </property>
                     </widget>
                    </item>
+                   <item row="11" column="1">
+                    <widget class="QLineEdit" name="eBP">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                    </widget>
+                   </item>
                    <item row="6" column="0">
                     <widget class="QLabel" name="lCBP">
                      <property name="text">
@@ -894,8 +917,8 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="11" column="1">
-                    <widget class="QLineEdit" name="eBP">
+                   <item row="2" column="1">
+                    <widget class="QLineEdit" name="eTPNumbet">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -914,15 +937,8 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="2" column="1">
-                    <widget class="QLineEdit" name="eTPNumbet">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                    </widget>
+                   <item row="9" column="1">
+                    <widget class="QSpinBox" name="eTWP"/>
                    </item>
                    <item row="2" column="0">
                     <widget class="QLabel" name="lTPNumbet">
@@ -941,8 +957,12 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="9" column="1">
-                    <widget class="QSpinBox" name="eTWP"/>
+                   <item row="5" column="0" colspan="2">
+                    <widget class="Line" name="line">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                    </widget>
                    </item>
                    <item row="1" column="1">
                     <widget class="QLineEdit" name="eSerialNumber">
@@ -954,12 +974,18 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="5" column="0" colspan="2">
-                    <widget class="Line" name="line">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
+                   <item row="12" column="0">
+                    <widget class="QLabel" name="lTFV">
+                     <property name="frameShape">
+                      <enum>QFrame::NoFrame</enum>
+                     </property>
+                     <property name="text">
+                      <string>Теоритический объем наполнения, см3</string>
                      </property>
                     </widget>
+                   </item>
+                   <item row="12" column="1">
+                    <widget class="QLineEdit" name="eTFV"/>
                    </item>
                   </layout>
                  </item>
