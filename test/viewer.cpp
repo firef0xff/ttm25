@@ -10,8 +10,7 @@ Viewer::Viewer(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Viewer),
     mPageNo( 0 ),
-    header_logo( "./img/kb.png", "PNG" ),
-    footer_logo( "./img/vershina.png", "PNG" )
+    logo( "./img/vershina_small.png", "PNG" )
 {
     ui->setupUi(this);
 
@@ -26,8 +25,8 @@ void Viewer::Init()
     QRect rc = PreparePage( painter, QRect(0,0,793,1123) ); //397 562
 
 
-    test::CURRENT_PARAMS.Draw( painter, rc, CompareWidth );
-    if ( test::Test* test =  test::CURRENT_PARAMS.TestCase() )
+    test::CURRENT_PARAMS->Draw( painter, rc, CompareWidth );
+    if ( test::Test* test =  test::CURRENT_PARAMS->TestForExec() )
     {
         test->ResetDrawLine();
 
@@ -50,14 +49,14 @@ void Viewer::Init()
         }
     }
 
-    if ( test::CURRENT_PARAMS.HasResults() )
+    if ( test::CURRENT_PARAMS->HasResults() )
     {
         painter.end();
         mPages.push_back( pixmap );
         pixmap = QPixmap( 793, 1123 );
         painter.begin( &pixmap );
         rc = PreparePage( painter, QRect(0,0,793,1123) );
-        test::CURRENT_PARAMS.DrawResults( painter, rc );
+        test::CURRENT_PARAMS->DrawResults( painter, rc );
     }
 
 
@@ -105,7 +104,7 @@ void Viewer::on_Save_clicked()
     {
         if ( !file_name.endsWith(".res", Qt::CaseInsensitive) )
             file_name += ".res";
-        test::DataToFile( file_name, test::CURRENT_PARAMS );
+        test::DataToFile( file_name, *test::CURRENT_PARAMS );
     }
 }
 
@@ -137,8 +136,8 @@ void Viewer::on_SavePDF_clicked()
         painter.translate( start );
         QRect rc = PreparePage( painter, printer.paperRect() );
 
-        test::CURRENT_PARAMS.Draw( painter, rc, CompareWidth );
-        if( test::Test* test= test::CURRENT_PARAMS.TestCase() )
+        test::CURRENT_PARAMS->Draw( painter, rc, CompareWidth );
+        if( test::Test* test= test::CURRENT_PARAMS->TestForExec() )
         {
             test->ResetDrawLine();
 
@@ -155,11 +154,11 @@ void Viewer::on_SavePDF_clicked()
                 rc.setTop( rc.top() + m.height() );
             }
         }
-        if ( test::CURRENT_PARAMS.HasResults() )
+        if ( test::CURRENT_PARAMS->HasResults() )
         {
             printer.newPage();
             rc = PreparePage( painter, printer.paperRect() );
-            test::CURRENT_PARAMS.DrawResults( painter, rc );
+            test::CURRENT_PARAMS->DrawResults( painter, rc );
         }
         painter.end();
     }
@@ -176,66 +175,20 @@ QRect Viewer::PreparePage( QPainter& painter, QRect const& page_rect )
     QRect work_area( 76, 76, 698, 1010 );// 698 x 1010 19 = 5мм
     QRect print_area( work_area.left() + 38, work_area.top() + 10, work_area.width() - ( 38 + 19 ), work_area.height() - 19 );
 
-    QRect header_rect( 0, 0, 86/1.5, 77/1.5 );
-    QRect footer_rect( 0, 0, 220, 55 );
-    header_rect.setHeight( header_logo.height() * header_rect.width() / header_logo.width() );
-    footer_rect.setHeight( footer_logo.height() * footer_rect.width() / footer_logo.width() );
+    QRect header_rect( 0, 0, 55, 55 );
+    header_rect.setHeight( logo.height() * header_rect.width() / logo.width() );
 
     painter.save();
-    QPoint header_point( work_area.right() - header_rect.width(), work_area.top() - header_rect.height() - 2 );
+    QPoint header_point( work_area.center().x() - header_rect.width()/2, work_area.top() - header_rect.height() - 2 );
     painter.translate( header_point );
-    painter.drawPixmap( header_rect, header_logo );
-    painter.restore();
-    painter.save();
-    QPoint footer_point( work_area.right() - header_rect.width() - footer_rect.width(), work_area.top() - footer_rect.height() - 2 );
-    painter.translate( footer_point );
-    painter.drawPixmap( footer_rect, footer_logo );
+    painter.drawPixmap( header_rect, logo );
     painter.restore();
 
-    {
-        painter.save();
-        QFont font = painter.font();
-        font.setFamily("Calibri");
-        font.setPointSize( 11 );
-        painter.setFont( font );
-        QFontMetrics m( font );
-        QPoint text_point( work_area.left(), work_area.top() - 3 * m.height() );
-//        painter.translate( text_point );
-        painter.drawText( text_point, "Шинный испытательный центр ВЕРШИНА" );
-        painter.restore();
-    }
-
-    {
-        painter.save();
-        QFont font = painter.font();
-        font.setFamily("Calibri");
-        font.setPointSize( 11 );
-        painter.setFont( font );
-        QFontMetrics m( font );
-        QPoint text_point( work_area.left(), work_area.top() - 2 * m.height() );
-//        painter.translate( text_point );
-        painter.drawText( text_point, "Испытание производилось на" );
-        painter.restore();
-    }
-
-    {
-        painter.save();
-        QFont font = painter.font();
-        font.setFamily("Calibri");
-        font.setPointSize( 11 );
-        painter.setFont( font );
-        QFontMetrics m( font );
-        QPoint text_point( work_area.left(), work_area.top() - 1 * m.height() );
-//        painter.translate( text_point );
-        painter.drawText( text_point, "стенде испытательном КБ «ПОЛИМЕРМАШ»" );
-        painter.restore();
-    }
-    painter.drawRect( work_area );
+//    painter.drawRect( work_area );
 
 //    painter.drawRect( print_area );
-//    painter.translate( print_area.topLeft() );
 
-    return print_area;
+    return work_area;
 }
 
 void Viewer::on_Compare_clicked()

@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>970</width>
-    <height>722</height>
+    <width>972</width>
+    <height>735</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -34,7 +34,7 @@
      <number>0</number>
     </property>
     <item>
-     <widget class="QTabWidget" name="tabWidget">
+     <widget class="QTabWidget" name="tMode">
       <property name="currentIndex">
        <number>0</number>
       </property>
@@ -597,6 +597,16 @@
                   <number>0</number>
                  </property>
                  <item>
+                  <widget class="QPushButton" name="pushButton">
+                   <property name="text">
+                    <string>ЗАПОЛНЕНИЕ</string>
+                   </property>
+                   <property name="checkable">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
                   <widget class="QPushButton" name="pushButton_4">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -606,6 +616,9 @@
                    </property>
                    <property name="text">
                     <string>СТАРТ</string>
+                   </property>
+                   <property name="checkable">
+                    <bool>true</bool>
                    </property>
                   </widget>
                  </item>
@@ -711,6 +724,9 @@
                    </item>
                    <item row="3" column="2">
                     <widget class="QToolButton" name="bMark">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="text">
                       <string>...</string>
                      </property>
@@ -718,6 +734,9 @@
                    </item>
                    <item row="3" column="0">
                     <widget class="QLabel" name="lMark">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="text">
                       <string>Маркировка</string>
                      </property>
@@ -740,25 +759,32 @@
                      </item>
                      <item>
                       <property name="text">
-                       <string>Методика №М 24-82</string>
+                       <string>Методика № М 24-82</string>
                       </property>
                      </item>
                      <item>
                       <property name="text">
-                       <string>Методика №МИ5С-2006</string>
+                       <string>Методика № МИ5С-2006</string>
                       </property>
                      </item>
                     </widget>
                    </item>
                    <item row="0" column="0">
                     <widget class="QLabel" name="lTitleTire">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="text">
                       <string>Обозначение шины</string>
                      </property>
                     </widget>
                    </item>
                    <item row="3" column="1">
-                    <widget class="QComboBox" name="eMark"/>
+                    <widget class="QComboBox" name="eMark">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
                    </item>
                    <item row="1" column="2">
                     <widget class="QToolButton" name="bTitleModel">
@@ -769,6 +795,9 @@
                    </item>
                    <item row="0" column="2">
                     <widget class="QToolButton" name="bTitleTire">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="text">
                       <string>...</string>
                      </property>
@@ -782,7 +811,11 @@
                     </widget>
                    </item>
                    <item row="0" column="1">
-                    <widget class="QComboBox" name="eTitleTire"/>
+                    <widget class="QComboBox" name="eTitleTire">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -811,6 +844,9 @@
                    </item>
                    <item row="4" column="0">
                     <widget class="QLabel" name="lTemperature">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="text">
                       <string>Температура в помещении, С</string>
                      </property>
@@ -847,7 +883,11 @@
                     </widget>
                    </item>
                    <item row="4" column="1">
-                    <widget class="QSpinBox" name="eTemperature"/>
+                    <widget class="QSpinBox" name="eTemperature">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
                    </item>
                    <item row="6" column="1">
                     <widget class="QLineEdit" name="eCBP">
@@ -885,6 +925,9 @@
                    </item>
                    <item row="3" column="0">
                     <widget class="QLabel" name="lMass">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="text">
                       <string>Масса, кг</string>
                      </property>
@@ -909,6 +952,9 @@
                    </item>
                    <item row="3" column="1">
                     <widget class="QLineEdit" name="eMass">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -919,6 +965,9 @@
                    </item>
                    <item row="2" column="1">
                     <widget class="QLineEdit" name="eTPNumbet">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -942,6 +991,9 @@
                    </item>
                    <item row="2" column="0">
                     <widget class="QLabel" name="lTPNumbet">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="text">
                       <string>Номер ТП</string>
                      </property>
@@ -1144,7 +1196,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget_2">
           <property name="currentIndex">
-           <number>2</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="tab_5">
            <attribute name="title">
@@ -1174,7 +1226,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>970</width>
+     <width>972</width>
      <height>19</height>
     </rect>
    </property>

@@ -10,13 +10,13 @@ void Worker::run()
     mStopSignal = false;
     try
     {
-        test::CURRENT_PARAMS.StendInit();
+        test::CURRENT_PARAMS->StendInit();
     }catch( std::exception const& e )
     {
         LogIt( e.what() );
         return;
     }
-    test::Test* to_run = test::CURRENT_PARAMS.TestCase();
+    test::Test* to_run = test::CURRENT_PARAMS->TestForExec();
 
     LogIt( "Запущен тест: " + to_run->Name() );
     bool result = to_run->Run( std::bind( &Worker::LaunchIt, this, std::placeholders::_1 ),
@@ -31,7 +31,7 @@ void Worker::run()
 
     try
     {
-        test::CURRENT_PARAMS.StendDeInit();
+        test::CURRENT_PARAMS->StendDeInit();
     }catch( std::exception const& e )
     {
         LogIt( e.what() );

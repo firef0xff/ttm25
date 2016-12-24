@@ -52,7 +52,9 @@ SOURCES += main.cpp\
     cpu/cpu_memory.cpp \
     main_window_controls.cpp \
     cpu/net_connection.cpp \
-    cpu/sensors.cpp
+    cpu/sensors.cpp \
+    test/impl/work_params.cpp \
+    test/impl/attestation_params.cpp
 
 HEADERS  += main_window.h \
     communication/fins/endpoint.h \
@@ -90,7 +92,9 @@ HEADERS  += main_window.h \
     cpu/controls.h\
     cpu/cpu_memory.h \
     cpu/net_connection.h \
-    cpu/sensors.h
+    cpu/sensors.h \
+    test/impl/work_params.h \
+    test/impl/attestation_params.h
 
 FORMS    += main_window.ui\
             test/viewer.ui\
@@ -107,7 +111,7 @@ win32 {
 
 unix {
     DEFINES -= WINDOWS
-    #DEFINES += DEMO
+    DEFINES += DEMO
 }
 
 debug {
@@ -123,10 +127,6 @@ DEFINES += LOG
 DEFINES += DEBUG
 #DEFINES += TESTS
 
-DISTFILES += \
-    data/kkt.json \
-    data/method.json \
-    data/tires_mark.json \
-    data/marks.json \
-    data/models.json \
-    data/TODO
+DISTFILES += \    
+    data/* \
+    img/*

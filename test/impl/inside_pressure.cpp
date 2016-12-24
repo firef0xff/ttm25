@@ -5,36 +5,39 @@
 #include "../test_params.h"
 #include <QTextDocument>
 #include <QtGui/QAbstractTextDocumentLayout>
-
+#include "work_params.h"
+#ifdef DEMO
+#include "../../settings/settings.h"
+#endif
 namespace test
 {
 
 namespace
 {
 
-QJsonArray ToJson( InsidePressure::DataSet const& data )
+QJsonArray ToJson( M2_2006::DataSet const& data )
 {
     QJsonArray arr;
-    foreach ( InsidePressure::Point const& d, data )
+    foreach ( M2_2006::Point const& d, data )
     {
         arr.insert( arr.end(), d.Serialise() );
     }
     return std::move( arr );
 }
-InsidePressure::DataSet FromJson( QJsonArray const& arr )
+M2_2006::DataSet FromJson( QJsonArray const& arr )
 {
-    InsidePressure::DataSet data;
+    M2_2006::DataSet data;
 
     foreach (QJsonValue const& v, arr)
     {
-        InsidePressure::Point d;
+        M2_2006::Point d;
         if ( d.Deserialize( v.toObject() ) )
             data.insert( data.end(), d );
     }
     return std::move( data );
 }
 
-ff0x::NoAxisGraphBuilder::LinePoints Process( InsidePressure::DataSet const& src, QPointF& x_range, QPointF& y_range )
+ff0x::NoAxisGraphBuilder::LinePoints Process( M2_2006::DataSet const& src, QPointF& x_range, QPointF& y_range )
 {
     ff0x::NoAxisGraphBuilder::LinePoints result;
 
@@ -78,40 +81,41 @@ ff0x::NoAxisGraphBuilder::LinePoints Process( InsidePressure::DataSet const& src
     return std::move( result );
 }
 }//namespace
-InsidePressure::Point::Point():
+
+M2_2006::Point::Point():
     mX(0),mY(0)
 {
 }
-InsidePressure::Point::Point( double x, double y ):
+M2_2006::Point::Point( double x, double y ):
     mX(x),
     mY(y)
 {}
-double const& InsidePressure::Point::X() const
+double const& M2_2006::Point::X() const
 {
     return mX;
 }
-double const& InsidePressure::Point::Y() const
+double const& M2_2006::Point::Y() const
 {
     return mY;
 }
 
-QJsonObject InsidePressure::Point::Serialise() const
+QJsonObject M2_2006::Point::Serialise() const
 {
     QJsonObject obj;
     obj.insert("x", mX);
     obj.insert("y", mY);
     return std::move( obj );
 }
-bool InsidePressure::Point::Deserialize( QJsonObject const& obj )
+bool M2_2006::Point::Deserialize( QJsonObject const& obj )
 {
     mX = obj.value("x").toDouble();
     mY = obj.value("y").toDouble();
 }
 
-class InsidePressure::GrapfData
+class M2_2006::GrapfData
 {
 public:
-    GrapfData( InsidePressure const* test, QString compare_width )
+    GrapfData( M2_2006 const* test, QString compare_width )
     {
         QPointF x_range_e;
         QPointF y_range_e;
@@ -122,7 +126,7 @@ public:
             auto obj = val.toObject();
             if ( obj.value("id").toInt() == test->mId )
             {
-                InsidePressure::DataSet data = FromJson( obj.value("data").toObject().value("Data").toArray() );
+                M2_2006::DataSet data = FromJson( obj.value("data").toObject().value("Data").toArray() );
                 dataA_e2 = Process( data, x_range_e, y_range_e );
                 use_etalone = true;
             }
@@ -187,12 +191,60 @@ private:
     double current_y_scale = 1.0;
 };
 
+DrawHelper::DrawHelper( QPainter& p, QRect& r):
+    painter(p),
+    free_rect(r)
+{
 
-InsidePressure::InsidePressure(CallBack f):
-    TestCommonData( "Испытание внутренним гидравлическим давлением", 1 ),
-    mOnDataUpdate( f )
+}
+void DrawHelper::DrawRowCenter( QRect const& place, QFont const& font, QColor const& color, QString const& text )
+{
+    painter.save();
+    QFontMetrics metrix( font );
+    QPoint start_point( place.center().x() - metrix.width( text ) / 2, place.center().y() +metrix.height()/2);
+    painter.setFont( font );
+    painter.setPen( color );
+    painter.drawText( start_point, text );
+    painter.restore();
+}
+void DrawHelper::DrawRowLeft( QRect const& place,
+                  QFont const& font,
+                  QColor const& color1,
+                  QString const& label,
+                  QColor const& color2,
+                  QString const& value )
+{
+    painter.save();
+    QFontMetrics metrix( font );
+    QPoint start_point( place.left() , place.center().y()+metrix.height()/2 );
+    QPoint start_point2( place.left() + metrix.width(label), place.center().y() +metrix.height()/2);
+    painter.setFont( font );
+    painter.setPen( color1 );
+    painter.drawText( start_point, label );
+    painter.setPen( color2 );
+    painter.drawText( start_point2, value );
+    painter.restore();
+}
+
+
+M2_2006::M2_2006(CallBack f, QString method_name, int32_t id):
+    TestCommonData( method_name, id ),
+    mOnDataUpdate( f ),
+    mBreakPressure(0.0),
+    mState(0)
 {
 #ifdef DEMO
+    auto& params = WorkParams::Instance();
+    params.Date( QDateTime::currentDateTime() );
+    params.Size( "265/75 R15" );
+    params.Model( "PS-400" );
+    params.Customer( "ОАО 'Роги и лапти'" );
+    params.OrderNo("10");
+    params.TireNo("4416 Я45545");
+    params.BreakPressure("56.7");
+    params.ConstPressureTime("90");
+    params.User( app::Settings::Instance().User() );
+
     for ( auto x = 0; x <100; ++x )
     {
         mData.append(Point( x, (10+x*x/50) ));
@@ -200,10 +252,10 @@ InsidePressure::InsidePressure(CallBack f):
 
 #endif
 }
-InsidePressure::~InsidePressure()
+M2_2006::~M2_2006()
 {}
 
-bool InsidePressure::Run()
+bool M2_2006::Run()
 {
     bool work = true;
     bool done = true;
@@ -215,307 +267,105 @@ bool InsidePressure::Run()
 
     return Success();
 }
-bool InsidePressure::Success() const
+bool M2_2006::Success() const
 {
     return mSuccess;
 }
-void InsidePressure::UpdateData()
+void M2_2006::UpdateData()
 {
     if (mOnDataUpdate)
         mOnDataUpdate();
 }
 
-QJsonObject InsidePressure::Serialise() const
+QJsonObject M2_2006::Serialise() const
 {
     QJsonObject obj = TestCommonData::Serialise();
     obj.insert("Data", ToJson( mData ) );
+    obj.insert("BreakPressure", mBreakPressure);
+    obj.insert("State", mState);
 
     return obj;
 }
-bool InsidePressure::Deserialize( QJsonObject const& obj )
+bool M2_2006::Deserialize( QJsonObject const& obj )
 {
     mData = FromJson( obj.value("Data").toArray() );
+    mBreakPressure = obj.value("BreakPressure").toDouble();
+    mState = obj.value("State").toInt();
+
     TestCommonData::Deserialize( obj );
     return true;
 }
 
-bool InsidePressure::Draw( QPainter& painter, QRect &free_rect, QString  const& compare_width ) const
+bool M2_2006::Draw( QPainter& painter, QRect &free_rect, QString  const& compare_width ) const
 {
     bool res = false;
-    bool is_auto = false;
     uint32_t num = 0;
-    if ( is_auto )
-        res = DrawAuto(num, painter,free_rect);
-    else
-        res = DrawAvia(num, painter,free_rect);
+
+    res = DrawHeader(num, painter,free_rect);
+    res = DrawBody(num, painter,free_rect);
     res = DrawGraph(num, painter,free_rect, compare_width);
+    res = DrawFoter(num, painter,free_rect);
+    if (res )
+        free_rect.setHeight( 0 );
     return res;
 }
 
-bool InsidePressure::DrawAuto( uint32_t& num, QPainter& painter, QRect &free_rect ) const
+bool M2_2006::DrawHeader( uint32_t& num, QPainter& painter, QRect &free_rect ) const
 {
     QFont header_font = painter.font();
     header_font.setFamily("Arial");
     header_font.setPointSize( 14 );
     header_font.setBold(true);
-    QFont result_font = header_font;
-    result_font.setUnderline(true);
-    result_font.setBold(false);
-    QFont text_font = header_font;
-    text_font.setPointSize( 12 );
-    text_font.setBold(false);
-    QFont underline_font = text_font;
-    underline_font.setPointSize( 6 );
+    auto& params = WorkParams::Instance();
 
-
-    auto DrawRowCenter = [ &painter, &free_rect ](QRect const& place, QFont const& font, QColor const& color, QString const& text )
-    {
-        painter.save();
-        QFontMetrics metrix( font );
-        QPoint start_point( place.center().x() - metrix.width( text ) / 2, place.center().y() +metrix.height()/2);
-        painter.setFont( font );
-        painter.setPen( color );
-        painter.drawText( start_point, text );
-        painter.restore();
-    };
-    auto DrawRowLeft = [ &painter, &free_rect ](    QRect const& place,
-                                                    QFont const& font,
-                                                    QColor const& color1,
-                                                    QString const& label,
-                                                    QColor const& color2 = Qt::black,
-                                                    QString const& value = "")
-    {
-        painter.save();
-        QFontMetrics metrix( font );
-        QPoint start_point( place.left() , place.center().y()+metrix.height()/2 );
-        QPoint start_point2( place.left() + metrix.width(label), place.center().y() +metrix.height()/2);
-        painter.setFont( font );
-        painter.setPen( color1 );
-        painter.drawText( start_point, label );
-        painter.setPen( color2 );
-        painter.drawText( start_point2, value );
-        painter.restore();
-    };
+    DrawHelper drw( painter, free_rect );
 
     bool res = DrawLine( num, free_rect, header_font,
-    [ this, &painter, &DrawRowCenter, &header_font ]( QRect const& rect )
+    [ this, &painter, &drw, &header_font ]( QRect const& rect )
     {
-        DrawRowCenter( rect, header_font, Qt::black, "Протокол No _________ от #DATE#" );
+        drw.DrawRowCenter( rect, header_font, Qt::black, "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ");
     }, 1.5 );
     res = DrawLine( num, free_rect, header_font,
-    [ this, &painter, &DrawRowCenter, &header_font ]( QRect const& rect )
+    [ this, &painter, &drw, &header_font ]( QRect const& rect )
     {
-        DrawRowCenter( rect, header_font, Qt::black, "испытания шины #NAME# производства" );
+        drw.DrawRowCenter( rect, header_font, Qt::black, "ШИННЫЙ ИСПЫТАТЕЛЬНЫЙ ЦЕНТР «ВЕРШИНА»");
     }, 1.5 );
-    res = DrawLine( num, free_rect, text_font,
-    [ this, &painter, &DrawRowLeft, &text_font ]( QRect const& )
+    res = DrawLine( num, free_rect, header_font,
+    []( QRect const& )
     {
-    }, 3 );
-
-    QString header = "<html>"
-            "<head>"
-              "<meta charset='utf-8'>"
-              "<style type='text/css'>"
-                   "td { text-align: center;}"
-                   "th { font-weight: normal;}"
-                   "table {border-collapse: collapse; border-style: solid;}"
-             "</style>"
-            "</head>"
-            "<body>"
-            "<table width='100%' border='1.5' cellspacing='-0.5' cellpadding='-0.5'>"
-                "<tr>"
-                    "<th rowspan='4'>Дата изготовления<br>порядковый<br>номер изделия</th>"
-                    "<th colspan='5'>Оценка устойчивости шины к разрыву</th>"
-                "</tr>"
-                "<tr>"
-                    "<th colspan='5'>Правила ЕЭК ООН No106 прил. 8</th>"
-                "</tr>"
-                "<tr>"
-                    "<th colspan='2'>Давление в шине<br>при измерении,<br>МПа (кгс/см^2)</th>"
-                    "<th colspan='2'>Поддержание давления<br>на неизменном уровне<br>в шине, мин.</th>"
-                    "<th rowspan='2'>Состояние шин после испытаний<br>(наличие и виды дефектов)</th>"
-                "</tr>"
-                "<tr>"
-                    "<th>Норматив</th>"
-                    "<th>Факт</th>"
-                    "<th>Норматив</th>"
-                    "<th>Факт</th>"
-                "</tr>";
-
-    QString footer = "</table>"
-            "</body>"
-            "</html>";
-
-    QString table = header;
-    auto MakeRow = [ this ]() -> QString
-    {
-        QString row =   "<tr>";
-        row +=              "<td>#1#</td>"
-                            "<td>#2#</td>"
-                            "<td>#3#</td>"
-                            "<td>#4#</td>"
-                            "<td>#5#</td>"
-                            "<td>#6#</td>";
-        row +=          "</tr>";
-        return row;
-    };
-
-    QTextDocument doc;
-    doc.setUndoRedoEnabled( false );
-    doc.setTextWidth( free_rect.width() );
-    doc.setUseDesignMetrics( true );
-    doc.setDefaultTextOption ( QTextOption (Qt::AlignHCenter )  );
-    table += MakeRow();
-    table += footer;
-
-    doc.setHtml( table );
-    auto h = doc.documentLayout()->documentSize().height();
-
-    res = DrawLine( num, free_rect, text_font,
-    [ this, &painter, &doc, &text_font ]( QRect const& rect )
-    {
-        painter.save();
-        QRectF r( 0, 0, rect.width(), rect.height() );
-        painter.translate( rect.topLeft() );
-        doc.drawContents( &painter, r);
-        painter.restore();
-    }, 1, h );
-
-    res = DrawLine( num, free_rect, text_font,
-    [ this, &painter, &DrawRowLeft, &text_font ]( QRect const& )
-    {
-    }, 3 );
-    res = DrawLine( num, free_rect, text_font,
-    [ this, &painter, &DrawRowLeft, &text_font ]( QRect const& rect )
-    {
-        DrawRowLeft( rect, text_font, Qt::black, "Заключение: ______________________________________________________" );
     }, 1.5 );
-    res = DrawLine( num, free_rect, text_font,
-    [ this, &painter, &DrawRowLeft, &text_font ]( QRect const& )
+    res = DrawLine( num, free_rect, header_font,
+    [ this, &painter, &drw, &header_font, &params ]( QRect const& rect )
     {
-    }, 3 );
-    res = DrawLine( num, free_rect, text_font,
-    [ this, &painter, &DrawRowLeft, &text_font ]( QRect const& )
-    {
-    }, 3 );
-    res = DrawLine( num, free_rect, text_font,
-    [ this, &painter, &DrawRowLeft, &text_font ]( QRect const& rect )
-    {
-        DrawRowLeft( rect, text_font, Qt::black, "Главный инженер ООО \"ШИЦ \"Вершина \"  ______________" + QString(10,' ') +"__________________" );
+        drw.DrawRowCenter( rect, header_font, Qt::black, "Протокол No _____ от " + params.Date().toString("dd.MM.yyyy") );
     }, 1.5 );
-    res = DrawLine( num, free_rect, underline_font,
-    [ this, &painter, &DrawRowLeft, &underline_font, &free_rect ]( QRect const& rect )
+    res = DrawLine( num, free_rect, header_font,
+    [ this, &painter, &drw, &header_font, &params ]( QRect const& rect )
     {
-        DrawRowLeft( rect, underline_font, Qt::black, QString(180,' ') + "подпись" + QString(60,' ') + "расшифровка подписи" );
-        free_rect.setHeight( 0 );
+        drw.DrawRowCenter( rect, header_font, Qt::black, "Испытание шины " + params.Size() + " " + params.Model() );
     }, 1.5 );
+    res = DrawLine( num, free_rect, header_font,
+    [ this, &painter, &drw, &header_font, &params ]( QRect const& rect )
+    {
+        drw.DrawRowCenter( rect, header_font, Qt::black, "Заказчик " + params.Customer() );
+    }, 1.5 );
+    res = DrawLine( num, free_rect, header_font,
+    [ this, &painter, &drw, &header_font, &params ]( QRect const& rect )
+    {
+        drw.DrawRowCenter( rect, header_font, Qt::black, "Заказ №" + ToString( params.OrderNo() ) );
+    }, 1.5 );
+
     return res;
 }
-bool InsidePressure::DrawAvia( uint32_t& num, QPainter& painter, QRect &free_rect ) const
+bool M2_2006::DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) const
 {
-    QFont header_font = painter.font();
-    header_font.setFamily("Arial");
-    header_font.setPointSize( 14 );
-    QFont result_font = header_font;
-    result_font.setUnderline(true);
-    QFont text_font = header_font;
+    QFont text_font = painter.font();
+    text_font.setFamily("Arial");
     text_font.setPointSize( 12 );
-    QFont text_bold_font = text_font;
-    text_bold_font.setBold(true);
-    QFont underline_font = text_font;
-    underline_font.setPointSize( 6 );
 
+    auto& params = WorkParams::Instance();
 
-    auto DrawRowCenter = [ &painter, &free_rect ](QRect const& place, QFont const& font, QColor const& color, QString const& text )
-    {
-        painter.save();
-        QFontMetrics metrix( font );
-        QPoint start_point( place.center().x() - metrix.width( text ) / 2, place.center().y() +metrix.height()/2);
-        painter.setFont( font );
-        painter.setPen( color );
-        painter.drawText( start_point, text );
-        painter.restore();
-    };
-    auto DrawRowLeft = [ &painter, &free_rect ](    QRect const& place,
-                                                    QFont const& font,
-                                                    QColor const& color1,
-                                                    QString const& label,
-                                                    QColor const& color2 = Qt::black,
-                                                    QString const& value = "")
-    {
-        painter.save();
-        QFontMetrics metrix( font );
-        QPoint start_point( place.left() , place.center().y()+metrix.height()/2 );
-        QPoint start_point2( place.left() + metrix.width(label), place.center().y() +metrix.height()/2);
-        painter.setFont( font );
-        painter.setPen( color1 );
-        painter.drawText( start_point, label );
-        painter.setPen( color2 );
-        painter.drawText( start_point2, value );
-        painter.restore();
-    };
-    auto DrawRowRight = [ &painter, &free_rect ](   QRect const& place,
-                                                    QFont const& font,
-                                                    QColor const& color1,
-                                                    QString const& label)
-    {
-        painter.save();
-        QFontMetrics metrix( font );
-        QPoint start_point( place.right() - metrix.width( label ) , place.center().y()+metrix.height()/2 );
-        painter.setFont( font );
-        painter.setPen( color1 );
-        painter.drawText( start_point, label );
-        painter.restore();
-    };
-
-
-    bool res = DrawLine( num, free_rect, text_font,
-    [ this, &painter, &DrawRowRight, &text_font ]( QRect const& rect )
-    {
-        DrawRowRight( rect, text_font, Qt::black, "Прил. М И11-2005 #DATE#" );
-    }, 1.5 );
-    res = DrawLine( num, free_rect, text_bold_font,
-    [ this, &painter, &DrawRowLeft, &text_bold_font ]( QRect const& rect )
-    {
-        DrawRowLeft( rect, text_bold_font, Qt::black, "ОАО \"ЯШЗ\"" );
-    }, 1 );
-    res = DrawLine( num, free_rect, text_bold_font,
-    [ this, &painter, &DrawRowLeft, &text_bold_font ]( QRect const& rect )
-    {
-        DrawRowLeft( rect, text_bold_font, Qt::black, "АКТ" );
-    }, 1 );
-    res = DrawLine( num, free_rect, text_bold_font,
-    [ this, &painter, &DrawRowLeft, &text_bold_font ]( QRect const& rect )
-    {
-        DrawRowLeft( rect, text_bold_font, Qt::black, "#DATE# No" );
-    }, 1 );
-
-    res = DrawLine( num, free_rect, text_font,
-    [ this, &painter, &DrawRowLeft, &text_font ]( QRect const& )
-    {
-    }, 1.5 );
-
-    res = DrawLine( num, free_rect, text_font,
-    [ this, &painter, &DrawRowLeft, &text_font ]( QRect const& rect )
-    {
-        DrawRowLeft( rect, text_font, Qt::black, QString(5,' ') + "Проведены испытания авиационных шин на прочность внутренним гидравлическим" );
-    }, 1.5 );
-    res = DrawLine( num, free_rect, text_font,
-    [ this, &painter, &DrawRowLeft, &text_font ]( QRect const& rect )
-    {
-        DrawRowLeft( rect, text_font, Qt::black, "давлением (методика МИ 5С-2006) в соответствии с требованиями технических условий" );
-    }, 1.5 );
-    res = DrawLine( num, free_rect, text_font,
-    [ this, &painter, &DrawRowLeft, &text_font ]( QRect const& rect )
-    {
-        DrawRowLeft( rect, text_font, Qt::black, "получены следующие результаты:" );
-    }, 1.5 );
-
-    res = DrawLine( num, free_rect, text_font,
-    [ this, &painter, &text_font ]( QRect const& )
-    {
-    }, 1.5 );
-
+    bool res = true;
     {
         QString header = "<html>"
                 "<head>"
@@ -529,18 +379,21 @@ bool InsidePressure::DrawAvia( uint32_t& num, QPainter& painter, QRect &free_rec
                 "<body>"
                 "<table valign='middle' width='100%' border='1.5' cellspacing='-0.5' cellpadding='-0.5'>"
                 "<tr>"
-                  "<th rowspan='2'>Обозна-<br>чение шины</th>"
-                  "<th rowspan='2'>Обозна-<br>чение<br>модели</th>"
-                  "<th rowspan='2'>Заводской номер</th>"
-                  "<th rowspan='2'>Мас-<br>са,<br>кг</th>"
-                  "<th rowspan='2'>Марки-<br>ровка</th>"
-                  "<th rowspan='2'>Обозна-<br>чение<br>ККТ</th>"
-                  "<th colspan='2'>Контрольно-раз-<br>рушающее давление<br>МПа (кгс/см^2 )</th>"
-                  "<th rowspan='2'>Характер разрушения</th>"
+                  "<th rowspan=\"4\">Дата<br>изготовления,<br>порядковый<br>номер изделия</th>"
+                  "<th colspan=\"3\">"+TableTitle()+"</th>"
+                  "<th rowspan=\"2\">Испытательное<br>оборудование</th>"
                 "</tr>"
                 "<tr>"
-                  "<th>по ТУ, не менее</th>"
-                  "<th>значение измеренное</th>"
+                  "<td colspan=\"3\">"+Name()+"</td>"
+                "</tr>"
+                "<tr>"
+                  "<td colspan=\"2\">Разрушающее давление,<br>МПа (кгс/см2)</td>"
+                  "<td rowspan=\"2\">Состояние шины после<br>испытания<br><br>(вид дефекта)</td>"
+                  "<td rowspan=\"3\">Стенд СИШ-25</td>"
+                "</tr>"
+                "<tr>"
+                  "<td>Факт</td>"
+                  "<td>Норматив</td>"
                 "</tr>";
 
         QString footer = "</table>"
@@ -548,18 +401,13 @@ bool InsidePressure::DrawAvia( uint32_t& num, QPainter& painter, QRect &free_rec
                 "</html>";
 
         QString table = header;
-        auto MakeRow = [ this ]() -> QString
+        auto MakeRow = [ this, &params ]() -> QString
         {
             QString row =   "<tr>";
-            row +=              "<td>#1#</td>"
-                                "<td>#2#</td>"
-                                "<td>#3#</td>"
-                                "<td>#4#</td>"
-                                "<td>#5#</td>"
-                                "<td>#6#</td>"
-                                "<td>#7#</td>"
-                                "<td>#8#</td>"
-                                "<td>#9#</td>";
+            row +=              "<td>"+params.TireNo()+"</td>"
+                                "<td>"+ToString(mBreakPressure)+"</td>"
+                                "<td>"+ToString(params.BreakPressure())+"</td>"
+                                "<td>"+ToString(mState)+"</td>";
             row +=          "</tr>";
             return row;
         };
@@ -584,264 +432,81 @@ bool InsidePressure::DrawAvia( uint32_t& num, QPainter& painter, QRect &free_rec
             doc.drawContents( &painter, r);
             painter.restore();
         }, 1, h );
-    }
-
-    res = DrawLine( num, free_rect, text_font,
-    [ this, &painter, &text_font ]( QRect const& )
-    {
-    }, 3 );
-
-
-    res = DrawLine( num, free_rect, text_font,
-    [ this, &painter, &DrawRowCenter, &text_font ]( QRect const& rect )
-    {
-        DrawRowCenter( rect, text_font, Qt::black, "Используемые средства измерения." );
-    }, 1.5 );
-
-    {
-        QString header = "<html>"
-                "<head>"
-                  "<meta charset='utf-8'>"
-                  "<style type='text/css'>"
-                       "td { text-align: center;}"
-                       "th { font-weight: normal;}"
-                       "table {border-collapse: collapse; border-style: solid; }"
-                 "</style>"
-                "</head>"
-                "<body>"
-                "<table valign='middle' width='100%' border='1.5' cellspacing='-0.5' cellpadding='-0.5'>"
-                "<tr>"
-                  "<th>Наименование и тип средства измерения</th>"
-                  "<th>Диапазон измерений</th>"
-                  "<th>Класс точности (разряд, цена деления)</th>"
-                  "<th>Номер средства измерения</th>"
-                "</tr>"
-                "<tr>"
-                  "<td>Датчик давления<br>Метран 100-ДИ 1172</td>"
-                  "<td>0-25 МПа</td>"
-                  "<td>01</td>"
-                  "<td>343100</td>"
-                "</tr>"
-                "<tr>"
-                  "<td>Весы ВУ-3/150</td>"
-                  "<td>0 - 150 кг</td>"
-                  "<td>КТШ</td>"
-                  "<td>1254</td>"
-                "</tr>";
-
-        QString footer = "</table>"
-                "</body>"
-                "</html>";
-
-        QString table = header;
-        auto MakeRow = [ this ]() -> QString
-        {
-            QString row =   "<tr>";
-            row +=              "<td>#1#</td>"
-                                "<td>#2#</td>"
-                                "<td>#3#</td>"
-                                "<td>#4#</td>";
-            row +=          "</tr>";
-            return row;
-        };
-
-        QTextDocument doc;
-        doc.setUndoRedoEnabled( false );
-        doc.setTextWidth( free_rect.width() );
-        doc.setUseDesignMetrics( true );
-        doc.setDefaultTextOption ( QTextOption (Qt::AlignHCenter )  );
-//        table += MakeRow();
-        table += footer;
-
-        doc.setHtml( table );
-        auto h = doc.documentLayout()->documentSize().height();
-
         res = DrawLine( num, free_rect, text_font,
-        [ this, &painter, &doc, &text_font ]( QRect const& rect )
+        []( QRect const& )
         {
-            painter.save();
-            QRectF r( 0, 0, rect.width(), rect.height() );
-            painter.translate( rect.topLeft() );
-            doc.drawContents( &painter, r);
-            painter.restore();
-        }, 1, h );
+        }, 3 );
     }
-    res = DrawLine( num, free_rect, text_font,
-    [ this, &painter, &DrawRowLeft, &text_font ]( QRect const& )
-    {
-    }, 3 );
-    res = DrawLine( num, free_rect, text_font,
-    [ this, &painter, &DrawRowLeft, &text_font ]( QRect const& rect )
-    {
-        DrawRowLeft( rect, text_font, Qt::black, "Представитель ООО \"ШИЦ\"Вершина\"  ____________  ____________  ____________" );
-    }, 1.5 );
-    res = DrawLine( num, free_rect, underline_font,
-    [ this, &painter, &DrawRowLeft, &underline_font ]( QRect const& rect )
-    {
-        DrawRowLeft( rect, underline_font, Qt::black, QString(165,' ') + "подпись" + QString(30,' ') + "инициалы, фамилия"+ QString(35,' ') + "дата" );
-    }, 1.5 );
-
-    res = DrawLine( num, free_rect, text_font,
-    [ this, &painter, &DrawRowLeft, &text_font ]( QRect const& rect )
-    {
-        DrawRowLeft( rect, text_font, Qt::black, "Контролер  ____________  ____________  ____________" );
-    }, 1.5 );
-    res = DrawLine( num, free_rect, underline_font,
-    [ this, &painter, &DrawRowLeft, &underline_font ]( QRect const& rect )
-    {
-        DrawRowLeft( rect, underline_font, Qt::black, QString(65,' ') + "подпись" + QString(30,' ') + "инициалы, фамилия"+ QString(35,' ') + "дата" );
-    }, 1.5 );
-
-    res = DrawLine( num, free_rect, underline_font,
-    [ this, &painter, &DrawRowLeft, &underline_font ]( QRect const& )
-    {
-    }, 1.5 );
-    res = DrawLine( num, free_rect, text_bold_font,
-    [ this, &painter, &DrawRowLeft, &text_bold_font ]( QRect const& rect )
-    {
-        DrawRowLeft( rect, text_bold_font, Qt::black, "Заключение представительства заказчика ________________________________" );
-    }, 1.5 );
-    res = DrawLine( num, free_rect, text_bold_font,
-    [ this, &painter, &DrawRowLeft, &text_bold_font ]( QRect const& rect )
-    {
-        DrawRowLeft( rect, text_bold_font, Qt::black, QString(70,'_') );
-    }, 1.5 );
-    res = DrawLine( num, free_rect, underline_font,
-    [ this, &painter, &DrawRowLeft, &underline_font ]( QRect const& )
-    {
-    }, 3 );
-
-    res = DrawLine( num, free_rect, text_font,
-    [ this, &painter, &DrawRowLeft, &text_font ]( QRect const& rect )
-    {
-        DrawRowLeft( rect, text_font, Qt::black, "____________  ____________  ____________" );
-    }, 1.5 );
-    res = DrawLine( num, free_rect, underline_font,
-    [ this, &painter, &DrawRowLeft, &underline_font, &free_rect ]( QRect const& rect )
-    {
-        DrawRowLeft( rect, underline_font, Qt::black, QString(20,' ') + "подпись" + QString(30,' ') + "инициалы, фамилия"+ QString(35,' ') + "дата" );
-        free_rect.setHeight( 0 );
-    }, 1.5 );
 
     return res;
 }
-bool InsidePressure::DrawGraph( uint32_t& num, QPainter& painter, QRect &free_rect, QString  const& compare_width ) const
+bool M2_2006::DrawFoter( uint32_t& num, QPainter& painter, QRect &free_rect ) const
 {
-
     QFont header_font = painter.font();
     header_font.setFamily("Arial");
-    header_font.setPointSize( 14 );
-    QFont result_font = header_font;
-    result_font.setUnderline(true);
     QFont text_font = header_font;
     text_font.setPointSize( 12 );
-    QFont text_bold_font = text_font;
-    text_bold_font.setBold(true);
+    text_font.setUnderline(true);
+    QFont underline_font = text_font;
+    underline_font.setPointSize( 6 );
+    underline_font.setUnderline(false);
 
+    auto& params = WorkParams::Instance();
+    DrawHelper drw( painter, free_rect );
 
-    auto DrawRowCenter = [ &painter, &free_rect ](QRect const& place, QFont const& font, QColor const& color, QString const& text )
-    {
-        painter.save();
-        QFontMetrics metrix( font );
-        QPoint start_point( place.center().x() - metrix.width( text ) / 2, place.center().y() +metrix.height()/2);
-        painter.setFont( font );
-        painter.setPen( color );
-        painter.drawText( start_point, text );
-        painter.restore();
-    };
-    auto DrawRowLeft = [ &painter, &free_rect ](    QRect const& place,
-                                                    QFont const& font,
-                                                    QColor const& color1,
-                                                    QString const& label,
-                                                    QColor const& color2 = Qt::black,
-                                                    QString const& value = "")
-    {
-        painter.save();
-        QFontMetrics metrix( font );
-        QPoint start_point( place.left() , place.center().y()+metrix.height()/2 );
-        QPoint start_point2( place.left() + metrix.width(label), place.center().y() +metrix.height()/2);
-        painter.setFont( font );
-        painter.setPen( color1 );
-        painter.drawText( start_point, label );
-        painter.setPen( color2 );
-        painter.drawText( start_point2, value );
-        painter.restore();
-    };
-
-    QFontMetrics m(text_bold_font);
-    int width = m.width(QString(45,'0'));
-    char symbol = '.';
-    auto FillToSize = [ width, &m, symbol ]( QString text )
-    {
-        while( m.width( text + symbol ) < width )
-            text += symbol;
-        return text + " ";
-    };
-
-    bool res = DrawLine( num, free_rect, text_bold_font,
-    [ this, &painter, &DrawRowLeft, &text_bold_font, &FillToSize ]( QRect const& rect )
-    {
-        DrawRowLeft( rect, text_bold_font, Qt::black, FillToSize("Дата испытания:"), Qt::black, "#DATE#" );
-    }, 1.5 );
-    res = DrawLine( num, free_rect, text_bold_font,
-    [ this, &painter, &DrawRowLeft, &text_bold_font, &FillToSize ]( QRect const& rect )
-    {
-        DrawRowLeft( rect, text_bold_font, Qt::black, FillToSize("Обозначение шины:"), Qt::black, "#NAME#" );
-    }, 1.5 );
-    res = DrawLine( num, free_rect, text_bold_font,
-    [ this, &painter, &DrawRowLeft, &text_bold_font, &FillToSize ]( QRect const& rect )
-    {
-        DrawRowLeft( rect, text_bold_font, Qt::black, FillToSize("Маркировка:"), Qt::black, "#MARK#" );
-    }, 1.5 );
-    res = DrawLine( num, free_rect, text_bold_font,
-    [ this, &painter, &DrawRowLeft, &text_bold_font, &FillToSize ]( QRect const& rect )
-    {
-        DrawRowLeft( rect, text_bold_font, Qt::black, FillToSize("Обозначение ККТ:"), Qt::black, "#KKT#" );
-    }, 1.5 );
-    res = DrawLine( num, free_rect, text_bold_font,
-    [ this, &painter, &DrawRowLeft, &text_bold_font, &FillToSize ]( QRect const& rect )
-    {
-        DrawRowLeft( rect, text_bold_font, Qt::black, FillToSize("Заводской номер:"), Qt::black, "#SERIAL#" );
-    }, 1.5 );
-    res = DrawLine( num, free_rect, text_bold_font,
-    [ this, &painter, &DrawRowLeft, &text_bold_font, &FillToSize ]( QRect const& rect )
-    {
-        DrawRowLeft( rect, text_bold_font, Qt::black, FillToSize("Масса шины, кг:"), Qt::black, "#MASS#" );
-    }, 1.5 );
-    res = DrawLine( num, free_rect, text_bold_font,
-    [ this, &painter, &DrawRowLeft, &text_bold_font, &FillToSize ]( QRect const& rect )
-    {
-        DrawRowLeft( rect, text_bold_font, Qt::black, FillToSize("Контрольно разрущающее давление,кгс\\см2:"), Qt::black, "#CONTROL PRESSURE#" );
-    }, 1.5 );
-    res = DrawLine( num, free_rect, text_bold_font,
-    [ this, &painter, &DrawRowLeft, &text_bold_font, &FillToSize ]( QRect const& rect )
-    {
-        DrawRowLeft( rect, text_bold_font, Qt::black, FillToSize("Давление разрушения, кгс\\см2:"), Qt::black, "#PRESSURE#" );
-    }, 1.5 );
-
-
-    res = DrawLine( num, free_rect, text_bold_font,
+    bool res = DrawLine( num, free_rect, text_font,
     []( QRect const& )
     {
-    }, 1.5 );
-
+    }, 3 );
 
     res = DrawLine( num, free_rect, text_font,
-    [ this, &painter, &text_font, &compare_width ]( QRect const& rect )
+    [ this, &painter, &drw, &text_font, &params ]( QRect const& rect )
     {
-        PaintGraph( painter, text_font, rect, compare_width );
-    }, 1, 480  );
-
-    free_rect.setHeight( 0 );
+        int add = 0;
+        auto const& user = params.User();
+        auto size = user.size();
+        if ( size < 10)
+        add = 10 - size;
+        drw.DrawRowLeft( rect, text_font, Qt::black, "Инженер ОСИ ООО «ШИЦ«Вершина»"+QString(2,'\t')+QString(10,'_')+QString(1,'\t')+user+QString(add,'_'));
+    }, 1.5 );
+    res = DrawLine( num, free_rect, underline_font,
+    [ this, &painter, &drw, &underline_font,&free_rect ]( QRect const& rect )
+    {
+        drw.DrawRowLeft( rect, underline_font, Qt::black, QString(5,'\t') + QString(15,' ') + "подпись" + QString(2,'\t') + "(расшифровка подписи)");
+        free_rect.setHeight(0);
+    }, 1.5 );
 
     return res;
 }
 
-void InsidePressure::PaintGraph( QPainter& painter, QFont const& font, QRect const &rect,
+QString M2_2006::TableTitle() const
+{
+    return "Определение прочности пневматических шин при разрушении внутренним давлением.";
+}
+bool M2_2006::DrawGraph( uint32_t& num, QPainter& painter, QRect &free_rect, QString  const& compare_width ) const
+{
+
+    QFont text_font = painter.font();
+    text_font.setFamily("Arial");
+    text_font.setPointSize( 12 );
+
+
+    bool res = DrawLine( num, free_rect, text_font,
+    [ this, &painter, &text_font, &compare_width, &free_rect ]( QRect const& rect )
+    {
+        PaintGraph( painter, text_font, rect, compare_width );        
+    }, 1, 480  );
+
+
+
+    return res;
+}
+
+void M2_2006::PaintGraph( QPainter& painter, QFont const& font, QRect const &rect,
                                  QString  const& compare_width,
                                  double skale,
-                                 InsidePressure::PressureUnits pu,
-                                 InsidePressure::TimeUnits tu ) const
+                                 M2_2006::PressureUnits pu,
+                                 M2_2006::TimeUnits tu ) const
 {
     if (!mGrapfs)
         mGrapfs.reset( new GrapfData( this, compare_width ) );
@@ -893,4 +558,139 @@ void InsidePressure::PaintGraph( QPainter& painter, QFont const& font, QRect con
     painter.restore();
 }
 
+
+
+EK_OON_106::EK_OON_106(CallBack f):
+    M2_2006( f, "Правило ЕЭК ООН №106", 2 ),
+    mConstPressureTime( 0 )
+{}
+void EK_OON_106::UpdateData()
+{
+    M2_2006::UpdateData();
+}
+QJsonObject EK_OON_106::Serialise() const
+{
+    auto obj = M2_2006::Serialise();
+    obj.insert("ConstPressureTime",mConstPressureTime);
+}
+bool EK_OON_106::Deserialize( QJsonObject const& obj )
+{
+    mConstPressureTime = obj.value("ConstPressureTime").toInt();
+    return M2_2006::Deserialize( obj );
+}
+
+bool EK_OON_106::DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) const
+{
+    QFont text_font = painter.font();
+    text_font.setFamily("Arial");
+    text_font.setPointSize( 12 );
+
+    auto& params = WorkParams::Instance();
+
+    bool res = true;
+    {
+        QString header = "<html>"
+                "<head>"
+                  "<meta charset='utf-8'>"
+                  "<style type='text/css'>"
+                       "td { text-align: center;}"
+                       "th { font-weight: normal;}"
+                       "table {border-collapse: collapse; border-style: solid;}"
+                 "</style>"
+                "</head>"
+                "<body>"
+                "<table valign='middle' width='100%' border='1.5' cellspacing='-0.5' cellpadding='-0.5'>"
+                "<tr>"
+                  "<th rowspan=\"4\">Дата<br>изготовления,<br>порядковый<br>номер изделия</th>"
+                  "<th colspan=\"5\">"+TableTitle()+"</th>"
+                  "<th rowspan=\"2\">Испытательное<br>оборудование</th>"
+                "</tr>"
+                "<tr>"
+                  "<td colspan=\"5\">"+Name()+"</td>"
+                "</tr>"
+                "<tr>"
+                  "<td colspan=\"2\">Разрушающее<br>давление,<br>МПа (кгс/см2)</td>"
+                  "<td colspan=\"2\">Поддержание<br>давления на<br>неизменном уровне<br>в шине, мин</td>"
+                  "<td rowspan=\"2\">Состояние шины после<br>испытания<br><br>(вид дефекта)</td>"
+                  "<td rowspan=\"3\">Стенд СИШ-25</td>"
+                "</tr>"
+                "<tr>"
+                  "<td>Факт</td>"
+                  "<td>Норматив</td>"
+                  "<td>Факт</td>"
+                  "<td>Норматив</td>"
+                "</tr>";
+
+        QString footer = "</table>"
+                "</body>"
+                "</html>";
+
+        QString table = header;
+        auto MakeRow = [ this, &params ]() -> QString
+        {
+            QString row =   "<tr>";
+            row +=              "<td>"+params.TireNo()+"</td>"
+                                "<td>"+ToString(mBreakPressure)+"</td>"
+                                "<td>"+ToString(params.BreakPressure())+"</td>"
+                                "<td>"+ToString(mConstPressureTime)+"</td>"
+                                "<td>"+ToString(params.ConstPressureTime())+"</td>"
+                                "<td>"+ToString(mState)+"</td>";
+            row +=          "</tr>";
+            return row;
+        };
+
+        QTextDocument doc;
+        doc.setUndoRedoEnabled( false );
+        doc.setTextWidth( free_rect.width() );
+        doc.setUseDesignMetrics( true );
+        doc.setDefaultTextOption ( QTextOption (Qt::AlignHCenter )  );
+        table += MakeRow();
+        table += footer;
+
+        doc.setHtml( table );
+        auto h = doc.documentLayout()->documentSize().height();
+
+        res = DrawLine( num, free_rect, text_font,
+        [ this, &painter, &doc, &text_font ]( QRect const& rect )
+        {
+            painter.save();
+            QRectF r( 0, 0, rect.width(), rect.height() );
+            painter.translate( rect.topLeft() );
+            doc.drawContents( &painter, r);
+            painter.restore();
+        }, 1, h );
+        res = DrawLine( num, free_rect, text_font,
+        []( QRect const& )
+        {
+        }, 3 );
+    }
+
+    return res;
+}
+QString EK_OON_106::TableTitle() const
+{
+    return "Оценка устойчивости шин к разрыву";
+}
+
+
+M24_82::M24_82(CallBack f):
+    M2_2006( f, "Методика № М 24-82", 3 )
+{
+
+}
+QString M24_82::TableTitle() const
+{
+    return "Определение прочности тормозной камеры внутренним гидравлическим давлением.";
+}
+
+
+MI5C_2006::MI5C_2006(CallBack f):
+    M2_2006( f, "Методика № МИ5С-2006", 4 )
+{
+
+}
+QString MI5C_2006::TableTitle() const
+{
+    return "Определение прочности авиационных шин внутренним гидравлическим давлением.";
+}
 }

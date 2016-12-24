@@ -34,8 +34,7 @@ private:
     int mPageNo;
 
     QVector< QPixmap > mPages;
-    QPixmap header_logo;
-    QPixmap footer_logo;
+    QPixmap logo;
 
     QString CompareWidth;
 

@@ -46,6 +46,9 @@ private slots:
     void on_bMark_clicked();
     void on_bTitleKKT_clicked();
 
+    //смена вкладок
+    void on_tMode_currentChanged(int index);
+
     //кнопки управления
     void on_bPumpOnOff_clicked(bool checked);
     void on_bResetOnOff_clicked(bool checked);
@@ -56,6 +59,10 @@ private slots:
     void on_bRegulatingOpen_clicked(bool checked);
 
     void onUpdateConnection( bool connected );
+
+
+    void on_eTestingMethod_activated(const QString &arg1);
+
 private:
     void closeEvent(QCloseEvent *e);
     void showEvent( QShowEvent *e );
@@ -75,10 +82,9 @@ private:
     Ui::MainWindow *ui;
     ChildPtr mChildWindow;
     //Поток обновления данных датчиков
-    ControlsUpdater Updater;
-    test::InsidePressure mTest;
+    ControlsUpdater Updater;   
     app::StringsSource mTitleTire;
     app::StringsSource mTitleModel;
     app::StringsSource mMark;
-    app::StringsSource mTitleKKT;    
+    app::StringsSource mTitleKKT;        
 };

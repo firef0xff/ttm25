@@ -193,6 +193,4 @@ void TestCommonData::ShowErrors( QString const& err )
     mCondVar.notify_one();
 }
 
-
-
 }

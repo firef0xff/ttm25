@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QLocale>
 #include <QTextDocument>
+#include <QAbstractTextDocumentLayout>
 #include "test.h"
 
 namespace test
@@ -15,7 +16,7 @@ namespace
 {
 Parameters p;
 }//namespace
-Parameters& CURRENT_PARAMS = p;
+Parameters* CURRENT_PARAMS = &p;
 
 bool ParseValue ( qint32& param, QString const& val )
 {
@@ -53,31 +54,27 @@ QString ToString( double const& v )
     return QString::number( v ).replace( ".", decimalsep );
 }
 
-std::vector<Test*> Tests()
-{
-#warning TODO
-    return std::vector<Test*>();
-}
 
 Parameters::Parameters():
-    mTestCase(),
-    mDefaultExpenditure( 0.0 )
+    mTestForExec(),
+    mTests()
+{}
+Parameters::~Parameters()
 {}
 void Parameters::Reset()
 {
-    mTestCase = nullptr;
+    mTestForExec = nullptr;
     mUser.clear();
     mDate = QDateTime();
-    mDefaultExpenditure = 0.0;
 }
 
-void Parameters::TestCase ( Test& test_case)
+void Parameters::TestForExec ( Test& test_case)
 {
-    mTestCase = &test_case;
+    mTestForExec = &test_case;
 }
-Test* Parameters::TestCase () const
+Test* Parameters::TestForExec () const
 {
-    return mTestCase;
+    return mTestForExec;
 }
 
 void Parameters::Date( QDateTime const& data )
@@ -98,36 +95,16 @@ QString const& Parameters::User()
     return mUser;
 }
 
-void Parameters::ReportType( QString const& val )
-{
-    mReportType = val;
-}
-QString const& Parameters::ReportType()
-{
-    return mReportType;
-}
-
-bool Parameters::DefaultExpenditure( QString const& value )
-{
-    return ParseValue( mDefaultExpenditure, value );
-}
-const double &Parameters::DefaultExpenditure() const
-{
-    return mDefaultExpenditure;
-}
-
 QJsonObject Parameters::Serialise() const
 {
     QJsonObject obj;
     QJsonArray tests;
-    if (mTestCase)
-        tests.push_back( mTestCase->ID() );
+    if (mTestForExec)
+        tests.push_back( mTestForExec->ID() );
 
-    obj.insert("TestCase", tests);
+    obj.insert("TestForExec", tests);
     obj.insert("Date", mDate.toString(Qt::ISODate));
     obj.insert("User", mUser);
-    obj.insert("ReportType", mReportType);
-    obj.insert("DefaultExpenditure", mDefaultExpenditure);
     return obj;
 }
 bool Parameters::Deserialize(const QJsonObject &obj )
@@ -139,13 +116,13 @@ bool Parameters::Deserialize(const QJsonObject &obj )
     foreach ( QJsonValue const& val, tests )
     {
         bool find = false;
-        for ( auto it = Tests().cbegin(), end = Tests().cend();
+        for ( auto it = TestsCase().cbegin(), end = TestsCase().cend();
               it != end && !find ; ++it)
         {
-            test::Test* ptr = *it;
-            if ( ptr->ID() == val.toInt() )
+            test::Test& ptr = *it->second;
+            if ( ptr.ID() == val.toInt() )
             {
-                mTestCase = ptr;
+                mTestForExec = &ptr;
                 find = true;
             }
         }
@@ -154,8 +131,6 @@ bool Parameters::Deserialize(const QJsonObject &obj )
 
     mDate = QDateTime::fromString( obj.value("Date").toString(), Qt::ISODate );
     mUser = obj.value("User").toString();
-    mReportType = obj.value("ReportType").toString();
-    mDefaultExpenditure = obj.value("DefaultExpenditure").toDouble();
 
     return res;
 }
@@ -166,32 +141,38 @@ void Parameters::StendInit() const
 }
 void Parameters::StendDeInit() const
 {}
+void Parameters::WriteToController() const
+{}
 
-bool Parameters::Draw(QPainter &painter, QRect &free_rect, QString const& compare_width ) const
+bool Parameters::Draw(QPainter &/*painter*/, QRect &/*free_rect*/, QString const& /*compare_width*/ ) const
 {
-    QFont text_font = painter.font();
-    text_font.setPointSize( 12 );
-    painter.setFont( text_font );
-
-    QRect r( 0, 0, free_rect.width(), free_rect.height() );
-    painter.save();
-    painter.translate( free_rect.topLeft() );
-    QTextDocument doc;
-    doc.setUndoRedoEnabled( false );
-    doc.setTextWidth( free_rect.width() );
-    doc.setUseDesignMetrics( true );
-    doc.setDefaultTextOption ( QTextOption (Qt::AlignLeft )  );
-    doc.setPlainText( ToString() );
-
-    doc.drawContents( &painter, r );
-
-    painter.restore();
+    return true;
+}
+bool Parameters::DrawResults(QPainter &/*painter*/, QRect &/*free_rect*/ ) const
+{
     return true;
 }
 
-QString Parameters::ModelId() const
+QString Parameters::ToString() const
 {
-    return "";
+    QString res;
+    res += "Дата проведения испытания: ";
+    res += mDate.toString("dd MMMM yyyy г. hh:mm");
+    res += "\n";
+    res += "Испытатель:";
+    res += mUser;
+    res += "\n";
+    return res;
+}
+
+void Parameters::AddTest( Parameters::TestPtr t)
+{
+    auto id = t->ID();
+    mTests.insert( std::pair<int32_t, Parameters::TestPtr >( id, std::move(t)));
+}
+Parameters::TestCase const& Parameters::TestsCase()
+{
+    return mTests;
 }
 
 void ParamsToFile( QString fname )
@@ -199,7 +180,7 @@ void ParamsToFile( QString fname )
     QFile f( fname );
     f.open(QIODevice::WriteOnly);
     QJsonDocument doc;
-    doc.setObject( CURRENT_PARAMS.Serialise() );
+    doc.setObject( CURRENT_PARAMS->Serialise() );
 
     f.write( doc.toJson() );
 
@@ -215,7 +196,7 @@ Parameters* ParamsFromFile( QString fname )
         auto doc = QJsonDocument::fromJson( f.readAll() );
         QJsonObject obj = doc.object();
 
-        CURRENT_PARAMS.Deserialize( obj );
+        CURRENT_PARAMS->Deserialize( obj );
         f.close();
     }
 
@@ -232,7 +213,6 @@ void DataToFile( QString fname, Parameters const& params )
 
     f.close();
 }
-
 bool DataFromFile( QString fname )
 {
     QFile f( fname );
@@ -243,16 +223,16 @@ bool DataFromFile( QString fname )
         QJsonObject params = doc.object().value("Params").toObject();
         QJsonArray tests_data = doc.object().value("Results").toArray();
 
-        CURRENT_PARAMS.Deserialize( params );
+        CURRENT_PARAMS->Deserialize( params );
 
         foreach (QJsonValue const& val, tests_data)
         {
             QJsonObject obj = val.toObject();
             uint8_t id = obj.value("id").toInt();
             QJsonObject data = obj.value("data").toObject();
-            if ( CURRENT_PARAMS.TestCase()->ID() != id )
+            if ( CURRENT_PARAMS->TestForExec()->ID() != id )
                 return false;
-            CURRENT_PARAMS.TestCase()->Deserialize( data );
+            CURRENT_PARAMS->TestForExec()->Deserialize( data );
         }
         f.close();
     }
@@ -266,7 +246,7 @@ QJsonObject GetTestData( Parameters const& params )
     data.insert( "Params", params.Serialise() );
 
     QJsonArray tests_data;
-    Test *d = params.TestCase();
+    Test *d = params.TestForExec();
     QJsonObject obj;
     obj.insert("id", d->ID() );
     obj.insert("data", d->Serialise() );
@@ -274,19 +254,6 @@ QJsonObject GetTestData( Parameters const& params )
 
     data.insert( "Results", tests_data );
     return data;
-}
-
-void SaveToEtalone( const Parameters &params )
-{
-    auto obj = ReadFromEtalone();
-    obj.insert( params.ModelId(), GetTestData(params) );
-    QFile f( "models.json" );
-    f.open(QIODevice::WriteOnly);
-    QJsonDocument doc;
-    doc.setObject( obj );
-    f.write( doc.toJson() );
-
-    f.close();
 }
 
 QJsonObject ReadFromFile( QString const& f_name )
@@ -302,11 +269,6 @@ QJsonObject ReadFromFile( QString const& f_name )
     }
 
     return QJsonObject();
-}
-
-QJsonObject ReadFromEtalone()
-{    
-    return ReadFromFile( "models.json" );
 }
 
 }//namespace test

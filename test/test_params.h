@@ -2,7 +2,7 @@
 #include <QString>
 #include <QPainter>
 #include <QDateTime>
-
+#include <memory>
 namespace test
 {
 
@@ -19,36 +19,28 @@ class Parameters
 {
 public:
     Parameters();
-    virtual ~Parameters(){}
-    virtual QString ToString() const
-    {
-#warning TODO
-        return QString();
-    }
+    virtual ~Parameters();
+    virtual QString ToString() const;
 
     virtual QJsonObject Serialise() const;
     virtual bool Deserialize( QJsonObject const& obj );
 
     virtual void StendInit() const;
     virtual void StendDeInit() const;
-    virtual void WriteToController() const
-    {
-#warning TODO
-    }
+    virtual void WriteToController() const;
 
     virtual bool Draw(QPainter &painter, QRect &free_rect , const QString &compare_width) const;
-    virtual bool DrawResults(QPainter &/*painter*/, QRect &/*free_rect*/ ) const
-    { return true; }
+    virtual bool DrawResults(QPainter &/*painter*/, QRect &/*free_rect*/ ) const;
+
     virtual bool HasResults()
     {
         return false;
     }
 
-    virtual QString ModelId() const;
-    void Reset();
+    virtual void Reset();
 
-    void TestCase (Test &test_case);
-    Test* TestCase () const;
+    void TestForExec (Test &test_case);
+    Test* TestForExec () const;
 
     void Date( QDateTime const& date );
     QDateTime const& Date();
@@ -56,25 +48,20 @@ public:
     void User( QString const& user );
     QString const& User();
 
-    void ReportType(QString const& val );
-    QString const& ReportType();
+    typedef std::unique_ptr<test::Test> TestPtr;
+    typedef std::map< int32_t, std::unique_ptr<test::Test> > TestCase;
 
-    bool DefaultExpenditure( QString const& value );
-    double const& DefaultExpenditure() const;
-
+    void AddTest( TestPtr t);
+    TestCase const& TestsCase();
 protected:
 
-    Test* mTestCase;        //тест для выполнения
+    Test* mTestForExec;        //тест для выполнения
     QDateTime mDate;            //дата проведения испытаний
     QString   mUser;            //испытатель.
-    QString   mReportType;      //тип отчета.
-
-    double mDefaultExpenditure; //расход по умолчанию
+    TestCase mTests;
 };
 
-std::vector<Test*> Tests();
-
-extern Parameters& CURRENT_PARAMS;
+extern Parameters* CURRENT_PARAMS;
 
 void ParamsToFile(QString fname);
 Parameters* ParamsFromFile( QString fname );
@@ -84,8 +71,7 @@ bool DataFromFile( QString fname );
 
 QJsonObject GetTestData(const Parameters &params);
 
-void SaveToEtalone( const Parameters &params );
+
 QJsonObject ReadFromFile( QString const& f_name );
-QJsonObject ReadFromEtalone();
 
 }//namespace test

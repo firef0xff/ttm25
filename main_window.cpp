@@ -6,17 +6,25 @@
 #include "test/test_params.h"
 #include "settings/textitem.h"
 #include <functional>
+#include "test/impl/work_params.h"
+#include "test/impl/attestation_params.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow),
-    mTest( std::bind( &MainWindow::RepaintGraph, this ) ),
+    ui(new Ui::MainWindow),  
     mTitleTire( "tires_mark.json" ),
     mTitleModel( "models.json" ),
     mMark( "marks.json" ),
     mTitleKKT( "kkt.json" )
 {
-    ui->setupUi(this);    
+    ui->setupUi(this);
+
+    auto f = std::bind( &MainWindow::RepaintGraph, this );
+    auto & wp = test::WorkParams::Instance();
+    wp.AddTest( std::unique_ptr<test::Test>( new test::MI5C_2006(f) ) );
+    wp.AddTest( std::unique_ptr<test::Test>( new test::M24_82(f) ) );
+    wp.AddTest( std::unique_ptr<test::Test>( new test::EK_OON_106(f) ) );
+    wp.AddTest( std::unique_ptr<test::Test>( new test::M2_2006(f) ) );
 
     SourceToControl( *ui->eTitleTire, mTitleTire );
     SourceToControl( *ui->eTitleKKT, mTitleKKT );
@@ -26,10 +34,8 @@ MainWindow::MainWindow(QWidget *parent) :
     InitUiControls();
 
     QObject::connect( &Updater, SIGNAL(update()), this, SLOT(onUpdateControls()) ); 
-    test::CURRENT_PARAMS.TestCase( mTest );
 
-    SynkControls();
-    Updater.start();
+    on_tMode_currentChanged( ui->tMode->currentIndex() );
 }
 
 MainWindow::~MainWindow()
@@ -98,9 +104,11 @@ void MainWindow::RepaintGraph()
     font.setPointSize(12);
     auto r = pixmap.rect();
     painter.fillRect( r, Qt::white );
-    mTest.PaintGraph( painter, font, pixmap.rect(), "", 1,
-                      static_cast<test::InsidePressure::PressureUnits>( ui->puUnits->currentIndex() ),
-                      static_cast<test::InsidePressure::TimeUnits>( ui->tuUnits->currentIndex() ) );
+    auto* ptr = static_cast<test::M2_2006*>( test::WorkParams::Instance().TestForExec() );
+    if ( ptr )
+        ptr->PaintGraph( painter, font, pixmap.rect(), "", 1,
+                          static_cast<test::M2_2006::PressureUnits>( ui->puUnits->currentIndex() ),
+                          static_cast<test::M2_2006::TimeUnits>( ui->tuUnits->currentIndex() ) );
     ui->Graph->setScaledContents( true );
     ui->Graph->setPixmap( pixmap );
     ui->Graph->setMinimumSize( 10, 10 );
@@ -168,4 +176,36 @@ void MainWindow::AddItem( QComboBox& combo, app::StringsSource& source )
         source.Save();
         SourceToControl( combo, source );
     }) ) );
+}
+
+void MainWindow::on_tMode_currentChanged(int index)
+{
+    Updater.stop();
+    switch (index)
+    {
+    case 0:
+        test::CURRENT_PARAMS = &test::WorkParams::Instance();
+        SynkControls();
+        Updater.start();
+        break;
+    case 1:
+        test::CURRENT_PARAMS = &test::AttestationParams::Instance();
+        break;
+    default:
+        break;
+    }
+}
+
+void MainWindow::on_eTestingMethod_activated(const QString &arg1)
+{
+    auto& params = test::WorkParams::Instance();
+    for ( auto it = params.TestsCase().begin(), end = params.TestsCase().end(); it != end; ++it )
+    {
+        auto & test = *it->second;
+        if ( test.Name() == arg1 )
+        {
+            params.TestForExec( test );
+            break;
+        }
+    }
 }
