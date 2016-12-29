@@ -12,7 +12,7 @@ bool ParseValue ( double &param, QString const& val );
 
 QString ToString( qint32 const& v );
 QString ToString( bool const& v );
-QString ToString( double const& v );
+QString ToString( double const& v, char f='g', int prec=6 );
 
 class Test;
 class Parameters

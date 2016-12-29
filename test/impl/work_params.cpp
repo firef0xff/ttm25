@@ -1,9 +1,11 @@
 #include "work_params.h"
+#include "../../cpu/cpu_memory.h"
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
 #include <memory>
 #include <mutex>
+
 
 namespace test
 {
@@ -32,7 +34,12 @@ WorkParams::WorkParams():
     mOrderNo(0),
     mTireNo(""),
     mBreakPressure(0),
-    mConstPressureTime(0)
+    mConstPressureTime(0),
+    mFrequency(0),
+    mPressure(0),
+    mExpenditure(0),
+    mPressureSpeed(0),
+    mVolume(0)
 {}
 WorkParams::~WorkParams()
 {}
@@ -48,6 +55,13 @@ void WorkParams::Reset()
     mTireNo = "";
     mBreakPressure = 0;
     mConstPressureTime = 0;
+
+
+    mFrequency = 0;
+    mPressure = 0;
+    mExpenditure = 0;
+    mPressureSpeed = 0;
+    mVolume = 0;
 }
 QString WorkParams::ToString() const
 {}
@@ -64,6 +78,12 @@ QJsonObject WorkParams::Serialise() const
     obj.insert("BreakPressure", mBreakPressure);
     obj.insert("ConstPressureTime", mConstPressureTime);
 
+    obj.insert("Frequency", mFrequency);
+    obj.insert("Pressure", mPressure);
+    obj.insert("Expenditure", mExpenditure);
+    obj.insert("PressureSpeed", mPressureSpeed);
+    obj.insert("Volume", mVolume);
+
     return obj;
 }
 bool WorkParams::Deserialize( QJsonObject const& obj )
@@ -75,7 +95,12 @@ bool WorkParams::Deserialize( QJsonObject const& obj )
             obj.contains("OrderNo") &&
             obj.contains("TireNo") &&
             obj.contains("BreakPressure") &&
-            obj.contains("ConstPressureTime");
+            obj.contains("ConstPressureTime")&&
+            obj.contains("Frequency")&&
+            obj.contains("Pressure")&&
+            obj.contains("Expenditure")&&
+            obj.contains("PressureSpeed")&&
+            obj.contains("Volume");
 
     if ( !res )
         return res;
@@ -88,11 +113,26 @@ bool WorkParams::Deserialize( QJsonObject const& obj )
     mTireNo = obj.value("TireNo").toInt();
     mBreakPressure = obj.value("BreakPressure").toDouble();
     mConstPressureTime = obj.value("ConstPressureTime").toInt();
+
+    mFrequency = obj.value("Frequency").toDouble();
+    mPressure = obj.value("Pressure").toDouble();
+    mExpenditure = obj.value("Expenditure").toDouble();
+    mPressureSpeed = obj.value("PressureSpeed").toDouble();
+    mVolume = obj.value("Volume").toDouble();
     return res;
 }
 
 void WorkParams::WriteToController() const
-{}
+{
+    auto& params = cpu::CpuMemory::Instance().Params;
+    params.Frequency( mFrequency );
+    params.Pressure( mPressure );
+    params.Expenditure( mExpenditure );
+    params.PressureSpeed( mPressureSpeed );
+    params.Volume( mVolume );
+
+    params.Write();
+}
 
 
 QString const& WorkParams::Model() const
@@ -158,6 +198,50 @@ void WorkParams::ConstPressureTime( QString const& val )
     ParseValue( mConstPressureTime, val );
 }
 
+double WorkParams::Frequency() const
+{
+    return mFrequency;
+}
+void WorkParams::Frequency( QString const& val )
+{
+    ParseValue( mFrequency, val );
+}
+
+double WorkParams::Pressure() const
+{
+    return mPressure;
+}
+void WorkParams::Pressure( QString const& val )
+{
+    ParseValue( mPressure, val );
+}
+
+double WorkParams::Expenditure() const
+{
+    return mExpenditure;
+}
+void WorkParams::Expenditure( QString const& val )
+{
+    ParseValue( mExpenditure, val );
+}
+
+double WorkParams::PressureSpeed() const
+{
+    return mPressureSpeed;
+}
+void WorkParams::PressureSpeed( QString const& val )
+{
+    ParseValue( mPressureSpeed, val );
+}
+
+double WorkParams::Volume() const
+{
+    return mVolume;
+}
+void WorkParams::Volume( QString const& val )
+{
+    ParseValue( mVolume, val );
+}
 
 }//namespace test
 

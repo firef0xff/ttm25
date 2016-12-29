@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>972</width>
-    <height>735</height>
+    <height>629</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -92,20 +92,6 @@
                   <number>0</number>
                  </property>
                  <item>
-                  <widget class="QLabel" name="label_13">
-                   <property name="text">
-                    <string>Частота вращения насоса, об/мин</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QSpinBox" name="spinBox">
-                   <property name="maximum">
-                    <number>9999999</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
                   <spacer name="horizontalSpacer_3">
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
@@ -175,7 +161,7 @@
                       </font>
                      </property>
                      <property name="text">
-                      <string>Q, см3/c</string>
+                      <string>Q, см3/cек</string>
                      </property>
                      <property name="alignment">
                       <set>Qt::AlignCenter</set>
@@ -251,22 +237,6 @@
                  </property>
                  <item>
                   <layout class="QGridLayout" name="gridLayout">
-                   <item row="2" column="2">
-                    <widget class="QPushButton" name="bFeedOnOff">
-                     <property name="toolTip">
-                      <string>W2.06/W2.07</string>
-                     </property>
-                     <property name="toolTipDuration">
-                      <number>500</number>
-                     </property>
-                     <property name="text">
-                      <string>Подача включить</string>
-                     </property>
-                     <property name="checkable">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
                    <item row="3" column="1">
                     <widget class="QPushButton" name="bAirOnOff">
                      <property name="toolTip">
@@ -277,22 +247,6 @@
                      </property>
                      <property name="text">
                       <string>Атмосфера включить</string>
-                     </property>
-                     <property name="checkable">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="1">
-                    <widget class="QPushButton" name="bResetOnOff">
-                     <property name="toolTip">
-                      <string>W2.04/W2.05</string>
-                     </property>
-                     <property name="toolTipDuration">
-                      <number>500</number>
-                     </property>
-                     <property name="text">
-                      <string>Сброс включить</string>
                      </property>
                      <property name="checkable">
                       <bool>true</bool>
@@ -360,6 +314,45 @@
                      </property>
                     </widget>
                    </item>
+                   <item row="2" column="2">
+                    <widget class="QPushButton" name="bResetOnOff">
+                     <property name="toolTip">
+                      <string>W2.04/W2.05</string>
+                     </property>
+                     <property name="toolTipDuration">
+                      <number>500</number>
+                     </property>
+                     <property name="text">
+                      <string>Сброс включить</string>
+                     </property>
+                     <property name="checkable">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="1">
+                    <widget class="QPushButton" name="bFeedOnOff">
+                     <property name="toolTip">
+                      <string>W2.06/W2.07</string>
+                     </property>
+                     <property name="toolTipDuration">
+                      <number>500</number>
+                     </property>
+                     <property name="text">
+                      <string>Подача включить</string>
+                     </property>
+                     <property name="checkable">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="3" column="0">
+                    <widget class="QPushButton" name="bParams">
+                     <property name="text">
+                      <string>Задать параметры</string>
+                     </property>
+                    </widget>
+                   </item>
                   </layout>
                  </item>
                  <item>
@@ -374,6 +367,12 @@
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
+                     </property>
+                     <property name="toolTip">
+                      <string>сигнализирует о движении заслокни клапана в положение &quot;открыто&quot;</string>
+                     </property>
+                     <property name="toolTipDuration">
+                      <number>1000</number>
                      </property>
                      <property name="text">
                       <string>ХО</string>
@@ -391,6 +390,12 @@
                        <verstretch>0</verstretch>
                       </sizepolicy>
                      </property>
+                     <property name="toolTip">
+                      <string>сигнализирует о достижении заслокни клапана положения &quot;закрыто&quot;</string>
+                     </property>
+                     <property name="toolTipDuration">
+                      <number>1000</number>
+                     </property>
                      <property name="text">
                       <string>КПЗ</string>
                      </property>
@@ -401,6 +406,12 @@
                    </item>
                    <item row="1" column="4">
                     <widget class="QLabel" name="label">
+                     <property name="toolTip">
+                      <string>индикатор включения двигателя насосной установки</string>
+                     </property>
+                     <property name="toolTipDuration">
+                      <number>1000</number>
+                     </property>
                      <property name="text">
                       <string>НВК</string>
                      </property>
@@ -416,6 +427,12 @@
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
+                     </property>
+                     <property name="toolTip">
+                      <string>сигнализирует об установлении разрешения режима местного управления в насосной установке</string>
+                     </property>
+                     <property name="toolTipDuration">
+                      <number>1000</number>
                      </property>
                      <property name="text">
                       <string>МУП</string>
@@ -433,6 +450,12 @@
                        <verstretch>0</verstretch>
                       </sizepolicy>
                      </property>
+                     <property name="toolTip">
+                      <string>сигнализирует о влючении двигателя насосной установки</string>
+                     </property>
+                     <property name="toolTipDuration">
+                      <number>1000</number>
+                     </property>
                      <property name="text">
                       <string>НВК</string>
                      </property>
@@ -448,6 +471,12 @@
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
+                     </property>
+                     <property name="toolTip">
+                      <string>сигнализирует о наличии питания блока управления и датчика давления</string>
+                     </property>
+                     <property name="toolTipDuration">
+                      <number>1000</number>
                      </property>
                      <property name="text">
                       <string>ПБУ</string>
@@ -465,6 +494,12 @@
                        <verstretch>0</verstretch>
                       </sizepolicy>
                      </property>
+                     <property name="toolTip">
+                      <string>сигнализирует о достижении заслокни клапана положения &quot;открыто&quot;</string>
+                     </property>
+                     <property name="toolTipDuration">
+                      <number>1000</number>
+                     </property>
                      <property name="text">
                       <string>КПО</string>
                      </property>
@@ -480,6 +515,12 @@
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
+                     </property>
+                     <property name="toolTip">
+                      <string>сигнализирует о нормальном уровне воды в баке</string>
+                     </property>
+                     <property name="toolTipDuration">
+                      <number>1000</number>
                      </property>
                      <property name="text">
                       <string>УВН</string>
@@ -497,6 +538,12 @@
                        <verstretch>0</verstretch>
                       </sizepolicy>
                      </property>
+                     <property name="toolTip">
+                      <string>Сигнализирует о минимальном уровне воды в баке</string>
+                     </property>
+                     <property name="toolTipDuration">
+                      <number>1000</number>
+                     </property>
                      <property name="text">
                       <string>УВМ</string>
                      </property>
@@ -512,6 +559,12 @@
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
+                     </property>
+                     <property name="toolTip">
+                      <string>сигнализирует о движении заслокни клапана в положение &quot;закрыто&quot;</string>
+                     </property>
+                     <property name="toolTipDuration">
+                      <number>1000</number>
                      </property>
                      <property name="text">
                       <string>ХЗ</string>
@@ -532,6 +585,12 @@
                        <verstretch>0</verstretch>
                       </sizepolicy>
                      </property>
+                     <property name="toolTip">
+                      <string>Проверка звонка насосной установки</string>
+                     </property>
+                     <property name="toolTipDuration">
+                      <number>1000</number>
+                     </property>
                      <property name="text">
                       <string>ЗВН</string>
                      </property>
@@ -542,6 +601,12 @@
                    </item>
                    <item row="0" column="5">
                     <widget class="QLabel" name="lConnect">
+                     <property name="toolTip">
+                      <string>сигнализирует о наличии связи с утановкой</string>
+                     </property>
+                     <property name="toolTipDuration">
+                      <number>1000</number>
+                     </property>
                      <property name="text">
                       <string>ЦПУ</string>
                      </property>
@@ -695,54 +760,51 @@
                 <layout class="QGridLayout" name="gridLayout_2">
                  <item row="0" column="0" colspan="4">
                   <layout class="QGridLayout" name="gridLayout_3">
-                   <item row="1" column="0">
-                    <widget class="QLabel" name="lTitleModel">
-                     <property name="text">
-                      <string>Обозначение модели</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="1">
-                    <widget class="QComboBox" name="eTitleKKT"/>
-                   </item>
                    <item row="2" column="0">
-                    <widget class="QLabel" name="lTitleKKT">
-                     <property name="text">
-                      <string>Обозначение ККТ</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="1">
-                    <widget class="QComboBox" name="eTitleModel"/>
-                   </item>
-                   <item row="4" column="0">
                     <widget class="QLabel" name="lTestingMethod">
                      <property name="text">
                       <string>Методика испытаний</string>
                      </property>
                     </widget>
                    </item>
-                   <item row="3" column="2">
-                    <widget class="QToolButton" name="bMark">
+                   <item row="1" column="1">
+                    <widget class="QComboBox" name="eTitleModel"/>
+                   </item>
+                   <item row="1" column="0">
+                    <widget class="QLabel" name="lTitleModel">
+                     <property name="text">
+                      <string>Модель</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QComboBox" name="eTitleTire">
                      <property name="enabled">
-                      <bool>false</bool>
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="2">
+                    <widget class="QToolButton" name="bTitleTire">
+                     <property name="enabled">
+                      <bool>true</bool>
                      </property>
                      <property name="text">
                       <string>...</string>
                      </property>
                     </widget>
                    </item>
-                   <item row="3" column="0">
-                    <widget class="QLabel" name="lMark">
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="lTitleTire">
                      <property name="enabled">
-                      <bool>false</bool>
+                      <bool>true</bool>
                      </property>
                      <property name="text">
-                      <string>Маркировка</string>
+                      <string>Типоразмер</string>
                      </property>
                     </widget>
                    </item>
-                   <item row="4" column="1">
+                   <item row="2" column="1">
                     <widget class="QComboBox" name="eTestingMethod">
                      <property name="currentIndex">
                       <number>-1</number>
@@ -769,23 +831,6 @@
                      </item>
                     </widget>
                    </item>
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="lTitleTire">
-                     <property name="enabled">
-                      <bool>false</bool>
-                     </property>
-                     <property name="text">
-                      <string>Обозначение шины</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="3" column="1">
-                    <widget class="QComboBox" name="eMark">
-                     <property name="enabled">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
                    <item row="1" column="2">
                     <widget class="QToolButton" name="bTitleModel">
                      <property name="text">
@@ -793,240 +838,24 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="0" column="2">
-                    <widget class="QToolButton" name="bTitleTire">
-                     <property name="enabled">
-                      <bool>false</bool>
-                     </property>
-                     <property name="text">
-                      <string>...</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="2">
-                    <widget class="QToolButton" name="bTitleKKT">
-                     <property name="text">
-                      <string>...</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="1">
-                    <widget class="QComboBox" name="eTitleTire">
-                     <property name="enabled">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
                   </layout>
                  </item>
                  <item row="4" column="0" colspan="4">
                   <layout class="QGridLayout" name="gridLayout_6">
-                   <item row="7" column="0">
-                    <widget class="QLabel" name="lMP">
-                     <property name="text">
-                      <string>Максимальное давления для обода, МПа</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="9" column="0">
-                    <widget class="QLabel" name="lTWP">
-                     <property name="text">
-                      <string>Время выдержки под давлением, мин</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="11" column="0">
-                    <widget class="QLabel" name="lBP">
-                     <property name="text">
-                      <string>Давление разрушения, МПа</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="4" column="0">
-                    <widget class="QLabel" name="lTemperature">
+                   <item row="1" column="0">
+                    <widget class="QLabel" name="lOrderNumber">
                      <property name="enabled">
-                      <bool>false</bool>
+                      <bool>true</bool>
                      </property>
-                     <property name="text">
-                      <string>Температура в помещении, С</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="10" column="1">
-                    <widget class="QLineEdit" name="eNP">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="1">
-                    <widget class="QLineEdit" name="eManufaktureNumber">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="8" column="1">
-                    <widget class="QCheckBox" name="eTUB">
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="tristate">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="4" column="1">
-                    <widget class="QSpinBox" name="eTemperature">
-                     <property name="enabled">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="6" column="1">
-                    <widget class="QLineEdit" name="eCBP">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="lManufaktureNumber">
                      <property name="frameShape">
                       <enum>QFrame::NoFrame</enum>
                      </property>
                      <property name="text">
-                      <string>Заводской номер</string>
+                      <string>Номер заказа</string>
                      </property>
                     </widget>
                    </item>
-                   <item row="8" column="0">
-                    <widget class="QLabel" name="lTUB">
-                     <property name="text">
-                      <string>Проводить испытания до разрушения</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="10" column="0">
-                    <widget class="QLabel" name="lNP">
-                     <property name="text">
-                      <string>Норматив, МПа</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="3" column="0">
-                    <widget class="QLabel" name="lMass">
-                     <property name="enabled">
-                      <bool>false</bool>
-                     </property>
-                     <property name="text">
-                      <string>Масса, кг</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="11" column="1">
-                    <widget class="QLineEdit" name="eBP">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="6" column="0">
-                    <widget class="QLabel" name="lCBP">
-                     <property name="text">
-                      <string>Контрольно - разрушаюшее давление, МПа</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="3" column="1">
-                    <widget class="QLineEdit" name="eMass">
-                     <property name="enabled">
-                      <bool>false</bool>
-                     </property>
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="1">
-                    <widget class="QLineEdit" name="eTPNumbet">
-                     <property name="enabled">
-                      <bool>false</bool>
-                     </property>
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="0">
-                    <widget class="QLabel" name="lSerialNumber">
-                     <property name="frameShadow">
-                      <enum>QFrame::Plain</enum>
-                     </property>
-                     <property name="text">
-                      <string>Порядковый номер</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="9" column="1">
-                    <widget class="QSpinBox" name="eTWP"/>
-                   </item>
-                   <item row="2" column="0">
-                    <widget class="QLabel" name="lTPNumbet">
-                     <property name="enabled">
-                      <bool>false</bool>
-                     </property>
-                     <property name="text">
-                      <string>Номер ТП</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="7" column="1">
-                    <widget class="QLineEdit" name="eMP">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="5" column="0" colspan="2">
-                    <widget class="Line" name="line">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="1">
-                    <widget class="QLineEdit" name="eSerialNumber">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="12" column="0">
+                   <item row="11" column="0">
                     <widget class="QLabel" name="lTFV">
                      <property name="frameShape">
                       <enum>QFrame::NoFrame</enum>
@@ -1036,8 +865,135 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="12" column="1">
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="lCustomer">
+                     <property name="enabled">
+                      <bool>true</bool>
+                     </property>
+                     <property name="text">
+                      <string>Заказчик</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="8" column="1">
+                    <widget class="QLineEdit" name="ePressure"/>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QLineEdit" name="eCustomer">
+                     <property name="enabled">
+                      <bool>true</bool>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="9" column="1">
+                    <widget class="QLineEdit" name="ePressureSpeed"/>
+                   </item>
+                   <item row="1" column="1">
+                    <widget class="QLineEdit" name="eOrderNumber">
+                     <property name="enabled">
+                      <bool>true</bool>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="10" column="1">
+                    <widget class="QLineEdit" name="eExpenditure"/>
+                   </item>
+                   <item row="6" column="0" colspan="2">
+                    <widget class="Line" name="line">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="7" column="0">
+                    <widget class="QLabel" name="lFRP">
+                     <property name="text">
+                      <string>Частота вращения насоса, %</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="7" column="1">
+                    <widget class="QSpinBox" name="eFRP">
+                     <property name="maximum">
+                      <number>100</number>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="0" rowspan="2">
+                    <widget class="QLabel" name="lSerialNumber">
+                     <property name="frameShadow">
+                      <enum>QFrame::Plain</enum>
+                     </property>
+                     <property name="text">
+                      <string>Порядковый номер изделия</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="11" column="1">
                     <widget class="QLineEdit" name="eTFV"/>
+                   </item>
+                   <item row="2" column="1" rowspan="2">
+                    <widget class="QLineEdit" name="eSerialNumber">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="4" column="0">
+                    <widget class="QLabel" name="lBreakPressure">
+                     <property name="text">
+                      <string>Разрушающее давление, МПа</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="9" column="0">
+                    <widget class="QLabel" name="lPressureSpeed">
+                     <property name="text">
+                      <string>Скорость нарастания давления, МПа/сек</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="8" column="0">
+                    <widget class="QLabel" name="lPressure_2">
+                     <property name="text">
+                      <string>Давление, МПа</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="4" column="1">
+                    <widget class="QLineEdit" name="eBreakPressure"/>
+                   </item>
+                   <item row="10" column="0">
+                    <widget class="QLabel" name="lExpenditure_2">
+                     <property name="text">
+                      <string>Расход, см3/сек</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="5" column="0">
+                    <widget class="QLabel" name="lConstPressureTime">
+                     <property name="text">
+                      <string>Поддержание постоянного давления, мин</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="5" column="1">
+                    <widget class="QLineEdit" name="eConstPressureTime"/>
                    </item>
                   </layout>
                  </item>

@@ -4,6 +4,7 @@
 #include "cpu/net_connection.h"
 
 #include "test/test_params.h"
+#include "test/impl/work_params.h"
 
 #include <QLabel>
 #include <QAbstractButton>
@@ -109,10 +110,18 @@ void MainWindow::UpdateMarks()
 void MainWindow::UpdateData()
 {
     auto & sensors = cpu::CpuMemory::Instance().Sensors;
-    ui->lPressure->setText( test::ToString( sensors.Pressure() ) );
-    ui->lVolume->setText( test::ToString( sensors.Volume() ) );
-    ui->lExpenditure->setText( test::ToString( sensors.Expenditure() ) );
-    ui->lTime->setText( test::ToString( sensors.Time() ) );
+    QString text;
+    text.sprintf("%07.2f", sensors.Pressure());
+    ui->lPressure->setText( text );
+    text.clear();
+    text.sprintf("%07.2f", sensors.Volume());
+    ui->lVolume->setText( text );
+    text.clear();
+    text.sprintf("%07.2f", sensors.Expenditure());
+    ui->lExpenditure->setText( text );
+    text.clear();
+    text.sprintf("%07.0f", sensors.Time());
+    ui->lTime->setText( text );
 }
 
 void MainWindow::on_bRegulatingClose_clicked(bool checked)
@@ -172,4 +181,38 @@ void MainWindow::on_bVacuumOnOff_clicked(bool checked)
     auto lock = controls.Locker();
     controls.VacuumOnOff( checked );
     controls.Write();
+}
+
+
+//управление параметрами
+void MainWindow::on_bParams_clicked()
+{
+    SaveParams();
+    test::CURRENT_PARAMS->WriteToController();
+}
+
+void MainWindow::SaveParams()
+{
+#warning TODO Добавить проверки и код для загрузки из файла
+
+    auto &params = test::WorkParams::Instance();
+    test::CURRENT_PARAMS = &params;
+
+    params.Model( ui->eTitleModel->currentText() );
+    params.Size( ui->eTitleTire->currentText() );
+    params.Customer( ui->eCustomer->text() );
+    params.OrderNo( ui->eOrderNumber->text() );
+    params.TireNo( ui->eSerialNumber->text() );
+
+    params.BreakPressure( ui->eBreakPressure->text() );
+    params.ConstPressureTime( ui->eConstPressureTime->text() );
+
+    params.Date( QDateTime::currentDateTime() );
+
+    params.Frequency( ui->eFRP->text() );
+    params.Pressure( ui->ePressure->text() );
+    params.PressureSpeed( ui->ePressureSpeed->text() );
+    params.Expenditure( ui->eExpenditure->text() );
+    params.Volume( ui->eTFV->text() );
+
 }

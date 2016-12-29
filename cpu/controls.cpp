@@ -9,7 +9,7 @@ namespace data
 {
 
 Controls::Controls():
-    mAddr(2,0)
+    mAddr(0,0)
 {
     Reset();
 }
@@ -30,92 +30,92 @@ void Controls::Read()
 void Controls::Reset()
 {
     mData.clear();
-    fins::AddElement< fins::BOOL >( mData, &W2_00, false );
-    fins::AddElement< fins::BOOL >( mData, &W2_01, false );
+    fins::AddElement< fins::BOOL >( mData, &H0_00, false );
+    fins::AddElement< fins::BOOL >( mData, &H0_01, false );
 
-    fins::AddElement< fins::BOOL >( mData, &W2_02, false );
-    fins::AddElement< fins::BOOL >( mData, &W2_03, false );
+    fins::AddElement< fins::BOOL >( mData, &H0_02, false );
+    fins::AddElement< fins::BOOL >( mData, &H0_03, false );
 
-    fins::AddElement< fins::BOOL >( mData, &W2_04, false );
-    fins::AddElement< fins::BOOL >( mData, &W2_05, false );
+    fins::AddElement< fins::BOOL >( mData, &H0_04, false );
+    fins::AddElement< fins::BOOL >( mData, &H0_05, false );
 
-    fins::AddElement< fins::BOOL >( mData, &W2_06, false );
-    fins::AddElement< fins::BOOL >( mData, &W2_07, false );
+    fins::AddElement< fins::BOOL >( mData, &H0_06, false );
+    fins::AddElement< fins::BOOL >( mData, &H0_07, false );
 
-    fins::AddElement< fins::BOOL >( mData, &W2_08, false );
-    fins::AddElement< fins::BOOL >( mData, &W2_09, false );
+    fins::AddElement< fins::BOOL >( mData, &H0_08, false );
+    fins::AddElement< fins::BOOL >( mData, &H0_09, false );
 
-    fins::AddElement< fins::BOOL >( mData, &W2_10, false );
-    fins::AddElement< fins::BOOL >( mData, &W2_11, false );
+    fins::AddElement< fins::BOOL >( mData, &H0_10, false );
+    fins::AddElement< fins::BOOL >( mData, &H0_11, false );
 }
 
 void Controls::PumpOnOff( bool v )
 {
-    *W2_00 = v;
+    *H0_00 = v;
 }
 bool Controls::PumpOnOff() const
 {
-    return *W2_00;
+    return *H0_00;
 }
 
 void Controls::RegulatingOpen( bool v )
 {
-    *W2_03 = v;
+    *H0_03 = v;
 }
 bool Controls::RegulatingOpen() const
 {
-    return *W2_03;
+    return *H0_03;
 }
 
 void Controls::RegulatingClose( bool v )
 {
-    *W2_02 = v;
+    *H0_02 = v;
 }
 bool Controls::RegulatingClose() const
 {
-    return *W2_02;
+    return *H0_02;
 }
 
 void Controls::ResetOnOff( bool v )
 {
-    *W2_04 = v;
-    *W2_05 = !v;
+    *H0_04 = v;
+    *H0_05 = !v;
 }
 bool Controls::ResetOnOff() const
 {
-    return *W2_04 &&  !*W2_05;
+    return *H0_04 &&  !*H0_05;
 }
 
 void Controls::FeedOnOff( bool v )
 {
-    *W2_06 = v;
-    *W2_07 = !v;
+    *H0_06 = v;
+    *H0_07 = !v;
 }
 bool Controls::FeedOnOff() const
 {
-    return *W2_06 &&  !*W2_07;
+    return *H0_06 &&  !*H0_07;
 }
 
 void Controls::AirOnOff( bool v )
 {
-    *W2_08 = v;
-    *W2_09 = !v;
+    *H0_08 = v;
+    *H0_09 = !v;
 
 }
 bool Controls::AirOnOff() const
 {
-    return *W2_08 && !*W2_09;
+    return *H0_08 && !*H0_09;
 }
 
 void Controls::VacuumOnOff( bool v )
 {
-    *W2_10 = v;
-    *W2_11 = !v;
+    *H0_10 = v;
+    *H0_11 = !v;
 
 }
 bool Controls::VacuumOnOff() const
 {
-    return *W2_10 && !*W2_11;
+    return *H0_10 && !*H0_11;
 }
 
 std::unique_lock< std::recursive_mutex > Controls::Locker()

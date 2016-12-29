@@ -43,8 +43,6 @@ private slots:
     void on_tuUnits_currentIndexChanged(int index);
     void on_bTitleTire_clicked();
     void on_bTitleModel_clicked();
-    void on_bMark_clicked();
-    void on_bTitleKKT_clicked();
 
     //смена вкладок
     void on_tMode_currentChanged(int index);
@@ -63,6 +61,8 @@ private slots:
 
     void on_eTestingMethod_activated(const QString &arg1);
 
+    void on_bParams_clicked();
+
 private:
     void closeEvent(QCloseEvent *e);
     void showEvent( QShowEvent *e );
@@ -78,6 +78,7 @@ private:
     void UpdateData();
     void InitUiControls();
 
+    void SaveParams();
 
     Ui::MainWindow *ui;
     ChildPtr mChildWindow;

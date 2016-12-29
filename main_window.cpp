@@ -27,9 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
     wp.AddTest( std::unique_ptr<test::Test>( new test::M2_2006(f) ) );
 
     SourceToControl( *ui->eTitleTire, mTitleTire );
-    SourceToControl( *ui->eTitleKKT, mTitleKKT );
     SourceToControl( *ui->eTitleModel, mTitleModel);
-    SourceToControl( *ui->eMark, mMark );
 
     InitUiControls();
 
@@ -158,14 +156,6 @@ void MainWindow::on_bTitleModel_clicked()
 {
     AddItem( *ui->eTitleModel, mTitleModel);
 }
-void MainWindow::on_bMark_clicked()
-{
-    AddItem( *ui->eMark, mMark );
-}
-void MainWindow::on_bTitleKKT_clicked()
-{
-    AddItem( *ui->eTitleKKT, mTitleKKT );
-}
 
 void MainWindow::AddItem( QComboBox& combo, app::StringsSource& source )
 {
@@ -195,7 +185,6 @@ void MainWindow::on_tMode_currentChanged(int index)
         break;
     }
 }
-
 void MainWindow::on_eTestingMethod_activated(const QString &arg1)
 {
     auto& params = test::WorkParams::Instance();
@@ -209,3 +198,4 @@ void MainWindow::on_eTestingMethod_activated(const QString &arg1)
         }
     }
 }
+

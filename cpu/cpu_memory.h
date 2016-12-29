@@ -1,7 +1,7 @@
 #pragma once
 #include "controls.h"
 #include "sensors.h"
-
+#include "params.h"
 namespace cpu
 {
 
@@ -13,7 +13,7 @@ public:
 
     data::Controls Controls;    //Управление стендом
     data::Sensors Sensors;      //Датчики стенда
-
+    data::Params Params;        //параметры проведения испытаний
 private:
     CpuMemory();
     CpuMemory( CpuMemory const& ) = delete;

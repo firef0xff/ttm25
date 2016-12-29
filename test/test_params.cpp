@@ -48,10 +48,10 @@ QString ToString( bool const& v )
         return QString( "Да" );
     return QString( "Нет" );
 }
-QString ToString( double const& v )
+QString ToString(double const& v , char f, int prec)
 {
     QChar const decimalsep = QLocale::system().decimalPoint();
-    return QString::number( v ).replace( ".", decimalsep );
+    return QString::number( v, f, prec ).replace( ".", decimalsep );
 }
 
 

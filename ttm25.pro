@@ -54,7 +54,8 @@ SOURCES += main.cpp\
     cpu/net_connection.cpp \
     cpu/sensors.cpp \
     test/impl/work_params.cpp \
-    test/impl/attestation_params.cpp
+    test/impl/attestation_params.cpp \
+    cpu/params.cpp
 
 HEADERS  += main_window.h \
     communication/fins/endpoint.h \
@@ -94,7 +95,8 @@ HEADERS  += main_window.h \
     cpu/net_connection.h \
     cpu/sensors.h \
     test/impl/work_params.h \
-    test/impl/attestation_params.h
+    test/impl/attestation_params.h \
+    cpu/params.h
 
 FORMS    += main_window.ui\
             test/viewer.ui\

@@ -45,23 +45,23 @@ public:
 
     std::unique_lock<std::recursive_mutex> Locker();
 protected:
-    bool* W2_00;    //насос вкл/выкл
-    bool* W2_01;    //резерв
+    bool* H0_00;    //насос вкл/выкл
+    bool* H0_01;    //резерв
 
-    bool* W2_02;    //регулирующий закрыть
-    bool* W2_03;    //регулирующий открыть
+    bool* H0_02;    //регулирующий закрыть
+    bool* H0_03;    //регулирующий открыть
 
-    bool* W2_04;    //сброс включить
-    bool* W2_05;    //сброс отключить
+    bool* H0_04;    //сброс включить
+    bool* H0_05;    //сброс отключить
 
-    bool* W2_06;    //подача включить
-    bool* W2_07;    //подача отключить
+    bool* H0_06;    //подача включить
+    bool* H0_07;    //подача отключить
 
-    bool* W2_08;    //атмосфера включить
-    bool* W2_09;    //атмосфера отключить
+    bool* H0_08;    //атмосфера включить
+    bool* H0_09;    //атмосфера отключить
 
-    bool* W2_10;    //Вакуум включить
-    bool* W2_11;    //Вакуум отключить
+    bool* H0_10;    //Вакуум включить
+    bool* H0_11;    //Вакуум отключить
 
 private:
     friend class cpu::CpuMemory;
@@ -70,7 +70,7 @@ private:
     void operator = ( const Controls& ) = delete;
 
     fins::Elements mData;
-    fins::BIT_WR mAddr;
+    fins::BIT_HR mAddr;
     std::recursive_mutex mMutex;
 };
 
