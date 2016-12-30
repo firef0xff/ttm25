@@ -46,7 +46,7 @@ void Communicator::Send( Paskage& pkg )
     auto resp_size = pkg.ResponseSize();
     while ( readed < resp_size )
     {
-        if ( !mSocket.waitForReadyRead(5) )
+        if ( !mSocket.waitForReadyRead(5000) )
         {
             emit connected( false );
             return;

@@ -49,20 +49,44 @@ public:
 
     virtual uint8_t const* Read( uint8_t const* buff, uint8_t size ) override
     {
+        //d1:ec:42:c9
+        //ec d1 c9 42
+
         CheckSize( size );
-        for ( uint8_t i = Size(); i > 0; --i )
+        uint8_t swap_size = (Size()/2)*2;
+        bool p = false;
+        for ( uint8_t i = 0; i < swap_size; ++i )
         {
-            mData.bytes[ i - 1  ] = *(buff++);
+            if ( p )
+                mData.bytes[ i - 1 ] = *(buff++);
+            else
+                mData.bytes[ i + 1 ] = *(buff++);
+            p = !p;
         }
+        for ( uint8_t i = swap_size; i < Size(); ++i )
+        {
+            mData.bytes[ i ] = *(buff++);
+        }
+
         return buff;
     }
     virtual uint8_t* Write( uint8_t* buff, uint8_t size ) const override
     {
         CheckSize( size );
 
-        for ( uint8_t i = Size(); i > 0; --i )
+        uint8_t swap_size = (Size()/2)*2;
+        bool p = false;
+        for ( uint8_t i = 0; i < swap_size; ++i )
         {
-            *(buff++) = mData.bytes[ i - 1  ];
+            if ( p )
+                *(buff++) = mData.bytes[ i - 1 ];
+            else
+                *(buff++) = mData.bytes[ i + 1 ];
+            p = !p;
+        }
+        for ( uint8_t i = swap_size; i < Size(); ++i )
+        {
+            *(buff++) = mData.bytes[ i ];
         }
         return buff;
     }
