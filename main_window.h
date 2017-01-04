@@ -63,6 +63,14 @@ private slots:
 
     void on_bParams_clicked();
 
+    void on_aSaveParams_triggered();
+
+    void on_aLoadParams_triggered();
+
+    void on_aSaveResults_triggered();
+
+    void on_aLoadResults_triggered();
+
 private:
     void closeEvent(QCloseEvent *e);
     void showEvent( QShowEvent *e );
@@ -79,6 +87,7 @@ private:
     void InitUiControls();
 
     void SaveParams();
+    void LoadParams();
 
     Ui::MainWindow *ui;
     ChildPtr mChildWindow;

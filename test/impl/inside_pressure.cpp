@@ -110,6 +110,7 @@ bool M2_2006::Point::Deserialize( QJsonObject const& obj )
 {
     mX = obj.value("x").toDouble();
     mY = obj.value("y").toDouble();
+    return true;
 }
 
 class M2_2006::GrapfData

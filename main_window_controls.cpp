@@ -5,9 +5,11 @@
 
 #include "test/test_params.h"
 #include "test/impl/work_params.h"
+#include "settings/settings.h"
 
 #include <QLabel>
 #include <QAbstractButton>
+#include <QFileDialog>
 
 ControlsUpdater::ControlsUpdater():
     mStopSignal(false)
@@ -193,7 +195,28 @@ void MainWindow::on_bParams_clicked()
 
 void MainWindow::SaveParams()
 {
-#warning TODO Добавить проверки и код для загрузки из файла
+    auto ParamChecker = []( QWidget* control, bool r ) -> bool
+    {
+        QPalette palette = control->palette();
+
+        if ( !r )
+        {
+            palette.setColor( control->backgroundRole(), Qt::red );
+            control->setAutoFillBackground( true );
+        }
+        else
+        {
+            control->setAutoFillBackground( false );
+        }
+        control->setPalette( palette );
+        return r;
+    };
+    auto ValidateRange = []( QLineEdit* control, bool r ) -> bool
+    {
+        QString text = control->text();
+        int pos = control->cursorPosition();
+        return std::min( control->validator()->validate( text, pos ) == QValidator::Acceptable , r );
+    };
 
     auto &params = test::WorkParams::Instance();
     test::CURRENT_PARAMS = &params;
@@ -210,9 +233,114 @@ void MainWindow::SaveParams()
     params.Date( QDateTime::currentDateTime() );
 
     params.Frequency( ui->eFRP->text() );
-    params.Pressure( ui->ePressure->text() );
-    params.PressureSpeed( ui->ePressureSpeed->text() );
-    params.Expenditure( ui->eExpenditure->text() );
-    params.Volume( ui->eTFV->text() );
 
+    bool res = true;
+    res *= ParamChecker( ui->lPressure_2,    ValidateRange( ui->ePressure, params.Pressure( ui->ePressure->text() ) ) );
+    res *= ParamChecker( ui->lPressureSpeed, ValidateRange( ui->ePressureSpeed,params.PressureSpeed( ui->ePressureSpeed->text() ) ) );
+    res *= ParamChecker( ui->lExpenditure_2, ValidateRange( ui->eExpenditure,params.Expenditure( ui->eExpenditure->text() ) ) );
+    res *= ParamChecker( ui->lTFV,           ValidateRange( ui->eTFV,params.Volume( ui->eTFV->text() ) ) );
+
+}
+void MainWindow::LoadParams()
+{
+    auto &params = test::WorkParams::Instance();
+    test::CURRENT_PARAMS = &params;
+
+    ui->eTitleModel->setCurrentIndex( ui->eTitleModel->findText( params.Model() ) );
+    ui->eTitleTire->setCurrentIndex( ui->eTitleTire->findText( params.Size() ) );
+
+    ui->eCustomer->setText( params.Customer() );
+    ui->eOrderNumber->setText( test::ToString( params.OrderNo() ) );
+    ui->eSerialNumber->setText( params.TireNo() );
+
+    ui->eBreakPressure->setText( test::ToString( params.BreakPressure() ) );
+    ui->eConstPressureTime->setText( test::ToString( params.ConstPressureTime() ) );
+    ui->eFRP->setValue( params.Frequency() );
+
+    ui->ePressure->setText( test::ToString( params.Pressure() ) );
+    ui->ePressureSpeed->setText( test::ToString( params.PressureSpeed() ) );
+    ui->eExpenditure->setText( test::ToString( params.Expenditure() ) );
+    ui->eTFV->setText( test::ToString( params.Volume() ) );
+
+    QString method = params.TestForExec()->Name();
+
+    for ( size_t it = 0, size = ui->eTestingMethod->count(); it < size; ++it )
+    {
+        if ( method == ui->eTestingMethod->itemText( it ) )
+        {
+            ui->eTestingMethod->setCurrentIndex( it );
+            break;
+        }
+    }
+}
+
+void MainWindow::on_aSaveParams_triggered()
+{
+    QString file_name;
+    QFileDialog dlg;
+    dlg.setFileMode( QFileDialog::AnyFile );
+    dlg.setDirectory( app::Settings::Instance().TestPath() );
+    dlg.setNameFilter( "Параметры испытаний (*.isx )" );
+    dlg.setAcceptMode( QFileDialog::AcceptSave );
+    dlg.setViewMode( QFileDialog::Detail );
+
+    if ( dlg.exec() )
+        file_name = dlg.selectedFiles().front();
+
+    if ( !file_name.isEmpty() )
+    {
+        if ( !file_name.endsWith(".isx", Qt::CaseInsensitive) )
+            file_name += ".isx";
+        SaveParams();
+        test::ParamsToFile( file_name );
+    }
+}
+void MainWindow::on_aLoadParams_triggered()
+{
+    QString file_name;
+    QFileDialog dlg;
+    dlg.setFileMode( QFileDialog::ExistingFile );
+    dlg.setDirectory( app::Settings::Instance().TestPath() );
+    dlg.setNameFilter( "Параметры испытаний (*.isx )" );
+    dlg.setViewMode( QFileDialog::Detail );
+    if ( dlg.exec() )
+        file_name = dlg.selectedFiles().front();
+
+    test::CURRENT_PARAMS = test::ParamsFromFile( file_name );
+    LoadParams();
+}
+
+void MainWindow::on_aSaveResults_triggered()
+{
+    QString file_name;
+    QFileDialog dlg;
+    dlg.setFileMode( QFileDialog::AnyFile );
+    dlg.setDirectory( app::Settings::Instance().TestPath() );
+    dlg.setNameFilter( "Результаты испытаний (*.res )" );
+    dlg.setAcceptMode( QFileDialog::AcceptSave );
+    dlg.setViewMode( QFileDialog::Detail );
+    if ( dlg.exec() )
+        file_name = dlg.selectedFiles().front();
+    if ( !file_name.isEmpty() )
+    {
+        if ( !file_name.endsWith(".res", Qt::CaseInsensitive) )
+            file_name += ".res";
+        test::DataToFile( file_name, *test::CURRENT_PARAMS );
+    }
+}
+void MainWindow::on_aLoadResults_triggered()
+{
+    QString file_name;
+    QFileDialog dlg;
+    dlg.setFileMode( QFileDialog::ExistingFile );
+    dlg.setDirectory( app::Settings::Instance().TestPath() );
+    dlg.setNameFilter( "Результаты испытаний (*.res )" );
+    dlg.setViewMode( QFileDialog::Detail );
+    if ( dlg.exec() )
+        file_name = dlg.selectedFiles().front();
+
+    test::DataFromFile( file_name );
+    RepaintGraph();
+    LoadParams();
+    on_a_proto_triggered();
 }

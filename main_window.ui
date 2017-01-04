@@ -1177,6 +1177,12 @@
     <addaction name="separator"/>
     <addaction name="a_exit"/>
     <addaction name="a_proto"/>
+    <addaction name="separator"/>
+    <addaction name="aSaveParams"/>
+    <addaction name="aLoadParams"/>
+    <addaction name="separator"/>
+    <addaction name="aSaveResults"/>
+    <addaction name="aLoadResults"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
@@ -1223,6 +1229,26 @@
   <action name="a_proto">
    <property name="text">
     <string>Протокол испытания</string>
+   </property>
+  </action>
+  <action name="aSaveParams">
+   <property name="text">
+    <string>Сохранить параметры</string>
+   </property>
+  </action>
+  <action name="aLoadParams">
+   <property name="text">
+    <string>Прочитать параметры</string>
+   </property>
+  </action>
+  <action name="aSaveResults">
+   <property name="text">
+    <string>Сохранить результаты</string>
+   </property>
+  </action>
+  <action name="aLoadResults">
+   <property name="text">
+    <string>Прочитать результаты</string>
    </property>
   </action>
  </widget>

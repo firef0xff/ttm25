@@ -88,6 +88,7 @@ QJsonObject WorkParams::Serialise() const
 }
 bool WorkParams::Deserialize( QJsonObject const& obj )
 {
+    Parameters::Deserialize( obj );
     bool res =
             obj.contains("Model") &&
             obj.contains("Size") &&
@@ -110,7 +111,7 @@ bool WorkParams::Deserialize( QJsonObject const& obj )
     mCustomer = obj.value("Customer").toString();
 
     mOrderNo = obj.value("OrderNo").toInt();
-    mTireNo = obj.value("TireNo").toInt();
+    mTireNo = obj.value("TireNo").toString();
     mBreakPressure = obj.value("BreakPressure").toDouble();
     mConstPressureTime = obj.value("ConstPressureTime").toInt();
 
@@ -139,108 +140,112 @@ QString const& WorkParams::Model() const
 {
     return mModel;
 }
-void WorkParams::Model( QString const& val )
+bool WorkParams::Model( QString const& val )
 {
     mModel = val;
+    return true;
 }
 
 QString const& WorkParams::Size() const
 {
     return mSize;
 }
-void WorkParams::Size( QString const& val )
+bool WorkParams::Size( QString const& val )
 {
     mSize = val;
+    return true;
 }
 
 QString const& WorkParams::Customer() const
 {
     return mCustomer;
 }
-void WorkParams::Customer( QString const& val )
+bool WorkParams::Customer( QString const& val )
 {
     mCustomer = val;
+    return true;
 }
 
 qint32 WorkParams::OrderNo() const
 {
     return mOrderNo;
 }
-void WorkParams::OrderNo( QString const& val )
+bool WorkParams::OrderNo( QString const& val )
 {
-    ParseValue( mOrderNo, val );
+    return ParseValue( mOrderNo, val );
 }
 
 QString WorkParams::TireNo() const
 {
     return mTireNo;
 }
-void WorkParams::TireNo( QString const& val )
+bool WorkParams::TireNo( QString const& val )
 {
     mTireNo = val;
+    return true;
 }
 
 double WorkParams::BreakPressure() const
 {
     return mBreakPressure;
 }
-void WorkParams::BreakPressure( QString const& val )
+bool WorkParams::BreakPressure( QString const& val )
 {
-    ParseValue( mBreakPressure, val );
+    return ParseValue( mBreakPressure, val );
 }
 
 qint32 WorkParams::ConstPressureTime() const
 {
     return mConstPressureTime;
 }
-void WorkParams::ConstPressureTime( QString const& val )
+bool WorkParams::ConstPressureTime( QString const& val )
 {
-    ParseValue( mConstPressureTime, val );
+    return ParseValue( mConstPressureTime, val );
 }
 
 double WorkParams::Frequency() const
 {
     return mFrequency;
 }
-void WorkParams::Frequency( QString const& val )
+bool WorkParams::Frequency( QString const& val )
 {
-    ParseValue( mFrequency, val );
+    return ParseValue( mFrequency, val );
 }
 
 double WorkParams::Pressure() const
 {
     return mPressure;
 }
-void WorkParams::Pressure( QString const& val )
+bool WorkParams::Pressure( QString const& val )
 {
-    ParseValue( mPressure, val );
+    return ParseValue( mPressure, val );
 }
 
 double WorkParams::Expenditure() const
 {
     return mExpenditure;
 }
-void WorkParams::Expenditure( QString const& val )
+bool WorkParams::Expenditure( QString const& val )
 {
-    ParseValue( mExpenditure, val );
+    return ParseValue( mExpenditure, val );
 }
 
 double WorkParams::PressureSpeed() const
 {
     return mPressureSpeed;
 }
-void WorkParams::PressureSpeed( QString const& val )
+bool WorkParams::PressureSpeed( QString const& val )
 {
-    ParseValue( mPressureSpeed, val );
+    return ParseValue( mPressureSpeed, val );
 }
 
 double WorkParams::Volume() const
 {
     return mVolume;
 }
-void WorkParams::Volume( QString const& val )
+bool WorkParams::Volume( QString const& val )
 {
-    ParseValue( mVolume, val );
+    return ParseValue( mVolume, val );
 }
 
 }//namespace test

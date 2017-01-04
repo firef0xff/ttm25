@@ -9,6 +9,8 @@
 #include <QTextDocument>
 #include <QAbstractTextDocumentLayout>
 #include "test.h"
+#include "impl/work_params.h"
+#include "impl/attestation_params.h"
 
 namespace test
 {
@@ -100,9 +102,7 @@ QJsonObject Parameters::Serialise() const
     QJsonObject obj;
     QJsonArray tests;
     if (mTestForExec)
-        tests.push_back( mTestForExec->ID() );
-
-    obj.insert("TestForExec", tests);
+        obj.insert("TestForExec", mTestForExec->ID());
     obj.insert("Date", mDate.toString(Qt::ISODate));
     obj.insert("User", mUser);
     return obj;
@@ -111,16 +111,16 @@ bool Parameters::Deserialize(const QJsonObject &obj )
 {
     Reset();
     bool res = true;
-    QJsonArray tests = obj.value("TestCase").toArray();
 
-    foreach ( QJsonValue const& val, tests )
+    if ( obj.contains("TestForExec") )
     {
         bool find = false;
+        int32_t test_id = obj.value("TestForExec").toInt();
         for ( auto it = TestsCase().cbegin(), end = TestsCase().cend();
               it != end && !find ; ++it)
         {
             test::Test& ptr = *it->second;
-            if ( ptr.ID() == val.toInt() )
+            if ( ptr.ID() == test_id )
             {
                 mTestForExec = &ptr;
                 find = true;
@@ -196,10 +196,12 @@ Parameters* ParamsFromFile( QString fname )
         auto doc = QJsonDocument::fromJson( f.readAll() );
         QJsonObject obj = doc.object();
 
-        CURRENT_PARAMS->Deserialize( obj );
+        if ( WorkParams::Instance().Deserialize( obj ) )
+            ret = &WorkParams::Instance();
+        else if ( AttestationParams::Instance().Deserialize( obj ) )
+            ret = &AttestationParams::Instance();
         f.close();
     }
-
     return ret;
 }
 

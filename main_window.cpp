@@ -34,6 +34,11 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect( &Updater, SIGNAL(update()), this, SLOT(onUpdateControls()) ); 
 
     on_tMode_currentChanged( ui->tMode->currentIndex() );
+
+    ui->ePressure->setValidator( new QDoubleValidator( INT32_MIN, INT32_MAX , 2, this ) );
+    ui->ePressureSpeed->setValidator( new QDoubleValidator( INT32_MIN, INT32_MAX , 2, this ) );
+    ui->eExpenditure->setValidator( new QDoubleValidator( INT32_MIN, INT32_MAX , 2, this ) );
+    ui->eTFV->setValidator( new QDoubleValidator( INT32_MIN, INT32_MAX , 2, this ) );
 }
 
 MainWindow::~MainWindow()
@@ -198,4 +203,3 @@ void MainWindow::on_eTestingMethod_activated(const QString &arg1)
         }
     }
 }
-
