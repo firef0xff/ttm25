@@ -118,8 +118,12 @@ class M2_2006::GrapfData
 public:
     GrapfData( M2_2006 const* test, QString compare_width )
     {
-        QPointF x_range_e;
-        QPointF y_range_e;
+        QPointF xa_range_e;
+        QPointF ya_range_e;
+
+        QPointF xb_range_e;
+        QPointF yb_range_e;
+
         //поиск данных теста
         bool use_etalone = false;
         foreach (QJsonValue const& val, test::ReadFromFile(compare_width).value("Results").toArray())
@@ -127,15 +131,27 @@ public:
             auto obj = val.toObject();
             if ( obj.value("id").toInt() == test->mId )
             {
-                M2_2006::DataSet data = FromJson( obj.value("data").toObject().value("Data").toArray() );
-                dataA_e2 = Process( data, x_range_e, y_range_e );
+                M2_2006::DataSet data = FromJson( obj.value("data").toObject().value("PData").toArray() );
+                dataA_e2 = Process( data, xa_range_e, ya_range_e );
+                data = FromJson( obj.value("data").toObject().value("VData").toArray() );
+                dataB_e2 = Process( data, xb_range_e, yb_range_e );
                 use_etalone = true;
+
+                xa_range_e = ff0x::MergeRanges( xa_range_e, xb_range_e, true );
+                ya_range_e = ff0x::MergeRanges( ya_range_e, yb_range_e, true );
             }
         }
 
-        dataA = Process( test->mData, x_range, y_range );
-        x_range = ff0x::MergeRanges( x_range, x_range_e, use_etalone );
-        y_range = ff0x::MergeRanges( y_range, y_range_e, use_etalone );
+        dataA = Process( test->mPData, x_range, y_range );
+        QPointF xb_range;
+        QPointF yb_range;
+        dataB = Process( test->mVData, xb_range, yb_range );
+
+        x_range = ff0x::MergeRanges( x_range, xb_range, true );
+        y_range = ff0x::MergeRanges( y_range, yb_range, true );
+
+        x_range = ff0x::MergeRanges( x_range, xa_range_e, use_etalone );
+        y_range = ff0x::MergeRanges( y_range, ya_range_e, use_etalone );
     }
 
     void SetXscale( double scale )
@@ -152,6 +168,16 @@ public:
             point.setX( point.x()/current_x_scale*scale );
         }
         for ( auto it = dataA_e2.begin(), end = dataA_e2.end(); it != end; ++it )
+        {
+            QPointF& point = *it;
+            point.setX( point.x()/current_x_scale*scale );
+        }
+        for ( auto it = dataB.begin(), end = dataB.end(); it != end; ++it )
+        {
+            QPointF& point = *it;
+            point.setX( point.x()/current_x_scale*scale );
+        }
+        for ( auto it = dataB_e2.begin(), end = dataB_e2.end(); it != end; ++it )
         {
             QPointF& point = *it;
             point.setX( point.x()/current_x_scale*scale );
@@ -177,12 +203,25 @@ public:
             QPointF& point = *it;
             point.setY( point.y()/current_y_scale*scale );
         }
+        for ( auto it = dataB.begin(), end = dataB.end(); it != end; ++it )
+        {
+            QPointF& point = *it;
+            point.setY( point.y()/current_y_scale*scale );
+        }
+        for ( auto it = dataB_e2.begin(), end = dataB_e2.end(); it != end; ++it )
+        {
+            QPointF& point = *it;
+            point.setY( point.y()/current_y_scale*scale );
+        }
 
         current_y_scale = scale;
     }
 
     ff0x::GraphBuilder::LinePoints dataA;
     ff0x::GraphBuilder::LinePoints dataA_e2;
+
+    ff0x::GraphBuilder::LinePoints dataB;
+    ff0x::GraphBuilder::LinePoints dataB_e2;
 
     QPointF x_range;
     QPointF y_range;
@@ -248,7 +287,8 @@ M2_2006::M2_2006(CallBack f, QString method_name, int32_t id):
 
     for ( auto x = 0; x <100; ++x )
     {
-        mData.append(Point( x, (10+x*x/50) ));
+        mPData.append(Point( x, (10+x*x/50) ));
+        mVData.append(Point( x, (5+x*x/30) ));
     }
 
 #endif
@@ -258,11 +298,7 @@ M2_2006::~M2_2006()
 
 bool M2_2006::Run()
 {
-    bool work = true;
-    bool done = true;
-
     Start();
-    Wait( work, done );
     if ( IsStopped() )
         return false;
 
@@ -274,6 +310,15 @@ bool M2_2006::Success() const
 }
 void M2_2006::UpdateData()
 {
+    auto& mem = cpu::CpuMemory::Instance().Sensors;
+    mem.Read();
+    if ( mLastTime != mem.Time() )
+    {
+        mLastTime = mem.Time();
+        mPData.push_back( Point( mLastTime, mem.Pressure() ) );
+        mVData.push_back( Point( mLastTime, mem.Volume() ) );
+    }
+
     if (mOnDataUpdate)
         mOnDataUpdate();
 }
@@ -281,7 +326,8 @@ void M2_2006::UpdateData()
 QJsonObject M2_2006::Serialise() const
 {
     QJsonObject obj = TestCommonData::Serialise();
-    obj.insert("Data", ToJson( mData ) );
+    obj.insert("PData", ToJson( mPData ) );
+    obj.insert("VData", ToJson( mVData ) );
     obj.insert("BreakPressure", mBreakPressure);
     obj.insert("State", mState);
 
@@ -289,7 +335,8 @@ QJsonObject M2_2006::Serialise() const
 }
 bool M2_2006::Deserialize( QJsonObject const& obj )
 {
-    mData = FromJson( obj.value("Data").toArray() );
+    mPData = FromJson( obj.value("PData").toArray() );
+    mVData = FromJson( obj.value("VData").toArray() );
     mBreakPressure = obj.value("BreakPressure").toDouble();
     mState = obj.value("State").toInt();
 
@@ -540,9 +587,12 @@ void M2_2006::PaintGraph( QPainter& painter, QFont const& font, QRect const &rec
 
     ff0x::NoAxisGraphBuilder builder ( w, h, f );
     ff0x::NoAxisGraphBuilder::GraphDataLine lines;
-    lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataA, ff0x::NoAxisGraphBuilder::LabelInfo( "Испытуемый аппарат", Qt::blue ) ) );
+    lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataA, ff0x::NoAxisGraphBuilder::LabelInfo( "Изменение давления", Qt::blue ) ) );
+    lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataB, ff0x::NoAxisGraphBuilder::LabelInfo( "Изменение объема", Qt::red ) ) );
     if ( !mGrapfs->dataA_e2.empty() )
-        lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataA_e2, ff0x::NoAxisGraphBuilder::LabelInfo( "Предыдущий результат", Qt::gray ) ) );
+        lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataA_e2, ff0x::NoAxisGraphBuilder::LabelInfo( "Предыдущий результат: давление", Qt::gray ) ) );
+    if ( !mGrapfs->dataB_e2.empty() )
+        lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataB_e2, ff0x::NoAxisGraphBuilder::LabelInfo( "Предыдущий результат: объем", Qt::lightGray ) ) );
 
     QRect p1(rect.left(), rect.top(), w, h );
     {
@@ -573,6 +623,7 @@ QJsonObject EK_OON_106::Serialise() const
 {
     auto obj = M2_2006::Serialise();
     obj.insert("ConstPressureTime",mConstPressureTime);
+    return obj;
 }
 bool EK_OON_106::Deserialize( QJsonObject const& obj )
 {

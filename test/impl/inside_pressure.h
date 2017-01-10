@@ -38,6 +38,7 @@ public:
 
         double const& X() const;
         double const& Y() const;
+
     private:
         double mX;
         double mY;
@@ -70,9 +71,11 @@ protected:
 
     friend class GrapfData;
     bool mSuccess = false;
-    DataSet mData;
+    DataSet mPData;
+    DataSet mVData;
     CallBack mOnDataUpdate;
     mutable std::unique_ptr<GrapfData> mGrapfs;
+    float mLastTime;
     double mBreakPressure;
 #warning TODO mState
     qint32 mState;

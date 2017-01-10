@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    auto f = std::bind( &MainWindow::RepaintGraph, this );
+    auto f = std::bind( &MainWindow::RepaintEvent, this );
     auto & wp = test::WorkParams::Instance();
     wp.AddTest( std::unique_ptr<test::Test>( new test::MI5C_2006(f) ) );
     wp.AddTest( std::unique_ptr<test::Test>( new test::M24_82(f) ) );
@@ -32,6 +32,8 @@ MainWindow::MainWindow(QWidget *parent) :
     InitUiControls();
 
     QObject::connect( &Updater, SIGNAL(update()), this, SLOT(onUpdateControls()) ); 
+    QObject::connect( this, SIGNAL(do_repaint()), this, SLOT(RepaintGraph()) );
+
 
     on_tMode_currentChanged( ui->tMode->currentIndex() );
 
@@ -44,8 +46,15 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     Updater.stop();
+    if ( mWorker )
+        mWorker->terminate();
 
     delete ui;
+}
+
+void MainWindow::RepaintEvent()
+{
+    emit do_repaint();
 }
 
 void MainWindow::closeEvent(QCloseEvent *e)
@@ -203,3 +212,4 @@ void MainWindow::on_eTestingMethod_activated(const QString &arg1)
         }
     }
 }
+

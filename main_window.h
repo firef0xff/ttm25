@@ -4,6 +4,7 @@
 #include <QThread>
 #include "test/impl/inside_pressure.h"
 #include <settings/strings_source.h>
+#include "test/worker.h"
 #include <QComboBox>
 
 namespace Ui {
@@ -22,7 +23,6 @@ private:
 signals:
     void update();
 };
-
 
 class MainWindow : public QMainWindow
 {
@@ -64,12 +64,21 @@ private slots:
     void on_bParams_clicked();
 
     void on_aSaveParams_triggered();
-
     void on_aLoadParams_triggered();
 
     void on_aSaveResults_triggered();
-
     void on_aLoadResults_triggered();
+
+    void on_bFill_clicked();
+    void on_bStart_clicked();
+    void on_bStop_clicked();
+    void on_bTERMINATE_clicked();
+    void on_bResults_clicked();
+
+    void exec( Functor );
+
+signals:
+    void do_repaint();
 
 private:
     void closeEvent(QCloseEvent *e);
@@ -89,10 +98,14 @@ private:
     void SaveParams();
     void LoadParams();
 
+    void RepaintEvent();
+
     Ui::MainWindow *ui;
     ChildPtr mChildWindow;
     //Поток обновления данных датчиков
     ControlsUpdater Updater;   
+    //
+    std::unique_ptr< Worker > mWorker;
     app::StringsSource mTitleTire;
     app::StringsSource mTitleModel;
     app::StringsSource mMark;

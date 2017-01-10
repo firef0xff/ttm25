@@ -4,7 +4,11 @@ namespace test
 {
 
 Test::Test(QString const& name, uint8_t id)
-    : mName(name), mId(id), mStopMarker(nullptr),
+    : mName(name),
+      mId(id),
+      mPrepareMarker(nullptr),
+      mRunMarker(nullptr),
+      mTerminateMarker(nullptr),
       mDrawLine( 0 )
 {
 }
@@ -23,24 +27,28 @@ uint8_t const& Test::ID() const
 {
     return mId;
 }
-bool Test::Run(LaunchFunction to_launch, LogFunction to_log, bool& stop )
+bool Test::Run(LaunchFunction to_launch, LogFunction to_log, bool& prepare, bool& run, bool& terminate )
 {
     Log = to_log;
     Launcher = to_launch;
-    mStopMarker = &stop;
+    mPrepareMarker = &prepare;
+    mRunMarker = &run;
+    mTerminateMarker = &terminate;
 
     bool res = Run();
 
     Log = LogFunction();
     Launcher = LaunchFunction();
-    mStopMarker = nullptr;
+    mPrepareMarker = nullptr;
+    mRunMarker = nullptr;
+    mTerminateMarker = nullptr;
 
     return res;
 }
 
 bool Test::IsStopped()
 {
-    return  mStopMarker && *mStopMarker;
+    return  mTerminateMarker && *mTerminateMarker;
 }
 
 void Test::ResetDrawLine()

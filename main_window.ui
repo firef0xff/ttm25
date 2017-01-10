@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>972</width>
-    <height>629</height>
+    <width>864</width>
+    <height>581</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -620,7 +620,7 @@
              </spacer>
             </item>
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout_6">
+             <layout class="QHBoxLayout" name="horizontalLayout_9">
               <property name="leftMargin">
                <number>0</number>
               </property>
@@ -646,17 +646,17 @@
                   <number>0</number>
                  </property>
                  <item>
-                  <widget class="QPushButton" name="pushButton">
+                  <widget class="QPushButton" name="bFill">
                    <property name="text">
                     <string>ЗАПОЛНЕНИЕ</string>
                    </property>
                    <property name="checkable">
-                    <bool>true</bool>
+                    <bool>false</bool>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="pushButton_4">
+                  <widget class="QPushButton" name="bStart">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                      <horstretch>0</horstretch>
@@ -667,12 +667,12 @@
                     <string>СТАРТ</string>
                    </property>
                    <property name="checkable">
-                    <bool>true</bool>
+                    <bool>false</bool>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="pushButton_2">
+                  <widget class="QPushButton" name="bStop">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                      <horstretch>0</horstretch>
@@ -685,7 +685,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="pushButton_7">
+                  <widget class="QPushButton" name="bResults">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                      <horstretch>0</horstretch>
@@ -701,20 +701,18 @@
                </widget>
               </item>
               <item>
-               <spacer name="verticalSpacer">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
+               <widget class="QPushButton" name="bTERMINATE">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
                 </property>
-                <property name="sizeType">
-                 <enum>QSizePolicy::Preferred</enum>
+                <property name="text">
+                 <string>АВАРИЙНЫЙ
+СТОП</string>
                 </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
+               </widget>
               </item>
              </layout>
             </item>
@@ -1166,8 +1164,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>972</width>
-     <height>19</height>
+     <width>864</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">

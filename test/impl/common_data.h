@@ -2,6 +2,7 @@
 #include "../test.h"
 #include <QDateTime>
 #include <condition_variable>
+#include "cpu/cpu_memory.h"
 
 namespace test
 {
@@ -19,11 +20,10 @@ protected:
     bool Deserialize( QJsonObject const& obj );
 
     void Start();
-    void Wait( bool& work, bool& done);
     bool CheckErrors();
     virtual uint8_t CommandID();
     virtual void UpdateData(){}
-//    cpu::data::DB31& mCommand;
+    cpu::data::LaunchControl& mCommand;
 private:
     void ShowErrors( QString const& err );
 };

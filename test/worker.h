@@ -12,8 +12,13 @@ public:
     Worker();
     void run();
     void stop();
+    void resume_fill();
+    void resume_test();
+    void terminate();
 private:
-    mutable bool mStopSignal;
+    mutable bool mFill;
+    mutable bool mTest;
+    mutable bool mTerminateSignal;
 //    bool mEtalone;
     void LogIt( QString const& str );
     void LaunchIt( Functor  func );

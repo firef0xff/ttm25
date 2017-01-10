@@ -22,7 +22,6 @@ SOURCES += main.cpp\
     communication/fins/paskage.cpp \
     communication/fins/command.cpp \
     unit_tests/test_fins.cpp\
-    cpu/db33.cpp\
     test/test.cpp\
     test/test_params.cpp \
     test/worker.cpp\
@@ -56,14 +55,14 @@ SOURCES += main.cpp\
     test/impl/work_params.cpp \
     test/impl/attestation_params.cpp \
     cpu/params.cpp \
-    cpu/indication.cpp
+    cpu/indication.cpp \
+    cpu/launch_control.cpp
 
 HEADERS  += main_window.h \
     communication/fins/endpoint.h \
     communication/fins/paskage.h \
     communication/fins/command.h \
     cpu/data_block_base.h \
-    cpu/db33.h\
     test/test.h\
     test/test_params.h \
     test/worker.h\
@@ -98,7 +97,8 @@ HEADERS  += main_window.h \
     test/impl/work_params.h \
     test/impl/attestation_params.h \
     cpu/params.h \
-    cpu/indication.h
+    cpu/indication.h \
+    cpu/launch_control.h
 
 FORMS    += main_window.ui\
             test/viewer.ui\
@@ -115,7 +115,7 @@ win32 {
 
 unix {
     DEFINES -= WINDOWS
-#    DEFINES += DEMO
+    DEFINES += DEMO
 }
 
 debug {

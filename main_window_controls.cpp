@@ -231,6 +231,7 @@ void MainWindow::SaveParams()
     params.ConstPressureTime( ui->eConstPressureTime->text() );
 
     params.Date( QDateTime::currentDateTime() );
+    params.User( app::Settings::Instance().User() );
 
     params.Frequency( ui->eFRP->text() );
 
@@ -343,4 +344,51 @@ void MainWindow::on_aLoadResults_triggered()
     RepaintGraph();
     LoadParams();
     on_a_proto_triggered();
+}
+
+//управление испытаниями
+void MainWindow::on_bFill_clicked()
+{
+    if (!mWorker)
+    {
+        SaveParams();
+        mWorker.reset( new Worker() );
+        QObject::connect( mWorker.get(), &Worker::to_exec, this, &MainWindow::exec );
+        mWorker->start();
+    }
+    mWorker->resume_fill();
+}
+void MainWindow::on_bStart_clicked()
+{
+    if (!mWorker)
+    {
+        SaveParams();
+        mWorker.reset( new Worker() );
+        mWorker->start();
+    }
+    mWorker->resume_test();
+}
+void MainWindow::on_bStop_clicked()
+{
+    if (mWorker)
+        mWorker->stop();
+}
+void MainWindow::on_bTERMINATE_clicked()
+{
+    if (mWorker)
+    {
+        mWorker->terminate();
+        QObject::disconnect( mWorker.get(), &Worker::to_exec, this, &MainWindow::exec );
+        mWorker.reset();
+    }
+}
+void MainWindow::on_bResults_clicked()
+{
+    on_a_proto_triggered();
+}
+
+void MainWindow::exec( Functor func )
+{
+    if ( func )
+        func();
 }

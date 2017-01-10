@@ -3,11 +3,13 @@
 #include "test.h"
 
 Worker::Worker():
-    mStopSignal(false)
+    mFill(false),
+    mTest(false),
+    mTerminateSignal(true)
 {}
 void Worker::run()
 {
-    mStopSignal = false;
+    mTerminateSignal = false;
     try
     {
         test::CURRENT_PARAMS->StendInit();
@@ -17,11 +19,16 @@ void Worker::run()
         return;
     }
     test::Test* to_run = test::CURRENT_PARAMS->TestForExec();
+    if (!to_run)
+    {
+        LogIt( "Нет тестов для запуска" );
+        return;
+    }
 
     LogIt( "Запущен тест: " + to_run->Name() );
     bool result = to_run->Run( std::bind( &Worker::LaunchIt, this, std::placeholders::_1 ),
                                std::bind( &Worker::LogIt, this, std::placeholders::_1 ),
-                               mStopSignal );
+                               mFill, mTest, mTerminateSignal );
     emit progress();
     if (result)
         LogIt( "Тест пройден" );
@@ -40,8 +47,20 @@ void Worker::run()
 }
 void Worker::stop()
 {
-    mStopSignal = true;
-    wait();
+    mFill = false;
+    mTest = false;
+}
+void Worker::resume_fill()
+{
+    mFill = true;
+}
+void Worker::resume_test()
+{
+    mTest = true;
+}
+void Worker::terminate()
+{
+    mTerminateSignal = true;
 }
 
 void Worker::LogIt( QString const& str )
