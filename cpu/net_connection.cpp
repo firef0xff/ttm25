@@ -4,8 +4,6 @@
 
 #include <memory>
 #include <mutex>
-#include <thread>
-#include <chrono>
 
 namespace cpu
 {
@@ -55,8 +53,6 @@ void NetConnection::Execute( fins::Command& cmd )
     fins::Paskage pkg( con.mDest, con.mSource, cmd );
 
     std::lock_guard< std::mutex > lock( NET_CONNECTION_MUTEX );
-
-    std::this_thread::sleep_for( std::chrono::milliseconds(100) );
 #ifndef DEMO
     con.mConnection.Send( pkg );
 #endif

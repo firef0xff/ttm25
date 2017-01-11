@@ -1,6 +1,8 @@
 #include "common_data.h"
 #include <QJsonObject>
 #include <QMessageBox>
+#include <thread>
+#include <chrono>
 
 namespace test
 {
@@ -61,6 +63,7 @@ void TestCommonData::Start()
             mCommand.Start(*mRunMarker);
 
         mCommand.Write();
+        std::this_thread::sleep_for( std::chrono::milliseconds(100) );
     }
     TestingTime = StartTime.elapsed()/1000;
     *mTerminateMarker = !CheckErrors();

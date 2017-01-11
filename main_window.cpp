@@ -19,12 +19,11 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    auto f = std::bind( &MainWindow::RepaintEvent, this );
     auto & wp = test::WorkParams::Instance();
-    wp.AddTest( std::unique_ptr<test::Test>( new test::MI5C_2006(f) ) );
-    wp.AddTest( std::unique_ptr<test::Test>( new test::M24_82(f) ) );
-    wp.AddTest( std::unique_ptr<test::Test>( new test::EK_OON_106(f) ) );
-    wp.AddTest( std::unique_ptr<test::Test>( new test::M2_2006(f) ) );
+    wp.AddTest( std::unique_ptr<test::Test>( new test::MI5C_2006() ) );
+    wp.AddTest( std::unique_ptr<test::Test>( new test::M24_82() ) );
+    wp.AddTest( std::unique_ptr<test::Test>( new test::EK_OON_106() ) );
+    wp.AddTest( std::unique_ptr<test::Test>( new test::M2_2006() ) );
 
     SourceToControl( *ui->eTitleTire, mTitleTire );
     SourceToControl( *ui->eTitleModel, mTitleModel);
@@ -32,7 +31,6 @@ MainWindow::MainWindow(QWidget *parent) :
     InitUiControls();
 
     QObject::connect( &Updater, SIGNAL(update()), this, SLOT(onUpdateControls()) ); 
-    QObject::connect( this, SIGNAL(do_repaint()), this, SLOT(RepaintGraph()) );
 
 
     on_tMode_currentChanged( ui->tMode->currentIndex() );
@@ -50,11 +48,6 @@ MainWindow::~MainWindow()
         mWorker->terminate();
 
     delete ui;
-}
-
-void MainWindow::RepaintEvent()
-{
-    emit do_repaint();
 }
 
 void MainWindow::closeEvent(QCloseEvent *e)

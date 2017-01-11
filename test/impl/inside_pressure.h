@@ -23,7 +23,7 @@ public:
         tuSec = 1
     };
 
-    M2_2006( CallBack f, QString method_name = "Методика №2-2006", int32_t id = 1 );
+    M2_2006( QString method_name = "Методика №2-2006", int32_t id = 1 );
     ~M2_2006();
 
     class GrapfData;
@@ -73,7 +73,6 @@ protected:
     bool mSuccess = false;
     DataSet mPData;
     DataSet mVData;
-    CallBack mOnDataUpdate;
     mutable std::unique_ptr<GrapfData> mGrapfs;
     float mLastTime;
     double mBreakPressure;
@@ -84,7 +83,7 @@ protected:
 class EK_OON_106: public M2_2006
 {
 public:
-    EK_OON_106(CallBack f);
+    EK_OON_106();
     void UpdateData() override;
     QJsonObject Serialise() const;
     bool Deserialize( QJsonObject const& obj );
@@ -99,14 +98,14 @@ private:
 class M24_82: public M2_2006
 {
 public:
-    M24_82(CallBack f);
+    M24_82();
     virtual QString TableTitle() const override;
 };
 
 class MI5C_2006: public M2_2006
 {
 public:
-    MI5C_2006(CallBack f);
+    MI5C_2006();
     virtual QString TableTitle() const override;
 };
 

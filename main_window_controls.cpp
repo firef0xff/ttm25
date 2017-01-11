@@ -74,6 +74,7 @@ void MainWindow::onUpdateControls()
 {
     UpdateMarks();
     UpdateData();
+    RepaintGraph();
 }
 
 void MainWindow::SynkControls()

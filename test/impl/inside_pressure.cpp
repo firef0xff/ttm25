@@ -203,16 +203,16 @@ public:
             QPointF& point = *it;
             point.setY( point.y()/current_y_scale*scale );
         }
-        for ( auto it = dataB.begin(), end = dataB.end(); it != end; ++it )
-        {
-            QPointF& point = *it;
-            point.setY( point.y()/current_y_scale*scale );
-        }
-        for ( auto it = dataB_e2.begin(), end = dataB_e2.end(); it != end; ++it )
-        {
-            QPointF& point = *it;
-            point.setY( point.y()/current_y_scale*scale );
-        }
+//        for ( auto it = dataB.begin(), end = dataB.end(); it != end; ++it )
+//        {
+//            QPointF& point = *it;
+//            point.setY( point.y()/current_y_scale*scale );
+//        }
+//        for ( auto it = dataB_e2.begin(), end = dataB_e2.end(); it != end; ++it )
+//        {
+//            QPointF& point = *it;
+//            point.setY( point.y()/current_y_scale*scale );
+//        }
 
         current_y_scale = scale;
     }
@@ -267,9 +267,8 @@ void DrawHelper::DrawRowLeft( QRect const& place,
 }
 
 
-M2_2006::M2_2006(CallBack f, QString method_name, int32_t id):
+M2_2006::M2_2006( QString method_name, int32_t id):
     TestCommonData( method_name, id ),
-    mOnDataUpdate( f ),
     mBreakPressure(0.0),
     mState(0)
 {
@@ -318,9 +317,6 @@ void M2_2006::UpdateData()
         mPData.push_back( Point( mLastTime, mem.Pressure() ) );
         mVData.push_back( Point( mLastTime, mem.Volume() ) );
     }
-
-    if (mOnDataUpdate)
-        mOnDataUpdate();
 }
 
 QJsonObject M2_2006::Serialise() const
@@ -587,8 +583,8 @@ void M2_2006::PaintGraph( QPainter& painter, QFont const& font, QRect const &rec
 
     ff0x::NoAxisGraphBuilder builder ( w, h, f );
     ff0x::NoAxisGraphBuilder::GraphDataLine lines;
-    lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataA, ff0x::NoAxisGraphBuilder::LabelInfo( "Изменение давления", Qt::blue ) ) );
-    lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataB, ff0x::NoAxisGraphBuilder::LabelInfo( "Изменение объема", Qt::red ) ) );
+    lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataA, ff0x::NoAxisGraphBuilder::LabelInfo( "Давление", Qt::blue ) ) );
+    lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataB, ff0x::NoAxisGraphBuilder::LabelInfo( "Объем,см3", Qt::red ) ) );
     if ( !mGrapfs->dataA_e2.empty() )
         lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataA_e2, ff0x::NoAxisGraphBuilder::LabelInfo( "Предыдущий результат: давление", Qt::gray ) ) );
     if ( !mGrapfs->dataB_e2.empty() )
@@ -611,8 +607,8 @@ void M2_2006::PaintGraph( QPainter& painter, QFont const& font, QRect const &rec
 
 
 
-EK_OON_106::EK_OON_106(CallBack f):
-    M2_2006( f, "Правило ЕЭК ООН №106", 2 ),
+EK_OON_106::EK_OON_106():
+    M2_2006( "Правило ЕЭК ООН №106", 2 ),
     mConstPressureTime( 0 )
 {}
 void EK_OON_106::UpdateData()
@@ -725,8 +721,8 @@ QString EK_OON_106::TableTitle() const
 }
 
 
-M24_82::M24_82(CallBack f):
-    M2_2006( f, "Методика № М 24-82", 3 )
+M24_82::M24_82():
+    M2_2006( "Методика № М 24-82", 3 )
 {
 
 }
@@ -736,8 +732,8 @@ QString M24_82::TableTitle() const
 }
 
 
-MI5C_2006::MI5C_2006(CallBack f):
-    M2_2006( f, "Методика № МИ5С-2006", 4 )
+MI5C_2006::MI5C_2006():
+    M2_2006( "Методика № МИ5С-2006", 4 )
 {
 
 }

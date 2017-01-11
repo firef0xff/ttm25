@@ -77,9 +77,6 @@ private slots:
 
     void exec( Functor );
 
-signals:
-    void do_repaint();
-
 private:
     void closeEvent(QCloseEvent *e);
     void showEvent( QShowEvent *e );
@@ -97,8 +94,6 @@ private:
 
     void SaveParams();
     void LoadParams();
-
-    void RepaintEvent();
 
     Ui::MainWindow *ui;
     ChildPtr mChildWindow;
