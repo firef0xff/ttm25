@@ -67,15 +67,15 @@ ff0x::NoAxisGraphBuilder::LinePoints Process( M2_2006::DataSet const& src, QPoin
 
         result.push_back( QPointF( x, y ) );
     }
-    if ( 0 > x_range.x() )
-        x_range.setX( 0 );
-    if ( 0 < x_range.y() )
-        x_range.setY( 0 );
+//    if ( 0 > x_range.x() )
+//        x_range.setX( 0 );
+//    if ( 0 < x_range.y() )
+//        x_range.setY( 0 );
 
-    if ( 0 > y_range.x() )
-        y_range.setX( 0 );
-    if ( 0 < y_range.y() )
-        y_range.setY( 0 );
+//    if ( 0 > y_range.x() )
+//        y_range.setX( 0 );
+//    if ( 0 < y_range.y() )
+//        y_range.setY( 0 );
 
 
     return std::move( result );
@@ -138,17 +138,15 @@ public:
                 use_etalone = true;
 
                 xa_range_e = ff0x::MergeRanges( xa_range_e, xb_range_e, true );
-                ya_range_e = ff0x::MergeRanges( ya_range_e, yb_range_e, true );
             }
         }
 
         dataA = Process( test->mPData, x_range, y_range );
         QPointF xb_range;
-        QPointF yb_range;
         dataB = Process( test->mVData, xb_range, yb_range );
 
         x_range = ff0x::MergeRanges( x_range, xb_range, true );
-        y_range = ff0x::MergeRanges( y_range, yb_range, true );
+        yb_range = ff0x::MergeRanges( yb_range, yb_range_e, use_etalone );
 
         x_range = ff0x::MergeRanges( x_range, xa_range_e, use_etalone );
         y_range = ff0x::MergeRanges( y_range, ya_range_e, use_etalone );
@@ -224,7 +222,8 @@ public:
     ff0x::GraphBuilder::LinePoints dataB_e2;
 
     QPointF x_range;
-    QPointF y_range;
+    QPointF y_range;    
+    QPointF yb_range;
 
 private:
     double current_x_scale = 1.0;
@@ -297,6 +296,14 @@ M2_2006::~M2_2006()
 
 bool M2_2006::Run()
 {
+    mSuccess = false;
+    mPData.clear();
+    mVData.clear();
+    mGrapfs.reset();
+    mLastTime = cpu::CpuMemory::Instance().Sensors.Time();
+    mBreakPressure = 0;
+    mState = 0;
+
     Start();
     if ( IsStopped() )
         return false;
@@ -310,7 +317,6 @@ bool M2_2006::Success() const
 void M2_2006::UpdateData()
 {
     auto& mem = cpu::CpuMemory::Instance().Sensors;
-    mem.Read();
     if ( mLastTime != mem.Time() )
     {
         mLastTime = mem.Time();
@@ -552,12 +558,11 @@ void M2_2006::PaintGraph( QPainter& painter, QFont const& font, QRect const &rec
                                  M2_2006::PressureUnits pu,
                                  M2_2006::TimeUnits tu ) const
 {
-    if (!mGrapfs)
-        mGrapfs.reset( new GrapfData( this, compare_width ) );
+    mGrapfs.reset( new GrapfData( this, compare_width ) );
 
     painter.save();
 
-    double x_scale = 1;
+    double x_scale = 1.0/60.0;
     QString x_msg = "Время, мин.";
     double y_scale = 1;
     QString y_msg = "Давление, кгс\\см2";
@@ -569,7 +574,7 @@ void M2_2006::PaintGraph( QPainter& painter, QFont const& font, QRect const &rec
     }
     if ( tu == tuSec )
     {
-        x_scale = 60;
+        x_scale = 1.0;
         x_msg = "Время, сек.";
     }
 
@@ -579,16 +584,13 @@ void M2_2006::PaintGraph( QPainter& painter, QFont const& font, QRect const &rec
     QFont f = font;
     f.setPointSize( 12 );
     int w = (rect.width())*skale;
-    int h = (rect.height())*skale;
+    int h = (rect.height())*skale/2;
 
     ff0x::NoAxisGraphBuilder builder ( w, h, f );
     ff0x::NoAxisGraphBuilder::GraphDataLine lines;
     lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataA, ff0x::NoAxisGraphBuilder::LabelInfo( "Давление", Qt::blue ) ) );
-    lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataB, ff0x::NoAxisGraphBuilder::LabelInfo( "Объем,см3", Qt::red ) ) );
     if ( !mGrapfs->dataA_e2.empty() )
         lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataA_e2, ff0x::NoAxisGraphBuilder::LabelInfo( "Предыдущий результат: давление", Qt::gray ) ) );
-    if ( !mGrapfs->dataB_e2.empty() )
-        lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataB_e2, ff0x::NoAxisGraphBuilder::LabelInfo( "Предыдущий результат: объем", Qt::lightGray ) ) );
 
     QRect p1(rect.left(), rect.top(), w, h );
     {
@@ -600,6 +602,23 @@ void M2_2006::PaintGraph( QPainter& painter, QFont const& font, QRect const &rec
         ff0x::DataLength( mGrapfs->y_range,y_range, y_step );
 
         painter.drawPixmap( p1, builder.Draw( lines, x_range, y_range, x_step, y_step, x_msg, y_msg, true ) );
+    }
+
+    ff0x::NoAxisGraphBuilder::GraphDataLine lines2;
+    lines2.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataB, ff0x::NoAxisGraphBuilder::LabelInfo( "Объем, см3", Qt::red ) ) );
+    if ( !mGrapfs->dataB_e2.empty() )
+        lines2.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataB_e2, ff0x::NoAxisGraphBuilder::LabelInfo( "Предыдущий результат: объем", Qt::lightGray ) ) );
+
+    QRect p2(rect.left(), rect.top()+h, w, h );
+    {
+        QPointF x_range;
+        QPointF y_range;
+        double x_step = 0;
+        double y_step = 0;
+        ff0x::DataLength( mGrapfs->x_range,x_range, x_step );
+        ff0x::DataLength( mGrapfs->yb_range,y_range, y_step );
+
+        painter.drawPixmap( p2, builder.Draw( lines2, x_range, y_range, x_step, y_step, x_msg, "Объем, см3", true ) );
     }
 
     painter.restore();

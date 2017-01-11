@@ -34,6 +34,9 @@ public:
     void Terminated( bool );
     bool Terminated() const;
 
+    void Done( bool );
+    bool Done() const;
+
     std::unique_lock<std::recursive_mutex> Locker();
 protected:
     bool* W3_00;    //Старт наполнения
@@ -41,6 +44,8 @@ protected:
 
     bool* W3_02;    //Стоп наполнение/нарастания //не уверен что он надо
     bool* W3_03;    //Аварийный сброс
+
+    bool* W3_04;    //индикатор останова
 
 private:
     friend class cpu::CpuMemory;

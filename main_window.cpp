@@ -177,6 +177,7 @@ void MainWindow::AddItem( QComboBox& combo, app::StringsSource& source )
 
 void MainWindow::on_tMode_currentChanged(int index)
 {
+    on_bTERMINATE_clicked();
     Updater.stop();
     switch (index)
     {
@@ -194,6 +195,7 @@ void MainWindow::on_tMode_currentChanged(int index)
 }
 void MainWindow::on_eTestingMethod_activated(const QString &arg1)
 {
+    on_bTERMINATE_clicked();
     auto& params = test::WorkParams::Instance();
     for ( auto it = params.TestsCase().begin(), end = params.TestsCase().end(); it != end; ++it )
     {

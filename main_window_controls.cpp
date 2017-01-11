@@ -355,9 +355,10 @@ void MainWindow::on_bFill_clicked()
         SaveParams();
         mWorker.reset( new Worker() );
         QObject::connect( mWorker.get(), &Worker::to_exec, this, &MainWindow::exec );
+        QObject::connect( mWorker.get(), &Worker::done, this, &MainWindow::OnEndTests );
         mWorker->start();
     }
-    mWorker->resume_fill();
+    mWorker->fill();
 }
 void MainWindow::on_bStart_clicked()
 {
@@ -367,7 +368,7 @@ void MainWindow::on_bStart_clicked()
         mWorker.reset( new Worker() );
         mWorker->start();
     }
-    mWorker->resume_test();
+    mWorker->test();
 }
 void MainWindow::on_bStop_clicked()
 {
@@ -379,7 +380,9 @@ void MainWindow::on_bTERMINATE_clicked()
     if (mWorker)
     {
         mWorker->terminate();
+        mWorker->wait();
         QObject::disconnect( mWorker.get(), &Worker::to_exec, this, &MainWindow::exec );
+        QObject::disconnect( mWorker.get(), &Worker::done, this, &MainWindow::OnEndTests );
         mWorker.reset();
     }
 }
@@ -392,4 +395,13 @@ void MainWindow::exec( Functor func )
 {
     if ( func )
         func();
+}
+void MainWindow::OnEndTests()
+{
+    if (mWorker)
+    {
+        QObject::disconnect( mWorker.get(), &Worker::to_exec, this, &MainWindow::exec );
+        QObject::disconnect( mWorker.get(), &Worker::done, this, &MainWindow::OnEndTests );
+        mWorker.reset();
+    }
 }

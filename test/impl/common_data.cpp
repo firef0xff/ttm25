@@ -44,7 +44,7 @@ void TestCommonData::Start()
 
     StartTime.start();
 
-    while( !mCommand.Terminated() )
+    while( !mCommand.Done() )
     {
         mCommand.Read();
         UpdateData();
@@ -56,11 +56,23 @@ void TestCommonData::Start()
             return;
         }
 
-        if ( mPrepareMarker && *mPrepareMarker != mCommand.Prepare() )
-            mCommand.Prepare(*mPrepareMarker);
+        if ( mPrepareMarker && *mPrepareMarker )
+        {
+            *mPrepareMarker = false;
+            mCommand.Prepare(true);
+        }
 
-        if ( mRunMarker && *mRunMarker != mCommand.Start())
-            mCommand.Start(*mRunMarker);
+        if ( mRunMarker && *mRunMarker )
+        {
+            *mRunMarker = false;
+            mCommand.Start(true);
+        }
+
+        if ( mPauseMarker && *mPauseMarker )
+        {
+            *mPauseMarker = false;
+            mCommand.Stop(true);
+        }
 
         mCommand.Write();
         std::this_thread::sleep_for( std::chrono::milliseconds(100) );

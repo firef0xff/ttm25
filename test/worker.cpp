@@ -5,6 +5,7 @@
 Worker::Worker():
     mFill(false),
     mTest(false),
+    mPause(false),
     mTerminateSignal(true)
 {}
 void Worker::run()
@@ -28,7 +29,7 @@ void Worker::run()
     LogIt( "Запущен тест: " + to_run->Name() );
     bool result = to_run->Run( std::bind( &Worker::LaunchIt, this, std::placeholders::_1 ),
                                std::bind( &Worker::LogIt, this, std::placeholders::_1 ),
-                               mFill, mTest, mTerminateSignal );
+                               mFill, mTest, mPause, mTerminateSignal );
     emit progress();
     if (result)
         LogIt( "Тест пройден" );
@@ -44,17 +45,17 @@ void Worker::run()
         LogIt( e.what() );
         return;
     }
+    emit done();
 }
 void Worker::stop()
 {
-    mFill = false;
-    mTest = false;
+    mPause = true;
 }
-void Worker::resume_fill()
+void Worker::fill()
 {
     mFill = true;
 }
-void Worker::resume_test()
+void Worker::test()
 {
     mTest = true;
 }

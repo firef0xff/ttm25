@@ -76,6 +76,7 @@ private slots:
     void on_bResults_clicked();
 
     void exec( Functor );
+    void OnEndTests();
 
 private:
     void closeEvent(QCloseEvent *e);

@@ -35,6 +35,8 @@ void LaunchControl::Reset()
 
     fins::AddElement< fins::BOOL >( mData, &W3_02, false );
     fins::AddElement< fins::BOOL >( mData, &W3_03, false );
+
+    fins::AddElement< fins::BOOL >( mData, &W3_04, false );
 }
 
 std::unique_lock< std::recursive_mutex > LaunchControl::Locker()
@@ -76,6 +78,15 @@ void LaunchControl::Terminated( bool v )
 bool LaunchControl::Terminated() const
 {
     return *W3_03;
+}
+
+void LaunchControl::Done( bool v )
+{
+    *W3_04 = v;
+}
+bool LaunchControl::Done() const
+{
+    return *W3_04;
 }
 
 }//namespace data

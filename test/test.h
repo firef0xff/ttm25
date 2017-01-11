@@ -19,7 +19,7 @@ public:
     typedef std::function< void( Handler ) > LaunchFunction;
     Test( QString const& name, uint8_t id );
     virtual ~Test();
-    bool Run( LaunchFunction, LogFunction, bool&, bool&, bool& );
+    bool Run( LaunchFunction, LogFunction, bool&, bool&, bool&, bool& );
     virtual bool Run() = 0;
     virtual bool Success() const = 0;
 
@@ -48,6 +48,7 @@ protected:
     uint8_t mId;
     bool* mPrepareMarker;
     bool* mRunMarker;
+    bool* mPauseMarker;
     bool* mTerminateMarker;
 private:
     Test( Test const& );

@@ -8,6 +8,7 @@ Test::Test(QString const& name, uint8_t id)
       mId(id),
       mPrepareMarker(nullptr),
       mRunMarker(nullptr),
+      mPauseMarker(nullptr),
       mTerminateMarker(nullptr),
       mDrawLine( 0 )
 {
@@ -27,12 +28,13 @@ uint8_t const& Test::ID() const
 {
     return mId;
 }
-bool Test::Run(LaunchFunction to_launch, LogFunction to_log, bool& prepare, bool& run, bool& terminate )
+bool Test::Run(LaunchFunction to_launch, LogFunction to_log, bool& prepare, bool& run, bool& pause, bool& terminate )
 {
     Log = to_log;
     Launcher = to_launch;
     mPrepareMarker = &prepare;
     mRunMarker = &run;
+    mPauseMarker = &pause;
     mTerminateMarker = &terminate;
 
     bool res = Run();
@@ -41,6 +43,7 @@ bool Test::Run(LaunchFunction to_launch, LogFunction to_log, bool& prepare, bool
     Launcher = LaunchFunction();
     mPrepareMarker = nullptr;
     mRunMarker = nullptr;
+    mPauseMarker = nullptr;
     mTerminateMarker = nullptr;
 
     return res;
