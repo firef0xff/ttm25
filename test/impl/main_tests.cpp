@@ -1,4 +1,4 @@
-#include "inside_pressure.h"
+#include "main_tests.h"
 #include <QJsonObject>
 #include <QJsonArray>
 #include <GraphBuilder/graph_builder.h>
@@ -564,12 +564,12 @@ void M2_2006::PaintGraph( QPainter& painter, QFont const& font, QRect const &rec
 
     double x_scale = 1.0/60.0;
     QString x_msg = "Время, мин.";
-    double y_scale = 1;
+    double y_scale = 1/10.19716212978;
     QString y_msg = "Давление, кгс\\см2";
 
     if ( pu == puMPA )
     {
-        y_scale = 10.19716212978;
+        y_scale = 1;
         y_msg = "Давление, МПа";
     }
     if ( tu == tuSec )

@@ -30,7 +30,6 @@ SOURCES += main.cpp\
     settings/settings_wnd.cpp\
     users/users.cpp\
     users/login.cpp \
-    test/impl/inside_pressure.cpp\
     ../mylib/Widgets/GraphBuilder/graph_builder.cpp \
     ../mylib/Widgets/RoundDial/round_dial.cpp \
     ../mylib/COMPort/ComPort.cpp \
@@ -49,14 +48,18 @@ SOURCES += main.cpp\
     communication/fins/funcs/memory_area_transfer.cpp \
     cpu/controls.cpp\
     cpu/cpu_memory.cpp \
-    main_window_controls.cpp \
     cpu/net_connection.cpp \
     cpu/sensors.cpp \
-    test/impl/work_params.cpp \
     test/impl/attestation_params.cpp \
     cpu/params.cpp \
     cpu/indication.cpp \
-    cpu/launch_control.cpp
+    cpu/launch_control.cpp \
+    main_testing.cpp \
+    main_attestation.cpp \
+    test/impl/attestation_tests.cpp \
+    test/impl/work_params.cpp \
+    test/impl/main_tests.cpp \
+    cpu/attestation_launch_control.cpp
 
 HEADERS  += main_window.h \
     communication/fins/endpoint.h \
@@ -71,7 +74,6 @@ HEADERS  += main_window.h \
     settings/settings_wnd.h\
     users/users.h\
     users/login.h \
-    test/impl/inside_pressure.h\
     ../mylib/Widgets/GraphBuilder/graph_builder.h\
     ../mylib/Widgets/RoundDial/round_dial.h \
     ../mylib/COMPort/ComPort.h \
@@ -98,7 +100,10 @@ HEADERS  += main_window.h \
     test/impl/attestation_params.h \
     cpu/params.h \
     cpu/indication.h \
-    cpu/launch_control.h
+    cpu/launch_control.h \
+    test/impl/main_tests.h \
+    test/impl/attestation_tests.h \
+    cpu/attestation_launch_control.h
 
 FORMS    += main_window.ui\
             test/viewer.ui\

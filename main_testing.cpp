@@ -5,31 +5,13 @@
 
 #include "test/test_params.h"
 #include "test/impl/work_params.h"
+#include "test/impl/attestation_params.h"
+#include "test/impl/main_tests.h"
 #include "settings/settings.h"
 
 #include <QLabel>
 #include <QAbstractButton>
 #include <QFileDialog>
-
-ControlsUpdater::ControlsUpdater():
-    mStopSignal(false)
-{}
-void ControlsUpdater::run()
-{
-    mStopSignal = false;
-    while ( !mStopSignal )
-    {
-        cpu::CpuMemory::Instance().Controls.Read();
-        cpu::CpuMemory::Instance().Sensors.Read();
-        emit update();
-        msleep(100);
-    }
-}
-void ControlsUpdater::stop()
-{
-    mStopSignal = true;
-    wait();
-}
 
 namespace
 {
@@ -70,20 +52,23 @@ void SetOnOffText( QAbstractButton *btn, QString on, QString off )
 
 }
 
-void MainWindow::onUpdateControls()
-{
-    UpdateMarks();
-    UpdateData();
-    RepaintGraph();
-}
 
 void MainWindow::SynkControls()
 {
     cpu::CpuMemory::Instance().Controls.Read();
     UpdateMarks();
 }
-void MainWindow::InitUiControls()
+void MainWindow::InitTestingModule()
 {
+    auto & wp = test::WorkParams::Instance();
+    wp.AddTest( std::unique_ptr<test::Test>( new test::MI5C_2006() ) );
+    wp.AddTest( std::unique_ptr<test::Test>( new test::M24_82() ) );
+    wp.AddTest( std::unique_ptr<test::Test>( new test::EK_OON_106() ) );
+    wp.AddTest( std::unique_ptr<test::Test>( new test::M2_2006() ) );
+
+    SourceToControl( *ui->eTitleTire, mTitleTire );
+    SourceToControl( *ui->eTitleModel, mTitleModel);
+
     SetOnOffText( ui->bRegulatingClose, "Регулирующий закрыть", "Регулирующий остановить" );
     SetOnOffText( ui->bRegulatingOpen, "Регулирующий открыть", "Регулирующий остановить" );
     SetOnOffText( ui->bPumpOnOff, "Насос включить", "Насос отключить" );
@@ -188,6 +173,20 @@ void MainWindow::on_bVacuumOnOff_clicked(bool checked)
 
 
 //управление параметрами
+void MainWindow::on_eTestingMethod_activated(const QString &arg1)
+{
+    on_bTERMINATE_clicked();
+    auto& params = test::WorkParams::Instance();
+    for ( auto it = params.TestsCase().begin(), end = params.TestsCase().end(); it != end; ++it )
+    {
+        auto & test = *it->second;
+        if ( test.Name() == arg1 )
+        {
+            params.TestForExec( test );
+            break;
+        }
+    }
+}
 void MainWindow::on_bParams_clicked()
 {
     SaveParams();
@@ -220,7 +219,6 @@ void MainWindow::SaveParams()
     };
 
     auto &params = test::WorkParams::Instance();
-    test::CURRENT_PARAMS = &params;
 
     params.Model( ui->eTitleModel->currentText() );
     params.Size( ui->eTitleTire->currentText() );
@@ -246,7 +244,6 @@ void MainWindow::SaveParams()
 void MainWindow::LoadParams()
 {
     auto &params = test::WorkParams::Instance();
-    test::CURRENT_PARAMS = &params;
 
     ui->eTitleModel->setCurrentIndex( ui->eTitleModel->findText( params.Model() ) );
     ui->eTitleTire->setCurrentIndex( ui->eTitleTire->findText( params.Size() ) );
@@ -264,7 +261,10 @@ void MainWindow::LoadParams()
     ui->eExpenditure->setText( test::ToString( params.Expenditure() ) );
     ui->eTFV->setText( test::ToString( params.Volume() ) );
 
-    QString method = params.TestForExec()->Name();
+    auto * test = params.TestForExec();
+    if (!test)
+        return;
+    QString method = test->Name();
 
     for ( size_t it = 0, size = ui->eTestingMethod->count(); it < size; ++it )
     {
@@ -310,6 +310,10 @@ void MainWindow::on_aLoadParams_triggered()
 
     test::CURRENT_PARAMS = test::ParamsFromFile( file_name );
     LoadParams();
+    if ( test::CURRENT_PARAMS == &test::WorkParams::Instance() )
+        ui->tMode->setCurrentIndex(0);
+    else
+        ui->tMode->setCurrentIndex(1);
 }
 
 void MainWindow::on_aSaveResults_triggered()
@@ -344,6 +348,10 @@ void MainWindow::on_aLoadResults_triggered()
     test::DataFromFile( file_name );
     RepaintGraph();
     LoadParams();
+    if ( test::CURRENT_PARAMS == &test::WorkParams::Instance() )
+        ui->tMode->setCurrentIndex(0);
+    else if ( test::CURRENT_PARAMS == &test::AttestationParams::Instance() )
+        ui->tMode->setCurrentIndex(1);
     on_a_proto_triggered();
 }
 
@@ -404,4 +412,34 @@ void MainWindow::OnEndTests()
         QObject::disconnect( mWorker.get(), &Worker::done, this, &MainWindow::OnEndTests );
         mWorker.reset();
     }
+}
+
+//отображение графика
+void MainWindow::RepaintGraph()
+{
+    QPixmap pixmap( ui->Graph->width()-2, ui->Graph->height()-2 );
+    QPainter painter(&pixmap);
+    QFont font = painter.font();
+    font.setFamily("Arial");
+    font.setPointSize(12);
+    auto r = pixmap.rect();
+    painter.fillRect( r, Qt::white );
+    auto* ptr = static_cast<test::M2_2006*>( test::WorkParams::Instance().TestForExec() );
+    if ( ptr )
+        ptr->PaintGraph( painter, font, pixmap.rect(), "", 1,
+                          static_cast<test::M2_2006::PressureUnits>( ui->puUnits->currentIndex() ),
+                          static_cast<test::M2_2006::TimeUnits>( ui->tuUnits->currentIndex() ) );
+    ui->Graph->setScaledContents( true );
+    ui->Graph->setPixmap( pixmap );
+    ui->Graph->setMinimumSize( 10, 10 );
+}
+
+//смена режима едениц измерения
+void MainWindow::on_puUnits_currentIndexChanged(int /*index*/)
+{
+    RepaintGraph();
+}
+void MainWindow::on_tuUnits_currentIndexChanged(int /*index*/)
+{
+    RepaintGraph();
 }

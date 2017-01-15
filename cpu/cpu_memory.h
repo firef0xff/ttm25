@@ -3,6 +3,7 @@
 #include "sensors.h"
 #include "params.h"
 #include "launch_control.h"
+#include "attestation_launch_control.h"
 
 namespace cpu
 {
@@ -17,6 +18,7 @@ public:
     data::Sensors Sensors;      //Датчики стенда
     data::Params Params;        //параметры проведения испытаний
     data::LaunchControl LaunchControl; //Управление запуском тестов
+    data::AttestationLaunchControls AttestationLaunchControls; //управление проведением аттестации
 private:
     CpuMemory();
     CpuMemory( CpuMemory const& ) = delete;

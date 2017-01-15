@@ -2,7 +2,6 @@
 #include <QMainWindow>
 #include <memory>
 #include <QThread>
-#include "test/impl/inside_pressure.h"
 #include <settings/strings_source.h>
 #include "test/worker.h"
 #include <QComboBox>
@@ -34,18 +33,21 @@ public:
     ~MainWindow();
 
 private slots:
+    //главное окно
     void on_a_users_triggered();
-    void onUpdateControls();
-    void RepaintGraph();
     void on_a_options_triggered();
     void on_a_proto_triggered();
-    void on_puUnits_currentIndexChanged(int index);
-    void on_tuUnits_currentIndexChanged(int index);
     void on_bTitleTire_clicked();
     void on_bTitleModel_clicked();
+    void on_tMode_currentChanged(int index);//смена вкладок
+    void onUpdateControls();
 
-    //смена вкладок
-    void on_tMode_currentChanged(int index);
+    //вкладка тестирования
+    void onUpdateConnection( bool connected );
+    //график
+    void RepaintGraph();
+    void on_puUnits_currentIndexChanged(int index);
+    void on_tuUnits_currentIndexChanged(int index);
 
     //кнопки управления
     void on_bPumpOnOff_clicked(bool checked);
@@ -56,29 +58,36 @@ private slots:
     void on_bRegulatingClose_clicked(bool checked);
     void on_bRegulatingOpen_clicked(bool checked);
 
-    void onUpdateConnection( bool connected );
-
-
+    //параметры
     void on_eTestingMethod_activated(const QString &arg1);
-
     void on_bParams_clicked();
-
     void on_aSaveParams_triggered();
     void on_aLoadParams_triggered();
 
     void on_aSaveResults_triggered();
     void on_aLoadResults_triggered();
 
+    //управление тестом
     void on_bFill_clicked();
     void on_bStart_clicked();
     void on_bStop_clicked();
     void on_bTERMINATE_clicked();
     void on_bResults_clicked();
 
+    //колбяки
     void exec( Functor );
     void OnEndTests();
 
+    //аттестация
+    void on_tAttestaion_currentChanged(int index);
+    void on_bAPStart_clicked();
+    void on_bAPWrite_clicked();
+    void on_bAPStop_clicked();
+    void on_bAPReport_clicked();
+    void on_bAPClear_clicked();
+
 private:
+    //главное окно
     void closeEvent(QCloseEvent *e);
     void showEvent( QShowEvent *e );
     void resizeEvent( QResizeEvent *e );
@@ -88,13 +97,18 @@ private:
     void SourceToControl( QComboBox& combo, app::StringsSource const& source );
     void AddItem( QComboBox& combo, app::StringsSource& source );
 
+    //вкладка тестирования
     void SynkControls();
     void UpdateMarks();
     void UpdateData();
-    void InitUiControls();
+    void InitTestingModule();
 
     void SaveParams();
     void LoadParams();
+
+    //вкладка аттестации
+    void InitAttestationModule();
+    void UpdateAttestation();
 
     Ui::MainWindow *ui;
     ChildPtr mChildWindow;

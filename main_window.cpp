@@ -2,12 +2,13 @@
 #include "ui_main_window.h"
 #include "users/users.h"
 #include "settings/settings_wnd.h"
+#include "settings/textitem.h"
 #include "test/viewer.h"
 #include "test/test_params.h"
-#include "settings/textitem.h"
-#include <functional>
 #include "test/impl/work_params.h"
 #include "test/impl/attestation_params.h"
+#include "test/impl/main_tests.h"
+#include "cpu/cpu_memory.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -19,21 +20,15 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    auto & wp = test::WorkParams::Instance();
-    wp.AddTest( std::unique_ptr<test::Test>( new test::MI5C_2006() ) );
-    wp.AddTest( std::unique_ptr<test::Test>( new test::M24_82() ) );
-    wp.AddTest( std::unique_ptr<test::Test>( new test::EK_OON_106() ) );
-    wp.AddTest( std::unique_ptr<test::Test>( new test::M2_2006() ) );
 
-    SourceToControl( *ui->eTitleTire, mTitleTire );
-    SourceToControl( *ui->eTitleModel, mTitleModel);
-
-    InitUiControls();
+    InitTestingModule();
+    InitAttestationModule();
+    on_tMode_currentChanged( ui->tMode->currentIndex() );
 
     QObject::connect( &Updater, SIGNAL(update()), this, SLOT(onUpdateControls()) ); 
+    Updater.start();
 
 
-    on_tMode_currentChanged( ui->tMode->currentIndex() );
 
     ui->ePressure->setValidator( new QDoubleValidator( INT32_MIN, INT32_MAX , 2, this ) );
     ui->ePressureSpeed->setValidator( new QDoubleValidator( INT32_MIN, INT32_MAX , 2, this ) );
@@ -100,24 +95,6 @@ void MainWindow::ShowChildWindow( ChildPtr child, bool maximized )
         mChildWindow->show();
 }
 
-void MainWindow::RepaintGraph()
-{
-    QPixmap pixmap( ui->Graph->width()-2, ui->Graph->height()-2 );
-    QPainter painter(&pixmap);
-    QFont font = painter.font();
-    font.setFamily("Arial");
-    font.setPointSize(12);
-    auto r = pixmap.rect();
-    painter.fillRect( r, Qt::white );
-    auto* ptr = static_cast<test::M2_2006*>( test::WorkParams::Instance().TestForExec() );
-    if ( ptr )
-        ptr->PaintGraph( painter, font, pixmap.rect(), "", 1,
-                          static_cast<test::M2_2006::PressureUnits>( ui->puUnits->currentIndex() ),
-                          static_cast<test::M2_2006::TimeUnits>( ui->tuUnits->currentIndex() ) );
-    ui->Graph->setScaledContents( true );
-    ui->Graph->setPixmap( pixmap );
-    ui->Graph->setMinimumSize( 10, 10 );
-}
 
 void MainWindow::on_a_users_triggered()
 {
@@ -130,16 +107,6 @@ void MainWindow::on_a_options_triggered()
 void MainWindow::on_a_proto_triggered()
 {
     ShowChildWindow( ChildPtr( new Viewer() ) );
-}
-
-//смена режима едениц измерения
-void MainWindow::on_puUnits_currentIndexChanged(int /*index*/)
-{
-    RepaintGraph();
-}
-void MainWindow::on_tuUnits_currentIndexChanged(int /*index*/)
-{
-    RepaintGraph();
 }
 
 //наполнение комбобоксов
@@ -175,36 +142,51 @@ void MainWindow::AddItem( QComboBox& combo, app::StringsSource& source )
     }) ) );
 }
 
+//смена вкладки
 void MainWindow::on_tMode_currentChanged(int index)
 {
-    on_bTERMINATE_clicked();
-    Updater.stop();
+    on_bTERMINATE_clicked();    
     switch (index)
     {
     case 0:
         test::CURRENT_PARAMS = &test::WorkParams::Instance();
         SynkControls();
-        Updater.start();
+        LoadParams();
         break;
     case 1:
         test::CURRENT_PARAMS = &test::AttestationParams::Instance();
+        on_tAttestaion_currentChanged( ui->tAttestaion->currentIndex() );
         break;
     default:
         break;
     }
 }
-void MainWindow::on_eTestingMethod_activated(const QString &arg1)
+
+//обновление данных контроддера
+void MainWindow::onUpdateControls()
 {
-    on_bTERMINATE_clicked();
-    auto& params = test::WorkParams::Instance();
-    for ( auto it = params.TestsCase().begin(), end = params.TestsCase().end(); it != end; ++it )
-    {
-        auto & test = *it->second;
-        if ( test.Name() == arg1 )
-        {
-            params.TestForExec( test );
-            break;
-        }
-    }
+    UpdateMarks();
+    UpdateData();
+    RepaintGraph();
+    UpdateAttestation();
 }
 
+ControlsUpdater::ControlsUpdater():
+    mStopSignal(false)
+{}
+void ControlsUpdater::run()
+{
+    mStopSignal = false;
+    while ( !mStopSignal )
+    {
+        cpu::CpuMemory::Instance().Controls.Read();
+        cpu::CpuMemory::Instance().Sensors.Read();
+        emit update();
+        msleep(100);
+    }
+}
+void ControlsUpdater::stop()
+{
+    mStopSignal = true;
+    wait();
+}

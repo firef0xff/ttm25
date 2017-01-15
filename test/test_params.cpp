@@ -225,16 +225,24 @@ bool DataFromFile( QString fname )
         QJsonObject params = doc.object().value("Params").toObject();
         QJsonArray tests_data = doc.object().value("Results").toArray();
 
-        CURRENT_PARAMS->Deserialize( params );
+        if ( WorkParams::Instance().Deserialize( params ) )
+            CURRENT_PARAMS = &WorkParams::Instance();
+        else if ( AttestationParams::Instance().Deserialize( params ) )
+            CURRENT_PARAMS = &AttestationParams::Instance();
 
         foreach (QJsonValue const& val, tests_data)
         {
             QJsonObject obj = val.toObject();
             uint8_t id = obj.value("id").toInt();
             QJsonObject data = obj.value("data").toObject();
-            if ( CURRENT_PARAMS->TestForExec()->ID() != id )
-                return false;
-            CURRENT_PARAMS->TestForExec()->Deserialize( data );
+            for ( auto it = CURRENT_PARAMS->TestsCase().begin(),
+                       end = CURRENT_PARAMS->TestsCase().end();
+                       it != end; ++it)
+            {
+                Test* ptr = it->second.get();
+                if ( ptr->ID() == id )
+                    ptr->Deserialize( data );
+            }
         }
         f.close();
     }
