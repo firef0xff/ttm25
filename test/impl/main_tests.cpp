@@ -317,10 +317,11 @@ bool M2_2006::Success() const
 void M2_2006::UpdateData()
 {
     auto& mem = cpu::CpuMemory::Instance().Sensors;
-    if ( mLastTime != mem.Time() )
+    if ( mLastTime != static_cast<int32_t>( mem.Time() ) )
     {
-        mLastTime = mem.Time();
-        mPData.push_back( Point( mLastTime, mem.Pressure() ) );
+        mLastTime = static_cast<int32_t>( mem.Time() );
+        if (!mIsPrepare)
+            mPData.push_back( Point( mLastTime, mem.Pressure() ) );
         mVData.push_back( Point( mLastTime, mem.Volume() ) );
     }
 }
@@ -586,39 +587,43 @@ void M2_2006::PaintGraph( QPainter& painter, QFont const& font, QRect const &rec
     int w = (rect.width())*skale;
     int h = (rect.height())*skale/2;
 
-    ff0x::NoAxisGraphBuilder builder ( w, h, f );
-    ff0x::NoAxisGraphBuilder::GraphDataLine lines;
-    lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataA, ff0x::NoAxisGraphBuilder::LabelInfo( "Давление", Qt::blue ) ) );
+    ff0x::GraphBuilder builder ( w, h, ff0x::GraphBuilder::PlusPlus, f );
+    ff0x::BasicGraphBuilder::GraphDataLine lines;
+    lines.push_back( ff0x::BasicGraphBuilder::Line(mGrapfs->dataA, ff0x::BasicGraphBuilder::LabelInfo( "Давление", Qt::blue ) ) );
     if ( !mGrapfs->dataA_e2.empty() )
-        lines.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataA_e2, ff0x::NoAxisGraphBuilder::LabelInfo( "Предыдущий результат: давление", Qt::gray ) ) );
+        lines.push_back( ff0x::BasicGraphBuilder::Line(mGrapfs->dataA_e2, ff0x::BasicGraphBuilder::LabelInfo( "Предыдущий результат: давление", Qt::gray ) ) );
 
     QRect p1(rect.left(), rect.top(), w, h );
     {
         QPointF x_range;
         QPointF y_range;
+        QPointF xi_range(mGrapfs->x_range.x(), 0);
+        QPointF yi_range(mGrapfs->y_range.x(), 0);
         double x_step = 0;
         double y_step = 0;
-        ff0x::DataLength( mGrapfs->x_range,x_range, x_step );
-        ff0x::DataLength( mGrapfs->y_range,y_range, y_step );
+        ff0x::DataLength( xi_range,x_range, x_step );
+        ff0x::DataLength( yi_range,y_range, y_step );
 
-        painter.drawPixmap( p1, builder.Draw( lines, x_range, y_range, x_step, y_step, x_msg, y_msg, true ) );
+        painter.drawPixmap( p1, builder.Draw( lines, x_range.x(), y_range.x(), x_step, y_step, x_msg, y_msg, true ) );
     }
 
-    ff0x::NoAxisGraphBuilder::GraphDataLine lines2;
-    lines2.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataB, ff0x::NoAxisGraphBuilder::LabelInfo( "Объем, см3", Qt::red ) ) );
+    ff0x::BasicGraphBuilder::GraphDataLine lines2;
+    lines2.push_back( ff0x::BasicGraphBuilder::Line(mGrapfs->dataB, ff0x::BasicGraphBuilder::LabelInfo( "Объем, см3", Qt::red ) ) );
     if ( !mGrapfs->dataB_e2.empty() )
-        lines2.push_back( ff0x::NoAxisGraphBuilder::Line(mGrapfs->dataB_e2, ff0x::NoAxisGraphBuilder::LabelInfo( "Предыдущий результат: объем", Qt::lightGray ) ) );
+        lines2.push_back( ff0x::BasicGraphBuilder::Line(mGrapfs->dataB_e2, ff0x::BasicGraphBuilder::LabelInfo( "Предыдущий результат: объем", Qt::lightGray ) ) );
 
     QRect p2(rect.left(), rect.top()+h, w, h );
     {
         QPointF x_range;
         QPointF y_range;
+        QPointF xi_range(mGrapfs->x_range.x(), 0);
+        QPointF yi_range(mGrapfs->yb_range.x(), 0);
         double x_step = 0;
         double y_step = 0;
-        ff0x::DataLength( mGrapfs->x_range,x_range, x_step );
-        ff0x::DataLength( mGrapfs->yb_range,y_range, y_step );
+        ff0x::DataLength( xi_range,x_range, x_step );
+        ff0x::DataLength( yi_range,y_range, y_step );
 
-        painter.drawPixmap( p2, builder.Draw( lines2, x_range, y_range, x_step, y_step, x_msg, "Объем, см3", true ) );
+        painter.drawPixmap( p2, builder.Draw( lines2, x_range.x(), y_range.x(), x_step, y_step, x_msg, "Объем, см3", true ) );
     }
 
     painter.restore();

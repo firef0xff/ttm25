@@ -24,6 +24,7 @@ protected:
     virtual uint8_t CommandID();
     virtual void UpdateData(){}
     cpu::data::LaunchControl& mCommand;
+    bool mIsPrepare;
 private:
     void ShowErrors( QString const& err );
 };

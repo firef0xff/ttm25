@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>864</width>
-    <height>581</height>
+    <width>1061</width>
+    <height>623</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -161,7 +161,7 @@
                       </font>
                      </property>
                      <property name="text">
-                      <string>Q, см3/cек</string>
+                      <string>Q, литр/сек</string>
                      </property>
                      <property name="alignment">
                       <set>Qt::AlignCenter</set>
@@ -871,7 +871,7 @@
                    <item row="9" column="0">
                     <widget class="QLabel" name="lPressureSpeed">
                      <property name="text">
-                      <string>Скорость нарастания давления, МПа/сек</string>
+                      <string>Скорость нарастания давления, МПа/мин</string>
                      </property>
                     </widget>
                    </item>
@@ -888,7 +888,7 @@
                    <item row="10" column="0">
                     <widget class="QLabel" name="lExpenditure_2">
                      <property name="text">
-                      <string>Расход, см3/сек</string>
+                      <string>Расход, литр/сек</string>
                      </property>
                     </widget>
                    </item>
@@ -1246,8 +1246,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>864</width>
-     <height>21</height>
+     <width>1061</width>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">

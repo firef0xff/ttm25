@@ -17,19 +17,22 @@ QString ErrMsg()
 
 TestCommonData::TestCommonData( QString const& name, uint8_t id ):
     test::Test(  name, id ),
-    mCommand( cpu::CpuMemory::Instance().LaunchControl )
+    mCommand( cpu::CpuMemory::Instance().LaunchControl ),
+    mIsPrepare(false)
 {}
 
 QJsonObject TestCommonData::Serialise() const
 {
     QJsonObject obj;
     obj.insert("TestingTime", TestingTime );
+    obj.insert("IsPrepare", mIsPrepare);
 
     return obj;
 }
 bool TestCommonData::Deserialize( QJsonObject const& obj )
 {
     TestingTime = obj.value("TestingTime").toInt();
+    mIsPrepare = obj.value("IsPrepare").toBool();
     return true;
 }
 
@@ -43,6 +46,7 @@ void TestCommonData::Start()
     mCommand.Write();
 
     StartTime.start();
+    mIsPrepare = false;
 
     while( !mCommand.Done() )
     {
@@ -60,12 +64,14 @@ void TestCommonData::Start()
         {
             *mPrepareMarker = false;
             mCommand.Prepare(true);
+            mIsPrepare = true;
         }
 
         if ( mRunMarker && *mRunMarker )
         {
             *mRunMarker = false;
             mCommand.Start(true);
+            mIsPrepare = false;
         }
 
         if ( mPauseMarker && *mPauseMarker )

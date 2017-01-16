@@ -74,7 +74,7 @@ protected:
     DataSet mPData;
     DataSet mVData;
     mutable std::unique_ptr<GrapfData> mGrapfs;
-    float mLastTime;
+    int32_t mLastTime;
     double mBreakPressure;
 #warning TODO mState
     qint32 mState;
