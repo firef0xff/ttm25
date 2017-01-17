@@ -33,7 +33,7 @@ WorkParams::WorkParams():
     mCustomer(""),
     mOrderNo(0),
     mTireNo(""),
-    mBreakPressure(0),
+    mBreakPressure(false),
     mConstPressureTime(0),
     mFrequency(0),
     mPressure(0),
@@ -53,7 +53,7 @@ void WorkParams::Reset()
 
     mOrderNo = 0;
     mTireNo = "";
-    mBreakPressure = 0;
+    mBreakPressure = false;
     mConstPressureTime = 0;
 
 
@@ -112,7 +112,7 @@ bool WorkParams::Deserialize( QJsonObject const& obj )
 
     mOrderNo = obj.value("OrderNo").toInt();
     mTireNo = obj.value("TireNo").toString();
-    mBreakPressure = obj.value("BreakPressure").toDouble();
+    mBreakPressure = obj.value("BreakPressure").toBool();
     mConstPressureTime = obj.value("ConstPressureTime").toInt();
 
     mFrequency = obj.value("Frequency").toDouble();
@@ -131,6 +131,8 @@ void WorkParams::WriteToController() const
     params.Expenditure( mExpenditure );
     params.PressureSpeed( mPressureSpeed );
     params.Volume( mVolume );
+    params.ConstPressureTime( mConstPressureTime );
+    params.BreakPressure( mBreakPressure );
 
     params.Write();
 }
@@ -185,13 +187,13 @@ bool WorkParams::TireNo( QString const& val )
     return true;
 }
 
-double WorkParams::BreakPressure() const
+bool WorkParams::BreakPressure() const
 {
     return mBreakPressure;
 }
-bool WorkParams::BreakPressure( QString const& val )
+void WorkParams::BreakPressure( bool val )
 {
-    return ParseValue( mBreakPressure, val );
+    mBreakPressure = val;
 }
 
 qint32 WorkParams::ConstPressureTime() const

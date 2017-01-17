@@ -124,7 +124,7 @@
                    <item row="0" column="4">
                     <widget class="QLabel" name="label_5">
                      <property name="text">
-                      <string>V, см3</string>
+                      <string>V, литр</string>
                      </property>
                     </widget>
                    </item>
@@ -824,120 +824,6 @@
                  </item>
                  <item row="4" column="0" colspan="4">
                   <layout class="QGridLayout" name="gridLayout_6">
-                   <item row="7" column="0">
-                    <widget class="QLabel" name="lFRP">
-                     <property name="text">
-                      <string>Частота вращения насоса, %</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="7" column="1">
-                    <widget class="QSpinBox" name="eFRP">
-                     <property name="maximum">
-                      <number>100</number>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="0" rowspan="2">
-                    <widget class="QLabel" name="lSerialNumber">
-                     <property name="frameShadow">
-                      <enum>QFrame::Plain</enum>
-                     </property>
-                     <property name="text">
-                      <string>Порядковый номер изделия</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="11" column="1">
-                    <widget class="QLineEdit" name="eTFV"/>
-                   </item>
-                   <item row="2" column="1" rowspan="2">
-                    <widget class="QLineEdit" name="eSerialNumber">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="4" column="0">
-                    <widget class="QLabel" name="lBreakPressure">
-                     <property name="text">
-                      <string>Разрушающее давление, МПа</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="9" column="0">
-                    <widget class="QLabel" name="lPressureSpeed">
-                     <property name="text">
-                      <string>Скорость нарастания давления, МПа/мин</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="8" column="0">
-                    <widget class="QLabel" name="lPressure_2">
-                     <property name="text">
-                      <string>Давление, МПа</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="4" column="1">
-                    <widget class="QLineEdit" name="eBreakPressure"/>
-                   </item>
-                   <item row="10" column="0">
-                    <widget class="QLabel" name="lExpenditure_2">
-                     <property name="text">
-                      <string>Расход, литр/сек</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="5" column="0">
-                    <widget class="QLabel" name="lConstPressureTime">
-                     <property name="text">
-                      <string>Поддержание постоянного давления, мин</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="5" column="1">
-                    <widget class="QLineEdit" name="eConstPressureTime"/>
-                   </item>
-                   <item row="1" column="0">
-                    <widget class="QLabel" name="lOrderNumber">
-                     <property name="enabled">
-                      <bool>true</bool>
-                     </property>
-                     <property name="frameShape">
-                      <enum>QFrame::NoFrame</enum>
-                     </property>
-                     <property name="text">
-                      <string>Номер заказа</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="11" column="0">
-                    <widget class="QLabel" name="lTFV">
-                     <property name="frameShape">
-                      <enum>QFrame::NoFrame</enum>
-                     </property>
-                     <property name="text">
-                      <string>Теоритический объем наполнения, см3</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="lCustomer">
-                     <property name="enabled">
-                      <bool>true</bool>
-                     </property>
-                     <property name="text">
-                      <string>Заказчик</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="8" column="1">
-                    <widget class="QLineEdit" name="ePressure"/>
-                   </item>
                    <item row="0" column="1">
                     <widget class="QLineEdit" name="eCustomer">
                      <property name="enabled">
@@ -951,8 +837,29 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="9" column="1">
-                    <widget class="QLineEdit" name="ePressureSpeed"/>
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="lCustomer">
+                     <property name="enabled">
+                      <bool>true</bool>
+                     </property>
+                     <property name="text">
+                      <string>Заказчик</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="7" column="0">
+                    <widget class="QLabel" name="lConstPressureTime">
+                     <property name="text">
+                      <string>Поддержание постоянного давления, мин</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="10" column="0">
+                    <widget class="QLabel" name="lPressure_2">
+                     <property name="text">
+                      <string>Давление, МПа</string>
+                     </property>
+                    </widget>
                    </item>
                    <item row="1" column="1">
                     <widget class="QLineEdit" name="eOrderNumber">
@@ -967,15 +874,112 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="6" column="0" colspan="2">
+                   <item row="9" column="0">
+                    <widget class="QLabel" name="lFRP">
+                     <property name="text">
+                      <string>Частота вращения насоса, %</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="12" column="1">
+                    <widget class="QLineEdit" name="eExpenditure"/>
+                   </item>
+                   <item row="13" column="1">
+                    <widget class="QLineEdit" name="eTFV"/>
+                   </item>
+                   <item row="5" column="0">
+                    <widget class="QLabel" name="lBreakPressure">
+                     <property name="text">
+                      <string>Проводить испытание до разрушения</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="11" column="0">
+                    <widget class="QLabel" name="lPressureSpeed">
+                     <property name="text">
+                      <string>Скорость нарастания давления, МПа/мин</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="5" column="1">
+                    <widget class="QCheckBox" name="eBreakPressure">
+                     <property name="text">
+                      <string> </string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="1" rowspan="2">
+                    <widget class="QLineEdit" name="eSerialNumber">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="0">
+                    <widget class="QLabel" name="lOrderNumber">
+                     <property name="enabled">
+                      <bool>true</bool>
+                     </property>
+                     <property name="frameShape">
+                      <enum>QFrame::NoFrame</enum>
+                     </property>
+                     <property name="text">
+                      <string>Номер заказа</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="0" rowspan="2">
+                    <widget class="QLabel" name="lSerialNumber">
+                     <property name="frameShadow">
+                      <enum>QFrame::Plain</enum>
+                     </property>
+                     <property name="text">
+                      <string>Порядковый номер изделия</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="9" column="1">
+                    <widget class="QSpinBox" name="eFRP">
+                     <property name="maximum">
+                      <number>100</number>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="11" column="1">
+                    <widget class="QLineEdit" name="ePressureSpeed"/>
+                   </item>
+                   <item row="10" column="1">
+                    <widget class="QLineEdit" name="ePressure"/>
+                   </item>
+                   <item row="13" column="0">
+                    <widget class="QLabel" name="lTFV">
+                     <property name="frameShape">
+                      <enum>QFrame::NoFrame</enum>
+                     </property>
+                     <property name="text">
+                      <string>Теоритический объем наполнения, литр</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="7" column="1">
+                    <widget class="QLineEdit" name="eConstPressureTime"/>
+                   </item>
+                   <item row="12" column="0">
+                    <widget class="QLabel" name="lExpenditure_2">
+                     <property name="text">
+                      <string>Расход, литр/сек</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="4" column="0" colspan="2">
                     <widget class="Line" name="line">
                      <property name="orientation">
                       <enum>Qt::Horizontal</enum>
                      </property>
                     </widget>
-                   </item>
-                   <item row="10" column="1">
-                    <widget class="QLineEdit" name="eExpenditure"/>
                    </item>
                   </layout>
                  </item>

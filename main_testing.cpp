@@ -226,8 +226,6 @@ void MainWindow::SaveParams()
     params.OrderNo( ui->eOrderNumber->text() );
     params.TireNo( ui->eSerialNumber->text() );
 
-    params.BreakPressure( ui->eBreakPressure->text() );
-    params.ConstPressureTime( ui->eConstPressureTime->text() );
 
     params.Date( QDateTime::currentDateTime() );
     params.User( app::Settings::Instance().User() );
@@ -235,10 +233,12 @@ void MainWindow::SaveParams()
     params.Frequency( ui->eFRP->text() );
 
     bool res = true;
-    res *= ParamChecker( ui->lPressure_2,    ValidateRange( ui->ePressure, params.Pressure( ui->ePressure->text() ) ) );
-    res *= ParamChecker( ui->lPressureSpeed, ValidateRange( ui->ePressureSpeed,params.PressureSpeed( ui->ePressureSpeed->text() ) ) );
-    res *= ParamChecker( ui->lExpenditure_2, ValidateRange( ui->eExpenditure,params.Expenditure( ui->eExpenditure->text() ) ) );
-    res *= ParamChecker( ui->lTFV,           ValidateRange( ui->eTFV,params.Volume( ui->eTFV->text() ) ) );
+    params.BreakPressure( ui->eBreakPressure->checkState() == Qt::Checked );
+    res *= ParamChecker( ui->lConstPressureTime,    ValidateRange( ui->eConstPressureTime,  params.ConstPressureTime( ui->eConstPressureTime->text() ) ) );
+    res *= ParamChecker( ui->lPressure_2,           ValidateRange( ui->ePressure,           params.Pressure( ui->ePressure->text() ) ) );
+    res *= ParamChecker( ui->lPressureSpeed,        ValidateRange( ui->ePressureSpeed,      params.PressureSpeed( ui->ePressureSpeed->text() ) ) );
+    res *= ParamChecker( ui->lExpenditure_2,        ValidateRange( ui->eExpenditure,        params.Expenditure( ui->eExpenditure->text() ) ) );
+    res *= ParamChecker( ui->lTFV,                  ValidateRange( ui->eTFV,                params.Volume( ui->eTFV->text() ) ) );
 
 }
 void MainWindow::LoadParams()
@@ -252,7 +252,7 @@ void MainWindow::LoadParams()
     ui->eOrderNumber->setText( test::ToString( params.OrderNo() ) );
     ui->eSerialNumber->setText( params.TireNo() );
 
-    ui->eBreakPressure->setText( test::ToString( params.BreakPressure() ) );
+    ui->eBreakPressure->setChecked( params.BreakPressure() );
     ui->eConstPressureTime->setText( test::ToString( params.ConstPressureTime() ) );
     ui->eFRP->setValue( params.Frequency() );
 

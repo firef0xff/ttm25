@@ -30,11 +30,11 @@ public:
     bool OrderNo( QString const& );
     QString TireNo() const;
     bool TireNo( QString const& );
-    double BreakPressure() const;
-    bool BreakPressure( QString const& );
+
+    bool BreakPressure() const;
+    void BreakPressure( bool );
     qint32 ConstPressureTime() const;
     bool ConstPressureTime( QString const& );
-
     double Frequency() const;
     bool Frequency( QString const& );
     double Pressure() const;
@@ -58,7 +58,7 @@ private:
 
     QString mTireNo;
 
-    double mBreakPressure;
+    bool mBreakPressure; //галка "проводить испытание до разрушения"
     qint32 mConstPressureTime;
 
     //контроллер

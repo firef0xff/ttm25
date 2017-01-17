@@ -57,7 +57,7 @@ public:
     void PaintGraph(QPainter& painter, QFont const& font, const QRect &rect,
                     QString  const& compare_width,
                     double skale = 0.98,
-                    PressureUnits pu = puKGS,
+                    PressureUnits pu = puMPA,
                     TimeUnits tu = tuMin ) const;
 
 protected:

@@ -8,7 +8,8 @@ namespace data
 {
 
 Params::Params():
-    mAddr(0,0)
+    mAddr(0,0),
+    mbAddr(3,15)
 {
     Reset();
 }
@@ -21,12 +22,16 @@ void Params::Reset()
     fins::AddElement< fins::FLOAT >( mData, &D04, 0.0f );
     fins::AddElement< fins::FLOAT >( mData, &D06, 0.0f );
     fins::AddElement< fins::FLOAT >( mData, &D08, 0.0f );
+    fins::AddElement< fins::FLOAT >( mData, &D10, 0.0f );
+    fins::AddElement< fins::BOOL >( mbData, &W3_15, false );
 }
 
 void Params::Write()
 {
-    fins::MemoryAreaWrite cmd( mAddr, mData );
-    NetConnection::Execute( cmd );
+    fins::MemoryAreaWrite cmd1( mAddr, mData );
+    NetConnection::Execute( cmd1 );
+    fins::MemoryAreaWrite cmd2( mbAddr, mbData );
+    NetConnection::Execute( cmd2 );
 }
 
 void Params::Frequency( float v )
@@ -49,6 +54,13 @@ void Params::Volume( float v )
 {
     *D08 = v;
 }
-
+void Params::ConstPressureTime( float v )
+{
+    *D10 = v;
+}
+void Params::BreakPressure( bool v )
+{
+    *W3_15 = v;
+}
 }//namespace data
 }//namespace cpu

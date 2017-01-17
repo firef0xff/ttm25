@@ -279,7 +279,8 @@ M2_2006::M2_2006( QString method_name, int32_t id):
     params.Customer( "ОАО 'Роги и лапти'" );
     params.OrderNo("10");
     params.TireNo("4416 Я45545");
-    params.BreakPressure("56.7");
+    params.Pressure("56.7");
+    params.BreakPressure(true);
     params.ConstPressureTime("90");
     params.User( app::Settings::Instance().User() );
 
@@ -457,7 +458,7 @@ bool M2_2006::DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) con
             QString row =   "<tr>";
             row +=              "<td>"+params.TireNo()+"</td>"
                                 "<td>"+ToString(mBreakPressure)+"</td>"
-                                "<td>"+ToString(params.BreakPressure())+"</td>"
+                                "<td>"+ToString(params.Pressure())+"</td>"
                                 "<td>"+ToString(mState)+"</td>";
             row +=          "</tr>";
             return row;
@@ -604,7 +605,7 @@ void M2_2006::PaintGraph( QPainter& painter, QFont const& font, QRect const &rec
         ff0x::DataLength( xi_range,x_range, x_step );
         ff0x::DataLength( yi_range,y_range, y_step );
 
-        painter.drawPixmap( p1, builder.Draw( lines, x_range.x(), y_range.x(), x_step, y_step, x_msg, y_msg, true ) );
+        painter.drawPixmap( p1, builder.Draw( lines, x_range.x()+x_step, y_range.x()+y_step, x_step, y_step, x_msg, y_msg, true ) );
     }
 
     ff0x::BasicGraphBuilder::GraphDataLine lines2;
@@ -623,7 +624,7 @@ void M2_2006::PaintGraph( QPainter& painter, QFont const& font, QRect const &rec
         ff0x::DataLength( xi_range,x_range, x_step );
         ff0x::DataLength( yi_range,y_range, y_step );
 
-        painter.drawPixmap( p2, builder.Draw( lines2, x_range.x(), y_range.x(), x_step, y_step, x_msg, "Объем, см3", true ) );
+        painter.drawPixmap( p2, builder.Draw( lines2, x_range.x()+x_step, y_range.x()+y_step, x_step, y_step, x_msg, "Объем, см3", true ) );
     }
 
     painter.restore();
@@ -703,7 +704,7 @@ bool EK_OON_106::DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) 
             QString row =   "<tr>";
             row +=              "<td>"+params.TireNo()+"</td>"
                                 "<td>"+ToString(mBreakPressure)+"</td>"
-                                "<td>"+ToString(params.BreakPressure())+"</td>"
+                                "<td>"+ToString(params.Pressure())+"</td>"
                                 "<td>"+ToString(mConstPressureTime)+"</td>"
                                 "<td>"+ToString(params.ConstPressureTime())+"</td>"
                                 "<td>"+ToString(mState)+"</td>";
