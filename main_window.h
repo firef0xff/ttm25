@@ -57,6 +57,7 @@ private slots:
     void on_bVacuumOnOff_clicked(bool checked);
     void on_bRegulatingClose_clicked(bool checked);
     void on_bRegulatingOpen_clicked(bool checked);
+    void on_cbManualControl_clicked(bool checked);
 
     //параметры
     void on_eTestingMethod_activated(const QString &arg1);
@@ -86,6 +87,7 @@ private slots:
     void on_bAPReport_clicked();
     void on_bAPClear_clicked();
 
+
 private:
     //главное окно
     void closeEvent(QCloseEvent *e);
@@ -96,6 +98,15 @@ private:
     void ShowChildWindow( ChildPtr child, bool maximized = false );
     void SourceToControl( QComboBox& combo, app::StringsSource const& source );
     void AddItem( QComboBox& combo, app::StringsSource& source );
+
+    enum Mode
+    {
+        mdNone,     //снятие блокировки интрефейса
+        mdAutoTest, //запущен тест
+        mdManual,   //активирован режим ручного управления
+        mdAttestation
+    };
+    void LockSkreen( Mode m );
 
     //вкладка тестирования
     void SynkControls();

@@ -23,6 +23,7 @@ void Worker::run()
     if (!to_run)
     {
         LogIt( "Нет тестов для запуска" );
+        emit done();
         return;
     }
 

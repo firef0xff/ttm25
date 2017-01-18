@@ -28,12 +28,12 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect( &Updater, SIGNAL(update()), this, SLOT(onUpdateControls()) ); 
     Updater.start();
 
-
-
+    ui->eConstPressureTime->setValidator( new QDoubleValidator( INT32_MIN, INT32_MAX , 2, this ) );
     ui->ePressure->setValidator( new QDoubleValidator( INT32_MIN, INT32_MAX , 2, this ) );
     ui->ePressureSpeed->setValidator( new QDoubleValidator( INT32_MIN, INT32_MAX , 2, this ) );
     ui->eExpenditure->setValidator( new QDoubleValidator( INT32_MIN, INT32_MAX , 2, this ) );
     ui->eTFV->setValidator( new QDoubleValidator( INT32_MIN, INT32_MAX , 2, this ) );
+    LockSkreen( mdNone );
 }
 
 MainWindow::~MainWindow()
@@ -46,7 +46,7 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::closeEvent(QCloseEvent *e)
-{
+{    
     QObject::disconnect( mChildWindow.get(), SIGNAL(closed()), this, SLOT(enable_modes()) );
     mChildWindow.reset();
     QWidget::closeEvent( e );
@@ -169,6 +169,134 @@ void MainWindow::onUpdateControls()
     UpdateData();
     RepaintGraph();
     UpdateAttestation();
+}
+
+void MainWindow::LockSkreen( Mode m )
+{
+    switch (m)
+    {
+    case mdNone:
+    {
+        //menu
+        ui->aLoadParams->setEnabled( true );
+        ui->aLoadResults->setEnabled( true );
+        //ручное управление
+        ui->cbManualControl->setEnabled( true );
+        ui->bPumpOnOff->setEnabled( true );
+        ui->bParams->setEnabled( true );
+        ui->bFeedOnOff->setEnabled( true );
+        ui->bAirOnOff->setEnabled( true );
+        ui->bResetOnOff->setEnabled( true );
+        ui->bVacuumOnOff->setEnabled( true );
+        ui->bRegulatingOpen->setEnabled( true );
+        ui->bRegulatingClose->setEnabled( true );
+        ui->bBuzen->setEnabled( true );
+
+        //управление автотестами
+        ui->bFill->setEnabled( true );
+        ui->bStart->setEnabled( true );
+        ui->bStop->setEnabled( true );
+        ui->bResults->setEnabled( true );
+
+        //часть настроек
+        ui->eTitleTire->setEnabled( true );
+        ui->bTitleTire->setEnabled( true );
+        ui->eTitleModel->setEnabled( true );
+        ui->bTitleModel->setEnabled( true );
+        ui->eTestingMethod->setEnabled( true );
+        ui->eCustomer->setEnabled( true );
+        ui->eOrderNumber->setEnabled( true );
+        ui->eSerialNumber->setEnabled( true );
+
+        ui->eBreakPressure->setEnabled( true );
+        ui->eConstPressureTime->setEnabled( true );
+        ui->eFRP->setEnabled( true );
+        ui->ePressure->setEnabled( true );
+        ui->ePressureSpeed->setEnabled( true );
+        ui->eExpenditure->setEnabled( true );
+        ui->eTFV->setEnabled( true );
+
+        //замораживаем навигацию по вкладкам
+        ui->tMode->tabBar()->setEnabled(true);
+        ui->tAttestaion->tabBar()->setEnabled(true);
+
+        break;
+    }
+    case mdManual:
+    {
+        //меню
+        ui->aLoadResults->setEnabled( false );
+        //управление автотестами
+        ui->bFill->setEnabled( false );
+        ui->bStart->setEnabled( false );
+        ui->bStop->setEnabled( false );
+        ui->bResults->setEnabled( false );
+
+        //часть настроек
+        ui->eTitleTire->setEnabled( false );
+        ui->bTitleTire->setEnabled( false );
+        ui->eTitleModel->setEnabled( false );
+        ui->bTitleModel->setEnabled( false );
+        ui->eTestingMethod->setEnabled( false );
+        ui->eCustomer->setEnabled( false );
+        ui->eOrderNumber->setEnabled( false );
+        ui->eSerialNumber->setEnabled( false );
+
+        //замораживаем навигацию по вкладкам
+        ui->tMode->tabBar()->setEnabled(false);
+        break;
+    }
+    case mdAutoTest:
+    {
+        //меню
+        ui->aLoadParams->setEnabled( false );
+        ui->aLoadResults->setEnabled( false );
+        //ручное управление
+        ui->cbManualControl->setEnabled( false );
+        ui->bPumpOnOff->setEnabled( false );
+        ui->bParams->setEnabled( false );
+        ui->bFeedOnOff->setEnabled( false );
+        ui->bAirOnOff->setEnabled( false );
+        ui->bResetOnOff->setEnabled( false );
+        ui->bVacuumOnOff->setEnabled( false );
+        ui->bRegulatingOpen->setEnabled( false );
+        ui->bRegulatingClose->setEnabled( false );
+        ui->bBuzen->setEnabled( false );
+
+        //настройки
+        ui->eTitleTire->setEnabled( false );
+        ui->bTitleTire->setEnabled( false );
+        ui->eTitleModel->setEnabled( false );
+        ui->bTitleModel->setEnabled( false );
+        ui->eTestingMethod->setEnabled( false );
+        ui->eCustomer->setEnabled( false );
+        ui->eOrderNumber->setEnabled( false );
+        ui->eSerialNumber->setEnabled( false );
+
+        ui->eBreakPressure->setEnabled( false );
+        ui->eConstPressureTime->setEnabled( false );
+        ui->eFRP->setEnabled( false );
+        ui->ePressure->setEnabled( false );
+        ui->ePressureSpeed->setEnabled( false );
+        ui->eExpenditure->setEnabled( false );
+        ui->eTFV->setEnabled( false );
+
+        //замораживаем навигацию по вкладкам
+        ui->tMode->tabBar()->setEnabled(false);
+        break;
+    }
+    case mdAttestation:
+    {
+        //меню
+        ui->aLoadParams->setEnabled( false );
+        ui->aLoadResults->setEnabled( false );
+
+        //замораживаем навигацию по вкладкам
+        ui->tMode->tabBar()->setEnabled(false);
+        ui->tAttestaion->tabBar()->setEnabled(false);
+        break;
+    }
+    }
 }
 
 ControlsUpdater::ControlsUpdater():

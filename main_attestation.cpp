@@ -25,6 +25,7 @@ void MainWindow::on_tAttestaion_currentChanged(int index)
 //управление аттестацией
 void MainWindow::on_bAPStart_clicked()
 {
+    LockSkreen( mdAttestation );
     if (!mWorker)
     {
         auto& params = test::AttestationParams::Instance();

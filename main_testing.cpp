@@ -170,6 +170,10 @@ void MainWindow::on_bVacuumOnOff_clicked(bool checked)
     controls.VacuumOnOff( checked );
     controls.Write();
 }
+void MainWindow::on_cbManualControl_clicked(bool checked)
+{
+    LockSkreen( checked?mdManual:mdNone );
+}
 
 
 //управление параметрами
@@ -358,6 +362,7 @@ void MainWindow::on_aLoadResults_triggered()
 //управление испытаниями
 void MainWindow::on_bFill_clicked()
 {
+    LockSkreen( mdAutoTest );
     if (!mWorker)
     {
         SaveParams();
@@ -370,10 +375,13 @@ void MainWindow::on_bFill_clicked()
 }
 void MainWindow::on_bStart_clicked()
 {
+    LockSkreen( mdAutoTest );
     if (!mWorker)
     {
         SaveParams();
         mWorker.reset( new Worker() );
+        QObject::connect( mWorker.get(), &Worker::to_exec, this, &MainWindow::exec );
+        QObject::connect( mWorker.get(), &Worker::done, this, &MainWindow::OnEndTests );
         mWorker->start();
     }
     mWorker->test();
@@ -393,6 +401,14 @@ void MainWindow::on_bTERMINATE_clicked()
         QObject::disconnect( mWorker.get(), &Worker::done, this, &MainWindow::OnEndTests );
         mWorker.reset();
     }
+    else
+    {
+        auto &mem = cpu::CpuMemory::Instance().LaunchControl;
+        auto lock = mem.Locker();
+        mem.Read();
+        mem.Terminated(true);
+        mem.Write();
+    }
 }
 void MainWindow::on_bResults_clicked()
 {
@@ -406,6 +422,7 @@ void MainWindow::exec( Functor func )
 }
 void MainWindow::OnEndTests()
 {
+    LockSkreen( mdNone );
     if (mWorker)
     {
         QObject::disconnect( mWorker.get(), &Worker::to_exec, this, &MainWindow::exec );

@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1061</width>
-    <height>623</height>
+    <width>864</width>
+    <height>574</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -91,6 +91,13 @@
                  <property name="topMargin">
                   <number>0</number>
                  </property>
+                 <item>
+                  <widget class="QCheckBox" name="cbManualControl">
+                   <property name="text">
+                    <string>Ручное Управление</string>
+                   </property>
+                  </widget>
+                 </item>
                  <item>
                   <spacer name="horizontalSpacer_3">
                    <property name="orientation">
@@ -559,7 +566,7 @@
                     </widget>
                    </item>
                    <item row="1" column="5">
-                    <widget class="QToolButton" name="toolButton_2">
+                    <widget class="QToolButton" name="bBuzen">
                      <property name="enabled">
                       <bool>true</bool>
                      </property>
@@ -904,7 +911,7 @@
                    <item row="5" column="1">
                     <widget class="QCheckBox" name="eBreakPressure">
                      <property name="text">
-                      <string> </string>
+                      <string/>
                      </property>
                     </widget>
                    </item>
@@ -1250,8 +1257,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1061</width>
-     <height>19</height>
+     <width>864</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
