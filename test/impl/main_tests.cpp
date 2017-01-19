@@ -6,6 +6,7 @@
 #include <QTextDocument>
 #include <QtGui/QAbstractTextDocumentLayout>
 #include "work_params.h"
+#include "defect_question.h"
 #ifdef DEMO
 #include "../../settings/settings.h"
 #endif
@@ -269,7 +270,7 @@ void DrawHelper::DrawRowLeft( QRect const& place,
 M2_2006::M2_2006( QString method_name, int32_t id):
     TestCommonData( method_name, id ),
     mBreakPressure(0.0),
-    mState(0)
+    mState()
 {
 #ifdef DEMO
     auto& params = WorkParams::Instance();
@@ -297,17 +298,26 @@ M2_2006::~M2_2006()
 
 bool M2_2006::Run()
 {
-    mSuccess = false;
-    mPData.clear();
-    mVData.clear();
-    mGrapfs.reset();
-    mLastTime = cpu::CpuMemory::Instance().Sensors.Time();
-    mBreakPressure = 0;
-    mState = 0;
+    {
+        std::unique_lock<std::mutex> l( mMutex );
+        mSuccess = false;
+        mPData.clear();
+        mVData.clear();
+        mGrapfs.reset();
+        mLastTime = cpu::CpuMemory::Instance().Sensors.Time();
+        mBreakPressure = 0;
+        mState = "";
+    }
 
     Start();
     if ( IsStopped() )
         return false;
+
+    std::mutex mutex;
+    std::unique_lock< std::mutex > lock( mutex );
+    Launcher( std::bind( &M2_2006::Question, this ) );
+
+    mCondVar.wait( lock );
 
     return Success();
 }
@@ -320,7 +330,11 @@ void M2_2006::UpdateData()
     auto& mem = cpu::CpuMemory::Instance().Sensors;
     if ( mLastTime != static_cast<int32_t>( mem.Time() ) )
     {
+        std::unique_lock<std::mutex> l( mMutex );
         mLastTime = static_cast<int32_t>( mem.Time() );
+        if (mBreakPressure < mem.Pressure())
+            mBreakPressure = mem.Pressure();
+
         if (!mIsPrepare)
             mPData.push_back( Point( mLastTime, mem.Pressure() ) );
         mVData.push_back( Point( mLastTime, mem.Volume() ) );
@@ -329,6 +343,7 @@ void M2_2006::UpdateData()
 
 QJsonObject M2_2006::Serialise() const
 {
+    std::unique_lock<std::mutex> l( mMutex );
     QJsonObject obj = TestCommonData::Serialise();
     obj.insert("PData", ToJson( mPData ) );
     obj.insert("VData", ToJson( mVData ) );
@@ -339,10 +354,11 @@ QJsonObject M2_2006::Serialise() const
 }
 bool M2_2006::Deserialize( QJsonObject const& obj )
 {
+    std::unique_lock<std::mutex> l( mMutex );
     mPData = FromJson( obj.value("PData").toArray() );
     mVData = FromJson( obj.value("VData").toArray() );
     mBreakPressure = obj.value("BreakPressure").toDouble();
-    mState = obj.value("State").toInt();
+    mState = obj.value("State").toString();
 
     TestCommonData::Deserialize( obj );
     return true;
@@ -459,7 +475,7 @@ bool M2_2006::DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) con
             row +=              "<td>"+params.TireNo()+"</td>"
                                 "<td>"+ToString(mBreakPressure)+"</td>"
                                 "<td>"+ToString(params.Pressure())+"</td>"
-                                "<td>"+ToString(mState)+"</td>";
+                                "<td>"+mState+"</td>";
             row +=          "</tr>";
             return row;
         };
@@ -560,6 +576,7 @@ void M2_2006::PaintGraph( QPainter& painter, QFont const& font, QRect const &rec
                                  M2_2006::PressureUnits pu,
                                  M2_2006::TimeUnits tu ) const
 {
+    std::unique_lock<std::mutex> l( mMutex );
     mGrapfs.reset( new GrapfData( this, compare_width ) );
 
     painter.save();
@@ -630,6 +647,15 @@ void M2_2006::PaintGraph( QPainter& painter, QFont const& font, QRect const &rec
     painter.restore();
 }
 
+
+void M2_2006::Question()
+{
+    DefectQuestion msg;
+    msg.setModal( true );
+    msg.exec();
+    mState = msg.Status();
+    mCondVar.notify_one();
+}
 
 
 EK_OON_106::EK_OON_106():
@@ -707,7 +733,7 @@ bool EK_OON_106::DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) 
                                 "<td>"+ToString(params.Pressure())+"</td>"
                                 "<td>"+ToString(mConstPressureTime)+"</td>"
                                 "<td>"+ToString(params.ConstPressureTime())+"</td>"
-                                "<td>"+ToString(mState)+"</td>";
+                                "<td>"+mState+"</td>";
             row +=          "</tr>";
             return row;
         };

@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     mMark( "marks.json" ),
     mTitleKKT( "kkt.json" )
 {
+    qRegisterMetaType< Functor >();
     ui->setupUi(this);
 
 
@@ -46,8 +47,7 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::closeEvent(QCloseEvent *e)
-{    
-    QObject::disconnect( mChildWindow.get(), SIGNAL(closed()), this, SLOT(enable_modes()) );
+{        
     mChildWindow.reset();
     QWidget::closeEvent( e );
 }
@@ -84,10 +84,7 @@ void MainWindow::CheckRights()
 
 void MainWindow::ShowChildWindow( ChildPtr child, bool maximized )
 {
-    if ( mChildWindow.get() )
-        QObject::disconnect( mChildWindow.get(), SIGNAL(closed()), this, SLOT(enable_modes()) );
     mChildWindow.reset( child.release() );
-    QObject::connect( mChildWindow.get(), SIGNAL(closed()), this, SLOT(enable_modes()) );
 
     if ( maximized )
         mChildWindow->showMaximized();

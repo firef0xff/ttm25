@@ -59,7 +59,8 @@ SOURCES += main.cpp\
     test/impl/attestation_tests.cpp \
     test/impl/work_params.cpp \
     test/impl/main_tests.cpp \
-    cpu/attestation_launch_control.cpp
+    cpu/attestation_launch_control.cpp \
+    test/impl/defect_question.cpp
 
 HEADERS  += main_window.h \
     communication/fins/endpoint.h \
@@ -103,14 +104,16 @@ HEADERS  += main_window.h \
     cpu/launch_control.h \
     test/impl/main_tests.h \
     test/impl/attestation_tests.h \
-    cpu/attestation_launch_control.h
+    cpu/attestation_launch_control.h \
+    test/impl/defect_question.h
 
 FORMS    += main_window.ui\
             test/viewer.ui\
             settings/settings_wnd.ui\
             users/users.ui\
             users/login.ui \
-    settings/textitem.ui
+    settings/textitem.ui \
+    test/impl/defect_question.ui
 
 win32 {
     RC_ICONS += img/Main.ico

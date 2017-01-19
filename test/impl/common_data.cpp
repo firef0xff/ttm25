@@ -78,6 +78,7 @@ void TestCommonData::Start()
         {
             *mPauseMarker = false;
             mCommand.Stop(true);
+            return;
         }
 
         mCommand.Write();

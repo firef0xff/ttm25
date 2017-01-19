@@ -60,6 +60,7 @@ public:
                     PressureUnits pu = puMPA,
                     TimeUnits tu = tuMin ) const;
 
+    void Question();
 protected:
     virtual bool DrawHeader( uint32_t& num, QPainter& painter, QRect &free_rect ) const;
     virtual bool DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) const;
@@ -75,9 +76,11 @@ protected:
     DataSet mVData;
     mutable std::unique_ptr<GrapfData> mGrapfs;
     int32_t mLastTime;
+
     double mBreakPressure;
-#warning TODO mState
-    qint32 mState;
+    QString mState;
+
+    mutable std::mutex mMutex;
 };
 
 class EK_OON_106: public M2_2006
