@@ -27,6 +27,7 @@ public:
     ~M2_2006();
 
     class GrapfData;
+    class ZGrapfData;
     class Point
     {
     public:
@@ -59,6 +60,10 @@ public:
                     double skale = 0.98,
                     PressureUnits pu = puMPA,
                     TimeUnits tu = tuMin ) const;
+    void PaintZGraph(QPainter& painter, QFont const& font, const QRect &rect,
+                    QString  const& compare_width,
+                    double skale = 0.98,
+                    TimeUnits tu = tuMin ) const;
 
     void Question();
 protected:
@@ -69,12 +74,15 @@ protected:
     virtual QString TableTitle() const;
 
     bool DrawGraph( uint32_t& num, QPainter& painter, QRect &free_rect, QString  const& compare_width ) const;
+    bool DrawZGraph( uint32_t& num, QPainter& painter, QRect &free_rect, QString  const& compare_width ) const;
 
     friend class GrapfData;
     bool mSuccess = false;
     DataSet mPData;
     DataSet mVData;
+    DataSet mZData;
     mutable std::unique_ptr<GrapfData> mGrapfs;
+    mutable std::unique_ptr<ZGrapfData> mZGrapfs;
     int32_t mLastTime;
 
     double mBreakPressure;

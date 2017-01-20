@@ -435,20 +435,31 @@ void MainWindow::OnEndTests()
 void MainWindow::RepaintGraph()
 {
     QPixmap pixmap( ui->Graph->width()-2, ui->Graph->height()-2 );
+    QPixmap z_pixmap( ui->Graph_2->width()-2, ui->Graph_2->height()-2 );
     QPainter painter(&pixmap);
+    QPainter z_painter(&z_pixmap);
     QFont font = painter.font();
     font.setFamily("Arial");
     font.setPointSize(12);
     auto r = pixmap.rect();
     painter.fillRect( r, Qt::white );
+    auto z_r = z_pixmap.rect();
+    z_painter.fillRect( z_r, Qt::white );
     auto* ptr = static_cast<test::M2_2006*>( test::WorkParams::Instance().TestForExec() );
     if ( ptr )
+    {
         ptr->PaintGraph( painter, font, pixmap.rect(), "", 1,
                           static_cast<test::M2_2006::PressureUnits>( ui->puUnits->currentIndex() ),
                           static_cast<test::M2_2006::TimeUnits>( ui->tuUnits->currentIndex() ) );
+        ptr->PaintZGraph( z_painter, font, z_pixmap.rect(), "", 1,
+                          static_cast<test::M2_2006::TimeUnits>( ui->tuUnits->currentIndex() ) );
+    }
     ui->Graph->setScaledContents( true );
     ui->Graph->setPixmap( pixmap );
     ui->Graph->setMinimumSize( 10, 10 );
+    ui->Graph_2->setScaledContents( true );
+    ui->Graph_2->setPixmap( z_pixmap );
+    ui->Graph_2->setMinimumSize( 10, 10 );
 }
 
 //смена режима едениц измерения

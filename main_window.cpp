@@ -179,15 +179,15 @@ void MainWindow::LockSkreen( Mode m )
         ui->aLoadResults->setEnabled( true );
         //ручное управление
         ui->cbManualControl->setEnabled( true );
-        ui->bPumpOnOff->setEnabled( true );
-        ui->bParams->setEnabled( true );
-        ui->bFeedOnOff->setEnabled( true );
-        ui->bAirOnOff->setEnabled( true );
-        ui->bResetOnOff->setEnabled( true );
-        ui->bVacuumOnOff->setEnabled( true );
-        ui->bRegulatingOpen->setEnabled( true );
-        ui->bRegulatingClose->setEnabled( true );
-        ui->bBuzen->setEnabled( true );
+        ui->bPumpOnOff->setEnabled( false );
+        ui->bParams->setEnabled( false );
+        ui->bFeedOnOff->setEnabled( false );
+        ui->bAirOnOff->setEnabled( false );
+        ui->bResetOnOff->setEnabled( false );
+        ui->bVacuumOnOff->setEnabled( false );
+        ui->bRegulatingOpen->setEnabled( false );
+        ui->bRegulatingClose->setEnabled( false );
+        ui->bBuzen->setEnabled( false );
 
         //управление автотестами
         ui->bFill->setEnabled( true );
@@ -204,10 +204,10 @@ void MainWindow::LockSkreen( Mode m )
         ui->eCustomer->setEnabled( true );
         ui->eOrderNumber->setEnabled( true );
         ui->eSerialNumber->setEnabled( true );
+        ui->eFRP->setEnabled( false );
 
         ui->eBreakPressure->setEnabled( true );
         ui->eConstPressureTime->setEnabled( true );
-        ui->eFRP->setEnabled( true );
         ui->ePressure->setEnabled( true );
         ui->ePressureSpeed->setEnabled( true );
         ui->eExpenditure->setEnabled( true );
@@ -223,6 +223,17 @@ void MainWindow::LockSkreen( Mode m )
     {
         //меню
         ui->aLoadResults->setEnabled( false );
+        //ручное управление
+        ui->cbManualControl->setEnabled( true );
+        ui->bPumpOnOff->setEnabled( true );
+        ui->bParams->setEnabled( true );
+        ui->bFeedOnOff->setEnabled( true );
+        ui->bAirOnOff->setEnabled( true );
+        ui->bResetOnOff->setEnabled( true );
+        ui->bVacuumOnOff->setEnabled( true );
+        ui->bRegulatingOpen->setEnabled( true );
+        ui->bRegulatingClose->setEnabled( true );
+        ui->bBuzen->setEnabled( true );
         //управление автотестами
         ui->bFill->setEnabled( false );
         ui->bStart->setEnabled( false );
@@ -238,6 +249,7 @@ void MainWindow::LockSkreen( Mode m )
         ui->eCustomer->setEnabled( false );
         ui->eOrderNumber->setEnabled( false );
         ui->eSerialNumber->setEnabled( false );
+        ui->eFRP->setEnabled( true );
 
         //замораживаем навигацию по вкладкам
         ui->tMode->tabBar()->setEnabled(false);

@@ -231,6 +231,65 @@ private:
     double current_y_scale = 1.0;
 };
 
+class M2_2006::ZGrapfData
+{
+public:
+    ZGrapfData( M2_2006 const* test, QString compare_width )
+    {
+        QPointF xa_range_e;
+        QPointF ya_range_e;
+
+        //поиск данных теста
+        bool use_etalone = false;
+        foreach (QJsonValue const& val, test::ReadFromFile(compare_width).value("Results").toArray())
+        {
+            auto obj = val.toObject();
+            if ( obj.value("id").toInt() == test->mId )
+            {
+                M2_2006::DataSet data = FromJson( obj.value("data").toObject().value("ZData").toArray() );
+                data_e2 = Process( data, xa_range_e, ya_range_e );
+                use_etalone = true;
+            }
+        }
+
+        data = Process( test->mZData, x_range, y_range );
+
+        x_range = ff0x::MergeRanges( x_range, xa_range_e, use_etalone );
+        y_range = ff0x::MergeRanges( y_range, ya_range_e, use_etalone );
+    }
+
+    void SetXscale( double scale )
+    {
+        if (current_x_scale == scale)
+            return;
+
+        x_range.setX( x_range.x()/current_x_scale*scale );
+        x_range.setY( x_range.y()/current_x_scale*scale );
+
+        for ( auto it = data.begin(), end = data.end(); it != end; ++it )
+        {
+            QPointF& point = *it;
+            point.setX( point.x()/current_x_scale*scale );
+        }
+        for ( auto it = data_e2.begin(), end = data_e2.end(); it != end; ++it )
+        {
+            QPointF& point = *it;
+            point.setX( point.x()/current_x_scale*scale );
+        }
+
+        current_x_scale = scale;
+    }
+
+    ff0x::GraphBuilder::LinePoints data;
+    ff0x::GraphBuilder::LinePoints data_e2;
+
+    QPointF x_range;
+    QPointF y_range;
+
+private:
+    double current_x_scale = 1.0;
+};
+
 DrawHelper::DrawHelper( QPainter& p, QRect& r):
     painter(p),
     free_rect(r)
@@ -336,8 +395,14 @@ void M2_2006::UpdateData()
             mBreakPressure = mem.Pressure();
 
         if (!mIsPrepare)
+        {
             mPData.push_back( Point( mLastTime, mem.Pressure() ) );
-        mVData.push_back( Point( mLastTime, mem.Volume() ) );
+            mVData.push_back( Point( mLastTime, mem.Volume() ) );
+        }
+        else
+        {
+            mZData.push_back( Point( mLastTime, mem.Volume() ) );
+        }
     }
 }
 
@@ -347,6 +412,7 @@ QJsonObject M2_2006::Serialise() const
     QJsonObject obj = TestCommonData::Serialise();
     obj.insert("PData", ToJson( mPData ) );
     obj.insert("VData", ToJson( mVData ) );
+    obj.insert("ZData", ToJson( mZData ) );
     obj.insert("BreakPressure", mBreakPressure);
     obj.insert("State", mState);
 
@@ -357,6 +423,7 @@ bool M2_2006::Deserialize( QJsonObject const& obj )
     std::unique_lock<std::mutex> l( mMutex );
     mPData = FromJson( obj.value("PData").toArray() );
     mVData = FromJson( obj.value("VData").toArray() );
+    mZData = FromJson( obj.value("ZData").toArray() );
     mBreakPressure = obj.value("BreakPressure").toDouble();
     mState = obj.value("State").toString();
 
@@ -373,6 +440,7 @@ bool M2_2006::Draw( QPainter& painter, QRect &free_rect, QString  const& compare
     res = DrawBody(num, painter,free_rect);
     res = DrawGraph(num, painter,free_rect, compare_width);
     res = DrawFoter(num, painter,free_rect);
+    res = DrawZGraph(num, painter,free_rect, compare_width);
     if (res )
         free_rect.setHeight( 0 );
     return res;
@@ -559,7 +627,15 @@ bool M2_2006::DrawGraph( uint32_t& num, QPainter& painter, QRect &free_rect, QSt
     text_font.setPointSize( 12 );
 
 
+    DrawHelper drw( painter, free_rect );
+
     bool res = DrawLine( num, free_rect, text_font,
+    [ this, &painter, &drw, &text_font ]( QRect const& rect )
+    {
+        drw.DrawRowCenter( rect, text_font, Qt::black, "Процесс испытания покрышки");
+    }, 1.5 );
+
+    res = DrawLine( num, free_rect, text_font,
     [ this, &painter, &text_font, &compare_width, &free_rect ]( QRect const& rect )
     {
         PaintGraph( painter, text_font, rect, compare_width );        
@@ -569,7 +645,32 @@ bool M2_2006::DrawGraph( uint32_t& num, QPainter& painter, QRect &free_rect, QSt
 
     return res;
 }
+bool M2_2006::DrawZGraph( uint32_t& num, QPainter& painter, QRect &free_rect, QString  const& compare_width ) const
+{
 
+    QFont text_font = painter.font();
+    text_font.setFamily("Arial");
+    text_font.setPointSize( 12 );
+
+    DrawHelper drw( painter, free_rect );
+
+    bool res = DrawLine( num, free_rect, text_font,
+    [ this, &painter, &drw, &text_font ]( QRect const& rect )
+    {
+        drw.DrawRowCenter( rect, text_font, Qt::black, "Процесс заполенния покрышки");
+    }, 1.5 );
+
+
+    res = DrawLine( num, free_rect, text_font,
+    [ this, &painter, &text_font, &compare_width, &free_rect ]( QRect const& rect )
+    {
+        PaintZGraph( painter, text_font, rect, compare_width );
+    }, 1, 480  );
+
+
+
+    return res;
+}
 void M2_2006::PaintGraph( QPainter& painter, QFont const& font, QRect const &rect,
                                  QString  const& compare_width,
                                  double skale,
@@ -626,7 +727,7 @@ void M2_2006::PaintGraph( QPainter& painter, QFont const& font, QRect const &rec
     }
 
     ff0x::BasicGraphBuilder::GraphDataLine lines2;
-    lines2.push_back( ff0x::BasicGraphBuilder::Line(mGrapfs->dataB, ff0x::BasicGraphBuilder::LabelInfo( "Объем, см3", Qt::red ) ) );
+    lines2.push_back( ff0x::BasicGraphBuilder::Line(mGrapfs->dataB, ff0x::BasicGraphBuilder::LabelInfo( "Объем, литр", Qt::red ) ) );
     if ( !mGrapfs->dataB_e2.empty() )
         lines2.push_back( ff0x::BasicGraphBuilder::Line(mGrapfs->dataB_e2, ff0x::BasicGraphBuilder::LabelInfo( "Предыдущий результат: объем", Qt::lightGray ) ) );
 
@@ -641,12 +742,59 @@ void M2_2006::PaintGraph( QPainter& painter, QFont const& font, QRect const &rec
         ff0x::DataLength( xi_range,x_range, x_step );
         ff0x::DataLength( yi_range,y_range, y_step );
 
-        painter.drawPixmap( p2, builder.Draw( lines2, x_range.x()+x_step, y_range.x()+y_step, x_step, y_step, x_msg, "Объем, см3", true ) );
+        painter.drawPixmap( p2, builder.Draw( lines2, x_range.x()+x_step, y_range.x()+y_step, x_step, y_step, x_msg, "Объем, литр", true ) );
     }
 
     painter.restore();
 }
+void M2_2006::PaintZGraph(QPainter& painter, QFont const& font, QRect const &rect,
+                                 QString  const& compare_width,
+                                 double skale,
+                                 M2_2006::TimeUnits tu ) const
+{
+    std::unique_lock<std::mutex> l( mMutex );
+    mZGrapfs.reset( new ZGrapfData( this, compare_width ) );
 
+    painter.save();
+
+    double x_scale = 1.0/60.0;
+    QString x_msg = "Время, мин.";
+
+    if ( tu == tuSec )
+    {
+        x_scale = 1.0;
+        x_msg = "Время, сек.";
+    }
+
+    mZGrapfs->SetXscale( x_scale );
+
+    QFont f = font;
+    f.setPointSize( 12 );
+    int w = (rect.width())*skale;
+    int h = (rect.height())*skale;
+
+    ff0x::GraphBuilder builder ( w, h, ff0x::GraphBuilder::PlusPlus, f );
+    ff0x::BasicGraphBuilder::GraphDataLine lines;
+    lines.push_back( ff0x::BasicGraphBuilder::Line(mZGrapfs->data, ff0x::BasicGraphBuilder::LabelInfo( "Объем, литр", Qt::darkGreen ) ) );
+    if ( !mZGrapfs->data_e2.empty() )
+        lines.push_back( ff0x::BasicGraphBuilder::Line(mZGrapfs->data_e2, ff0x::BasicGraphBuilder::LabelInfo( "Предыдущий результат: объем", Qt::gray ) ) );
+
+    QRect p1(rect.left(), rect.top(), w, h );
+    {
+        QPointF x_range;
+        QPointF y_range;
+        QPointF xi_range(mZGrapfs->x_range.x(), 0);
+        QPointF yi_range(mZGrapfs->y_range.x(), 0);
+        double x_step = 0;
+        double y_step = 0;
+        ff0x::DataLength( xi_range,x_range, x_step );
+        ff0x::DataLength( yi_range,y_range, y_step );
+
+        painter.drawPixmap( p1, builder.Draw( lines, x_range.x()+x_step, y_range.x()+y_step, x_step, y_step, x_msg, "Объем, литр", true ) );
+    }
+
+    painter.restore();
+}
 
 void M2_2006::Question()
 {
