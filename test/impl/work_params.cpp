@@ -64,7 +64,9 @@ void WorkParams::Reset()
     mVolume = 0;
 }
 QString WorkParams::ToString() const
-{}
+{
+    return QString();
+}
 
 QJsonObject WorkParams::Serialise() const
 {

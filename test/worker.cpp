@@ -8,6 +8,12 @@ Worker::Worker():
     mPause(false),
     mTerminateSignal(true)
 {}
+Worker::~Worker()
+{
+    QObject::disconnect();
+    terminate();
+    wait();
+}
 void Worker::run()
 {
     mTerminateSignal = false;

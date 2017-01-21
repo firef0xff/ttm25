@@ -10,6 +10,7 @@ class Worker : public QThread
     Q_OBJECT
 public:
     Worker();
+    ~Worker();
     void run();
     void stop();
     void fill();

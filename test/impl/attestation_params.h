@@ -20,10 +20,15 @@ public:
 
     virtual void WriteToController() const;
 
+    double PressureSpeed() const;
+    bool PressureSpeed( QString const& );
+
 private:
     AttestationParams();
     AttestationParams( AttestationParams const& ) = delete;
     void operator = ( AttestationParams const& ) = delete;
+
+    double mPressureSpeed;
 };
 
 }//namespace test

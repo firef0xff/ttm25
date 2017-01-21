@@ -57,6 +57,21 @@ private:
     mutable uint32_t mDrawLine; //отметка на которой остановилась печать
 };
 
+class DrawHelper
+{
+public:
+    DrawHelper( QPainter& , QRect& );
+    void DrawRowCenter( QRect const& place, QFont const& font, QColor const& color, QString const& text );
+    void DrawRowLeft( QRect const& place,
+                      QFont const& font,
+                      QColor const& color1,
+                      QString const& label,
+                      QColor const& color2 = Qt::black,
+                      QString const& value = "" );
+private:
+    QPainter& painter;
+    QRect &free_rect;
+};
 }//namespace test
 
 Q_DECLARE_METATYPE( test::Test* )

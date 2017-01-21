@@ -1,4 +1,5 @@
 #include "attestation_params.h"
+#include "../../cpu/cpu_memory.h"
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
@@ -25,7 +26,8 @@ AttestationParams& AttestationParams::Instance()
     return *INST;
 }
 
-AttestationParams::AttestationParams()
+AttestationParams::AttestationParams():
+    mPressureSpeed(0)
 {}
 AttestationParams::~AttestationParams()
 {}
@@ -33,6 +35,7 @@ AttestationParams::~AttestationParams()
 void AttestationParams::Reset()
 {
     Parameters::Reset();
+    mPressureSpeed = 0;
 }
 QString AttestationParams::ToString() const
 {
@@ -42,16 +45,32 @@ QString AttestationParams::ToString() const
 QJsonObject AttestationParams::Serialise() const
 {
     auto obj = Parameters::Serialise();
+    obj.insert("PressureSpeed", mPressureSpeed);
     return obj;
 }
-bool AttestationParams::Deserialize( QJsonObject const& /*obj*/ )
+bool AttestationParams::Deserialize( QJsonObject const& obj )
 {
-    return true;
+    Parameters::Deserialize( obj );
+    bool res = obj.contains("PressureSpeed");
+    mPressureSpeed = obj.value("PressureSpeed").toDouble();
+    return res;
 }
 
 void AttestationParams::WriteToController() const
-{}
+{
+    auto& params = cpu::CpuMemory::Instance().Params;
+    params.Reset();
+    params.PressureSpeed( mPressureSpeed );
+    params.Write();
+}
 
-
+double AttestationParams::PressureSpeed() const
+{
+    return mPressureSpeed;
+}
+bool AttestationParams::PressureSpeed( QString const& val )
+{
+    return ParseValue( mPressureSpeed, val );
+}
 }//namespace test
 

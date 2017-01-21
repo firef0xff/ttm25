@@ -23,11 +23,18 @@ public:
     virtual bool Deserialize( QJsonObject const& obj ) override;
     virtual bool Draw( QPainter& painter, QRect &free_rect, QString  const& compare_width ) const override;
 
+    virtual void ResetDrawLine() override;
 
 protected:
+    virtual bool DrawHeader( uint32_t& num, QPainter& painter, QRect &free_rect ) const;
+    virtual bool DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) const = 0;
+    virtual bool DrawFoter( uint32_t& num, QPainter& painter, QRect &free_rect ) const;
+
     bool mSuccess;
     cpu::data::AttestationLaunchControls& mControls;
 
+    mutable int PrintedRows = 0;
+    mutable int PrintedPage = 0;
 };
 
 class AttPressure : public Attestaion
@@ -61,6 +68,8 @@ public:
     virtual QJsonObject Serialise() const override;
     virtual bool Deserialize( QJsonObject const& obj ) override;
 private:
+    virtual bool DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) const;
+
     DataSet mData;
     int32_t mCurrenPos;
     bool mWait;
@@ -69,30 +78,71 @@ private:
 class AttTime : public Attestaion
 {
 public:
+    struct Data
+    {
+        Data();
+
+        QJsonObject Serialise() const;
+        bool Deserialize( QJsonObject const& obj );
+
+        double mCpuTime;
+        double mResult;
+        bool mCurrent;
+    };
+    typedef QVector<Data> DataSet;
     AttTime();
     virtual bool Run() override;
 
-    void Reset(){};
-    virtual void UpdateData(){};
-    virtual void SetStartBit( bool b ){};
-    virtual void SetStopBit( bool b ){};
+    void Reset();
+    DataSet const& GetData() const;
+    DataSet& GetData();
+    virtual void UpdateData();
+    virtual void SetStartBit( bool b );
+    virtual void SetStopBit( bool b );
 
     virtual QJsonObject Serialise() const override;
     virtual bool Deserialize( QJsonObject const& obj ) override;
+private:
+    virtual bool DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) const;
+
+    DataSet mData;
+    int32_t mCurrenPos;
+    bool mWait;
 };
 
 class AttPressureSpeed : public Attestaion
 {
 public:
+    struct Data
+    {
+        Data();
+
+        QJsonObject Serialise() const;
+        bool Deserialize( QJsonObject const& obj );
+
+        double mCpuTime;
+        double mResult;
+    };
+    typedef QVector<Data> DataSet;
+
     AttPressureSpeed();
     virtual bool Run() override;
 
-    void Reset(){};
-    virtual void UpdateData(){};
-    virtual void SetStartBit( bool b ){};
-    virtual void SetStopBit( bool b ){};
+    DataSet const& GetData() const;
+    DataSet& GetData();
+
+    void Reset();
+    virtual void UpdateData();
+    virtual void SetStartBit( bool b );
+    virtual void SetStopBit( bool b );
 
     virtual QJsonObject Serialise() const override;
     virtual bool Deserialize( QJsonObject const& obj ) override;
+
+private:
+    virtual bool DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) const;
+
+    DataSet mData;
+    int32_t mCurrenPos;
 };
 }//namespace test

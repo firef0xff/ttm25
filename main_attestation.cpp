@@ -26,16 +26,16 @@ void MainWindow::on_tAttestaion_currentChanged(int index)
 void MainWindow::on_bAPStart_clicked()
 {
     LockSkreen( mdAttestation );
-    if (!mWorker)
-    {
-        auto& params = test::AttestationParams::Instance();
-        params.Date( QDateTime::currentDateTime() );
-        params.User( app::Settings::Instance().User() );
-        mWorker.reset( new Worker() );
-        QObject::connect( mWorker.get(), &Worker::to_exec, this, &MainWindow::exec );
-        QObject::connect( mWorker.get(), &Worker::done, this, &MainWindow::OnEndTests );
-        mWorker->start();
-    }
+    auto& params = test::AttestationParams::Instance();
+    params.Date( QDateTime::currentDateTime() );
+    params.User( app::Settings::Instance().User() );
+    params.PressureSpeed( ui->cbPressureSpeed->currentText() );
+
+    mWorker.reset( new Worker() );
+    QObject::connect( mWorker.get(), &Worker::to_exec, this, &MainWindow::exec );
+    QObject::connect( mWorker.get(), &Worker::done, this, &MainWindow::OnEndTests );
+    mWorker->start();
+
     mWorker->fill();
 }
 void MainWindow::on_bAPWrite_clicked()
@@ -101,6 +101,118 @@ void MainWindow::on_bAPClear_clicked()
     table->setRowCount(0);
 }
 
+void MainWindow::on_bATStart_clicked()
+{
+    on_bATClear_clicked();
+    on_bAPStart_clicked();
+}
+void MainWindow::on_bATWrite_clicked()
+{
+    auto & wp = test::AttestationParams::Instance();
+    auto* test = wp.TestForExec();
+    if ( !test || test->ID() != 1 )
+        return;
+
+    auto *ptr = static_cast<test::AttTime*>(test);
+
+    auto& data = ptr->GetData();
+
+    for ( auto i = 0; i < data.size(); ++i )
+    {
+        test::AttTime::Data &lnk = data[i];
+        if ( lnk.mCurrent )
+        {
+            auto* item = ui->tblAttTime->item(i,1);
+            if ( !test::ParseValue( lnk.mResult, item->text() ) )
+                item->setBackgroundColor(Qt::red);
+            else
+            {
+                item->setBackgroundColor(Qt::green);
+                break;
+            }
+        }
+    }
+
+    //кнопка записать
+    if (mWorker)
+    {
+        mWorker->test();
+    }
+}
+void MainWindow::on_bATStop_clicked()
+{
+    on_bTERMINATE_clicked();
+}
+void MainWindow::on_bATReport_clicked()
+{
+    on_a_proto_triggered();
+}
+void MainWindow::on_bATClear_clicked()
+{
+    auto & wp = test::AttestationParams::Instance();
+    auto* test = wp.TestForExec();
+    if ( !test || test->ID() != 1 )
+        return;
+
+    on_bATStop_clicked();
+
+    auto *ptr = static_cast<test::AttPressure*>(test);
+    ptr->Reset();
+    auto* table = ui->tblAttTime;
+
+    // Deselects all selected items
+    table->clearSelection();
+    table->disconnect();
+    table->clearContents();
+    table->setRowCount(0);
+}
+
+void MainWindow::on_bAPTStart_clicked()
+{
+    on_bAPTClear_clicked();
+    on_bAPStart_clicked();
+}
+void MainWindow::on_bAPTWrite_clicked()
+{
+    auto & wp = test::AttestationParams::Instance();
+    auto* test = wp.TestForExec();
+    if ( !test || test->ID() != 2 )
+        return;
+
+    //кнопка записать
+    if (mWorker)
+    {
+        mWorker->test();
+    }
+}
+void MainWindow::on_bAPTStop_clicked()
+{
+    on_bTERMINATE_clicked();
+}
+void MainWindow::on_bAPTReport_clicked()
+{
+    on_a_proto_triggered();
+}
+void MainWindow::on_bAPTClear_clicked()
+{
+    auto & wp = test::AttestationParams::Instance();
+    auto* test = wp.TestForExec();
+    if ( !test || test->ID() != 2 )
+        return;
+
+    on_bAPTStop_clicked();
+
+    auto *ptr = static_cast<test::AttPressureSpeed*>(test);
+    ptr->Reset();
+    auto* table = ui->tblAttPressureSpeed;
+
+    // Deselects all selected items
+    table->clearSelection();
+    table->disconnect();
+    table->clearContents();
+    table->setRowCount(0);
+}
+
 //обновление данных на вкладке
 namespace
 {
@@ -112,7 +224,7 @@ void UpdatePresureTest( test::AttPressure const& test, Ui::MainWindow *ui )
     {
         test::AttPressure::Data const& dt = data[it];
 
-        if ( table->rowCount() <= it )
+        if ( static_cast<size_t>( table->rowCount() ) <= it )
         {
             table->insertRow(table->rowCount());
 
@@ -173,11 +285,103 @@ void UpdatePresureTest( test::AttPressure const& test, Ui::MainWindow *ui )
 }
 void UpdateTimeTest( test::AttTime const& test, Ui::MainWindow *ui )
 {
+    auto const& data = test.GetData();
+    auto* table = ui->tblAttTime;
 
+    while ( data.size() < table->rowCount() )
+    {
+        table->removeRow( table->rowCount() - 1 );
+    }
+    for( size_t it = 0, end = data.size(); it < end; ++it )
+    {
+        test::AttTime::Data const& dt = data[it];
+
+        if ( static_cast<size_t>( table->rowCount() ) <= it )
+        {
+            table->insertRow(table->rowCount());
+
+            std::unique_ptr<QTableWidgetItem> mark( new QTableWidgetItem );
+            std::unique_ptr<QTableWidgetItem> i_result( new QTableWidgetItem );
+            std::unique_ptr<QTableWidgetItem> i_fact( new QTableWidgetItem );
+
+            if (dt.mCurrent)
+            {
+                mark->setText("*");
+                i_fact->setFlags( Qt::ItemIsEnabled|Qt::ItemIsEditable|Qt::ItemIsSelectable );
+            }
+            else
+            {
+                mark->setText("");
+                i_fact->setFlags( Qt::ItemIsEnabled );
+            }
+
+            i_result->setText(test::ToString( dt.mCpuTime ));
+            i_fact->setText(test::ToString( dt.mResult ));
+
+            i_result->setFlags( Qt::ItemIsEnabled );
+
+            table->setVerticalHeaderItem(table->rowCount() - 1, mark.release());
+            table->setItem(table->rowCount() - 1, 0, i_result.release());
+            table->setItem(table->rowCount() - 1, 1, i_fact.release());
+        }
+        else
+        {
+            QTableWidgetItem *mark = table->verticalHeaderItem(it);
+            QTableWidgetItem *i_result = table->item(it, 0);
+            QTableWidgetItem *i_fact = table->item(it, 1);
+
+            if (dt.mCurrent)
+            {
+                mark->setText("*");
+                Qt::ItemFlags f = Qt::ItemIsEnabled|Qt::ItemIsEditable|Qt::ItemIsSelectable;
+                if ( i_fact->flags() != f )
+                    i_fact->setFlags( f );
+            }
+            else
+            {
+                mark->setText("");
+                i_fact->setFlags( Qt::ItemIsEnabled );
+            }
+            i_result->setText(test::ToString( dt.mCpuTime ));
+            if (!dt.mCurrent)
+                i_fact->setText(test::ToString( dt.mResult ));
+        }
+    }
 }
 void UpdatePresureSpeedTest( test::AttPressureSpeed const& test, Ui::MainWindow *ui )
 {
+    auto const& data = test.GetData();
+    auto* table = ui->tblAttPressureSpeed;
 
+    for( size_t it = 0, end = data.size(); it < end; ++it )
+    {
+        test::AttPressureSpeed::Data const& dt = data[it];
+
+        if ( static_cast<size_t>( table->rowCount() ) <= it )
+        {
+            table->insertRow(table->rowCount());
+
+            std::unique_ptr<QTableWidgetItem> i_result( new QTableWidgetItem );
+            std::unique_ptr<QTableWidgetItem> i_fact( new QTableWidgetItem );
+
+
+            i_result->setText(test::ToString( dt.mCpuTime ));
+            i_fact->setText(test::ToString( dt.mResult ));
+
+            i_result->setFlags( Qt::ItemIsEnabled );
+
+            table->setItem(table->rowCount() - 1, 0, i_result.release());
+            table->setItem(table->rowCount() - 1, 1, i_fact.release());
+        }
+        else
+        {
+            QTableWidgetItem *i_result = table->item(it, 0);
+            QTableWidgetItem *i_fact = table->item(it, 1);
+
+            i_result->setText(test::ToString( dt.mCpuTime ));
+            i_fact->setText(test::ToString( dt.mResult ));
+        }
+    }
 }
 
 }

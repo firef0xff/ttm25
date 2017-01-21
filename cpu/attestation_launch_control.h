@@ -30,6 +30,18 @@ public:
     void AttPressureSave( bool b );
     bool const& AttPressureSave() const;
 
+    void AttTimeStart( bool b );
+    bool const& AttTimeStart() const;
+
+    void AttTimeStop( bool b );
+    bool const& AttTimeStop() const;
+
+    void AttPressureSpeedStart( bool b );
+    bool const& AttPressureSpeedStart() const;
+
+    void AttPressureSpeedStop( bool b );
+    bool const& AttPressureSpeedStop() const;
+
     std::unique_lock<std::recursive_mutex> Locker();
 protected:
     bool* W10_00;    //Старт по времени

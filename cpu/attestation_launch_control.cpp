@@ -71,5 +71,42 @@ bool const& AttestationLaunchControls::AttPressureSave() const
 {
     return *W10_04;
 }
+
+void AttestationLaunchControls::AttTimeStart( bool b )
+{
+    *W10_00 = b;
+}
+bool const& AttestationLaunchControls::AttTimeStart() const
+{
+    return *W10_00;
+}
+
+void AttestationLaunchControls::AttTimeStop( bool b )
+{
+    *W10_01 = b;
+}
+bool const& AttestationLaunchControls::AttTimeStop() const
+{
+    return *W10_01;
+}
+
+void AttestationLaunchControls::AttPressureSpeedStart( bool b )
+{
+    *W10_05 = b;
+}
+bool const& AttestationLaunchControls::AttPressureSpeedStart() const
+{
+    return *W10_05;
+}
+
+void AttestationLaunchControls::AttPressureSpeedStop( bool b )
+{
+    *W10_06 = b;
+}
+bool const& AttestationLaunchControls::AttPressureSpeedStop() const
+{
+    return *W10_06;
+}
+
 }//namespace data
 }//namespace cpu

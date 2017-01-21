@@ -317,7 +317,11 @@ void MainWindow::on_aLoadParams_triggered()
     if ( test::CURRENT_PARAMS == &test::WorkParams::Instance() )
         ui->tMode->setCurrentIndex(0);
     else
+    {
         ui->tMode->setCurrentIndex(1);
+        if ( auto ptr = test::AttestationParams::Instance().TestForExec() )
+            ui->tAttestaion->setCurrentIndex( ptr->ID() );
+    }
 }
 
 void MainWindow::on_aSaveResults_triggered()
@@ -355,7 +359,11 @@ void MainWindow::on_aLoadResults_triggered()
     if ( test::CURRENT_PARAMS == &test::WorkParams::Instance() )
         ui->tMode->setCurrentIndex(0);
     else if ( test::CURRENT_PARAMS == &test::AttestationParams::Instance() )
+    {
+        if ( auto ptr = test::AttestationParams::Instance().TestForExec() )
+            ui->tAttestaion->setCurrentIndex( ptr->ID() );
         ui->tMode->setCurrentIndex(1);
+    }
     on_a_proto_triggered();
 }
 
@@ -396,10 +404,6 @@ void MainWindow::on_bTERMINATE_clicked()
     if (mWorker)
     {
         mWorker->terminate();
-        mWorker->wait();
-        QObject::disconnect( mWorker.get(), &Worker::to_exec, this, &MainWindow::exec );
-        QObject::disconnect( mWorker.get(), &Worker::done, this, &MainWindow::OnEndTests );
-        mWorker.reset();
     }
     else
     {

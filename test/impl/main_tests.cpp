@@ -290,42 +290,6 @@ private:
     double current_x_scale = 1.0;
 };
 
-DrawHelper::DrawHelper( QPainter& p, QRect& r):
-    painter(p),
-    free_rect(r)
-{
-
-}
-void DrawHelper::DrawRowCenter( QRect const& place, QFont const& font, QColor const& color, QString const& text )
-{
-    painter.save();
-    QFontMetrics metrix( font );
-    QPoint start_point( place.center().x() - metrix.width( text ) / 2, place.center().y() +metrix.height()/2);
-    painter.setFont( font );
-    painter.setPen( color );
-    painter.drawText( start_point, text );
-    painter.restore();
-}
-void DrawHelper::DrawRowLeft( QRect const& place,
-                  QFont const& font,
-                  QColor const& color1,
-                  QString const& label,
-                  QColor const& color2,
-                  QString const& value )
-{
-    painter.save();
-    QFontMetrics metrix( font );
-    QPoint start_point( place.left() , place.center().y()+metrix.height()/2 );
-    QPoint start_point2( place.left() + metrix.width(label), place.center().y() +metrix.height()/2);
-    painter.setFont( font );
-    painter.setPen( color1 );
-    painter.drawText( start_point, label );
-    painter.setPen( color2 );
-    painter.drawText( start_point2, value );
-    painter.restore();
-}
-
-
 M2_2006::M2_2006( QString method_name, int32_t id):
     TestCommonData( method_name, id ),
     mBreakPressure(0.0),

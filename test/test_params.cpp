@@ -241,7 +241,10 @@ bool DataFromFile( QString fname )
             {
                 Test* ptr = it->second.get();
                 if ( ptr->ID() == id )
+                {
                     ptr->Deserialize( data );
+                    CURRENT_PARAMS->TestForExec( *ptr );
+                }
             }
         }
         f.close();
