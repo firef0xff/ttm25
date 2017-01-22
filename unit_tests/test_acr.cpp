@@ -47,5 +47,8 @@ public:
         if (cv.CRC != s )
             throw std::runtime_error("wrong cv.CRC");
     }
-}t2;
+};
+#ifdef TESTS
+TestAcr t2;
+#endif
 }

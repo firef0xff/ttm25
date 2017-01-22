@@ -329,7 +329,7 @@ void MainWindow::on_aSaveResults_triggered()
     QString file_name;
     QFileDialog dlg;
     dlg.setFileMode( QFileDialog::AnyFile );
-    dlg.setDirectory( app::Settings::Instance().TestPath() );
+    dlg.setDirectory( app::Settings::Instance().ResultPath() );
     dlg.setNameFilter( "Результаты испытаний (*.res )" );
     dlg.setAcceptMode( QFileDialog::AcceptSave );
     dlg.setViewMode( QFileDialog::Detail );
@@ -347,7 +347,7 @@ void MainWindow::on_aLoadResults_triggered()
     QString file_name;
     QFileDialog dlg;
     dlg.setFileMode( QFileDialog::ExistingFile );
-    dlg.setDirectory( app::Settings::Instance().TestPath() );
+    dlg.setDirectory( app::Settings::Instance().ResultPath() );
     dlg.setNameFilter( "Результаты испытаний (*.res )" );
     dlg.setViewMode( QFileDialog::Detail );
     if ( dlg.exec() )
@@ -428,7 +428,16 @@ void MainWindow::OnEndTests()
 {
     LockSkreen( mdNone );
     if (mWorker)
-    {
+    {        
+        if ( test::CURRENT_PARAMS )
+            if ( auto ptr = test::CURRENT_PARAMS->TestForExec() )
+            {
+                QString name = app::Settings::Instance().ResultPath() + "/" +
+                               test::CURRENT_PARAMS->Date().toString("dd_MM_yyyy_hh_mm_ss") +
+                               " " +ptr->Name() + ".res";
+                test::DataToFile( name, *test::CURRENT_PARAMS );
+            }
+
         QObject::disconnect( mWorker.get(), &Worker::to_exec, this, &MainWindow::exec );
         QObject::disconnect( mWorker.get(), &Worker::done, this, &MainWindow::OnEndTests );
         mWorker.reset();
