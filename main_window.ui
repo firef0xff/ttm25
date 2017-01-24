@@ -1196,10 +1196,16 @@
             <item>
              <widget class="QTableWidget" name="tblAttPressure">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>320</width>
+                <height>0</height>
+               </size>
               </property>
               <column>
                <property name="text">
@@ -1216,6 +1222,19 @@
                 <string>Факт</string>
                </property>
               </column>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="lATGraph">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
              </widget>
             </item>
             <item>
@@ -1255,6 +1274,20 @@
                <widget class="QPushButton" name="bAPClear">
                 <property name="text">
                  <string>СБРОС</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="bAPTerm">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>60</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>АВАРИЙНЫЙ
+СТОП</string>
                 </property>
                </widget>
               </item>
@@ -1337,6 +1370,20 @@
                <widget class="QPushButton" name="bATClear">
                 <property name="text">
                  <string>СБРОС</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="bATTerm">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>60</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>АВАРИЙНЫЙ
+СТОП</string>
                 </property>
                </widget>
               </item>
@@ -1467,6 +1514,20 @@
                <widget class="QPushButton" name="bAPTClear">
                 <property name="text">
                  <string>СБРОС</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="bAPTTerm">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>60</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>АВАРИЙНЫЙ
+СТОП</string>
                 </property>
                </widget>
               </item>

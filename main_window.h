@@ -108,6 +108,12 @@ private slots:
 
     void on_bAPTClear_clicked();
 
+    void on_bAPTerm_clicked();
+
+    void on_bATTerm_clicked();
+
+    void on_bAPTTerm_clicked();
+
 private:
     //главное окно
     void closeEvent(QCloseEvent *e);

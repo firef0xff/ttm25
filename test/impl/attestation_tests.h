@@ -23,12 +23,16 @@ public:
     virtual bool Deserialize( QJsonObject const& obj ) override;
     virtual bool Draw( QPainter& painter, QRect &free_rect, QString  const& compare_width ) const override;
 
+    virtual void PaintGraph(QPainter& painter, QFont const& font, const QRect &rect,
+                    double skale = 0.98 ) const;
+
     virtual void ResetDrawLine() override;
 
 protected:
     virtual bool DrawHeader( uint32_t& num, QPainter& painter, QRect &free_rect ) const;
     virtual bool DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) const = 0;
     virtual bool DrawFoter( uint32_t& num, QPainter& painter, QRect &free_rect ) const;
+    virtual bool DrawGraph( uint32_t& num, QPainter& painter, QRect &free_rect ) const;
 
     bool mSuccess;
     cpu::data::AttestationLaunchControls& mControls;
@@ -40,6 +44,7 @@ protected:
 class AttPressure : public Attestaion
 {
 public:
+    class GrapfData;
     struct Data
     {
         Data();
@@ -67,12 +72,16 @@ public:
 
     virtual QJsonObject Serialise() const override;
     virtual bool Deserialize( QJsonObject const& obj ) override;
+
+    virtual void PaintGraph(QPainter& painter, QFont const& font, const QRect &rect,
+                    double skale) const override;
 private:
     virtual bool DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) const;
 
     DataSet mData;
     int32_t mCurrenPos;
     bool mWait;
+    mutable std::unique_ptr<GrapfData> mGrapfs;
 };
 
 class AttTime : public Attestaion

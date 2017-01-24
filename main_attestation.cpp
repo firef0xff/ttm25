@@ -14,8 +14,6 @@ void MainWindow::InitAttestationModule()
 
 void MainWindow::on_tAttestaion_currentChanged(int index)
 {
-    on_bTERMINATE_clicked();
-
     auto & wp = test::AttestationParams::Instance();
     auto it = wp.TestsCase().find( index );
     if ( it != wp.TestsCase().end() )
@@ -75,7 +73,10 @@ void MainWindow::on_bAPWrite_clicked()
 }
 void MainWindow::on_bAPStop_clicked()
 {//кнопка стоп
-    on_bTERMINATE_clicked();
+    if (mWorker)
+    {
+        mWorker->terminate();
+    }
 }
 void MainWindow::on_bAPReport_clicked()
 {
@@ -99,6 +100,15 @@ void MainWindow::on_bAPClear_clicked()
     table->disconnect();
     table->clearContents();
     table->setRowCount(0);
+}
+void MainWindow::on_bAPTerm_clicked()
+{
+    on_bAPStop_clicked();
+    auto &mem = cpu::CpuMemory::Instance().LaunchControl;
+    auto lock = mem.Locker();
+    mem.Read();
+    mem.Terminated(true);
+    mem.Write();
 }
 
 void MainWindow::on_bATStart_clicked()
@@ -141,7 +151,7 @@ void MainWindow::on_bATWrite_clicked()
 }
 void MainWindow::on_bATStop_clicked()
 {
-    on_bTERMINATE_clicked();
+    on_bAPStop_clicked();
 }
 void MainWindow::on_bATReport_clicked()
 {
@@ -166,6 +176,10 @@ void MainWindow::on_bATClear_clicked()
     table->clearContents();
     table->setRowCount(0);
 }
+void MainWindow::on_bATTerm_clicked()
+{
+    on_bAPTerm_clicked();
+}
 
 void MainWindow::on_bAPTStart_clicked()
 {
@@ -187,7 +201,7 @@ void MainWindow::on_bAPTWrite_clicked()
 }
 void MainWindow::on_bAPTStop_clicked()
 {
-    on_bTERMINATE_clicked();
+    on_bAPStop_clicked();
 }
 void MainWindow::on_bAPTReport_clicked()
 {
@@ -212,12 +226,33 @@ void MainWindow::on_bAPTClear_clicked()
     table->clearContents();
     table->setRowCount(0);
 }
+void MainWindow::on_bAPTTerm_clicked()
+{
+    on_bAPTerm_clicked();
+}
 
 //обновление данных на вкладке
 namespace
 {
+void RepaintGraph( test::Attestaion const& test, QLabel *label )
+{
+    QPixmap pixmap( label->width()-2, label->height()-2 );
+    QPainter painter(&pixmap);
+    QFont font = painter.font();
+    font.setFamily("Arial");
+    font.setPointSize(12);
+    auto r = pixmap.rect();
+    painter.fillRect( r, Qt::white );
+
+    test.PaintGraph( painter, font, pixmap.rect(), 1 );
+
+    label->setScaledContents( true );
+    label->setPixmap( pixmap );
+    label->setMinimumSize( 10, 10 );
+}
 void UpdatePresureTest( test::AttPressure const& test, Ui::MainWindow *ui )
 {
+    RepaintGraph( test, ui->lATGraph );
     auto const& data = test.GetData();
     auto* table = ui->tblAttPressure;
     for( size_t it = 0, end = data.size(); it < end; ++it )

@@ -17,6 +17,7 @@ Params::Params():
 void Params::Reset()
 {
     mData.clear();
+    mbData.clear();
     fins::AddElement< fins::FLOAT >( mData, &D00, 0.0f );
     fins::AddElement< fins::FLOAT >( mData, &D02, 0.0f );
     fins::AddElement< fins::FLOAT >( mData, &D04, 0.0f );

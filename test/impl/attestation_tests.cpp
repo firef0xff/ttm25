@@ -5,6 +5,7 @@
 #include <QJsonArray>
 #include <QTextDocument>
 #include <QAbstractTextDocumentLayout>
+#include <GraphBuilder/graph_builder.h>
 
 namespace test
 {
@@ -27,6 +28,7 @@ void Attestaion::Start( bool const& flag )
         if ( IsStopped() )
         {
             SetStopBit( true );
+            mControls.Write();
             Log( "Испытание прервано" );
             return;
         }
@@ -74,6 +76,7 @@ bool Attestaion::Draw( QPainter& painter, QRect &free_rect, QString  const& /*co
     uint32_t num = 0;
 
     res = DrawHeader(num, painter,free_rect);
+    res = DrawGraph( num, painter, free_rect );
     res = DrawBody(num, painter,free_rect);
     res = DrawFoter(num, painter,free_rect);
 
@@ -161,6 +164,25 @@ bool Attestaion::DrawFoter( uint32_t& num, QPainter& painter, QRect &free_rect )
     return res;
 }
 
+bool Attestaion::DrawGraph( uint32_t& num, QPainter& painter, QRect &free_rect ) const
+{
+
+    QFont text_font = painter.font();
+    text_font.setFamily("Arial");
+    text_font.setPointSize( 12 );
+
+
+    DrawHelper drw( painter, free_rect );
+
+    bool res = DrawLine( num, free_rect, text_font,
+    [ this, &painter, &text_font, &free_rect ]( QRect const& rect )
+    {
+        PaintGraph( painter, text_font, rect );
+    }, 1, 480  );
+
+    return res;
+}
+
 void Attestaion::ResetDrawLine()
 {
     PrintedRows = 0;
@@ -168,6 +190,8 @@ void Attestaion::ResetDrawLine()
     Test::ResetDrawLine();
 }
 
+void Attestaion::PaintGraph(QPainter&, QFont const&, const QRect&, double ) const
+{}
 //------------------------------------------------------~
 
 namespace
@@ -392,6 +416,105 @@ bool AttPressure::DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect )
     return res;
 }
 
+namespace
+{
+QVector<ff0x::GraphBuilder::LinePoints> Process( AttPressure::DataSet const& src, QPointF& x_range, QPointF& y_range )
+{
+    QVector<ff0x::GraphBuilder::LinePoints> result;
+    result.resize(3);
+
+    for ( int i = 0; i < src.size(); ++i )
+    {
+        double const& y1 = src[i].mTask;
+        double const& y2 = src[i].mResult;
+        double const& y3 = src[i].mFact;
+
+        double x = i + 1;
+
+        double max_y = std::max( y1, std::max( y2, y3 ) );
+        double min_y = std::min( y1, std::min( y2, y3 ) );
+        if ( !i )
+        {
+            x_range.setX( x );
+            x_range.setY( x );
+            y_range.setX( max_y );
+            y_range.setY( min_y );
+        }
+        else
+        {
+            if ( x > x_range.x() )
+                x_range.setX( x );
+            if ( x < x_range.y() )
+                x_range.setY( x );
+
+            if ( max_y > y_range.x() )
+                y_range.setX( max_y );
+            if ( min_y < y_range.y() )
+                y_range.setY( min_y );
+        }
+
+        result[0].push_back( QPointF( x, y1 ) );
+        result[1].push_back( QPointF( x, y2 ) );
+        result[2].push_back( QPointF( x, y3 ) );
+    }
+
+    return std::move( result );
+}
+
+}
+
+class AttPressure::GrapfData
+{
+public:
+    GrapfData( AttPressure const* test )
+    {
+        data = Process( test->mData, x_range, y_range );
+    }
+
+    QVector<ff0x::GraphBuilder::LinePoints> data;
+
+
+    QPointF x_range;
+    QPointF y_range;
+};
+
+void AttPressure::PaintGraph(QPainter& painter, QFont const& font, const QRect &rect, double skale) const
+{
+    mGrapfs.reset( new GrapfData( this ) );
+
+    painter.save();
+
+    QString x_msg = "Номер измерения";
+    QString y_msg = "Давление, МПа";
+
+
+    QFont f = font;
+    f.setPointSize( 12 );
+    int w = (rect.width())*skale;
+    int h = (rect.height())*skale;
+
+    ff0x::GraphBuilder builder ( w, h, ff0x::GraphBuilder::PlusPlus, f );
+    ff0x::BasicGraphBuilder::GraphDataLine lines;
+    lines.push_back( ff0x::BasicGraphBuilder::Line(mGrapfs->data[0], ff0x::BasicGraphBuilder::LabelInfo( "Задание", Qt::darkRed ) ) );
+    lines.push_back( ff0x::BasicGraphBuilder::Line(mGrapfs->data[1], ff0x::BasicGraphBuilder::LabelInfo( "Результат", Qt::darkGreen ) ) );
+    lines.push_back( ff0x::BasicGraphBuilder::Line(mGrapfs->data[2], ff0x::BasicGraphBuilder::LabelInfo( "Контрольное значение", Qt::darkBlue ) ) );
+
+    QRect p1(rect.left(), rect.top(), w, h );
+    {
+        QPointF x_range;
+        QPointF y_range;
+        QPointF xi_range(mGrapfs->x_range.x(), 0);
+        QPointF yi_range(mGrapfs->y_range.x(), 0);
+        double x_step = 0;
+        double y_step = 0;
+        ff0x::DataLength( xi_range,x_range, x_step );
+        ff0x::DataLength( yi_range,y_range, y_step );
+
+        painter.drawPixmap( p1, builder.Draw( lines, x_range.x()+x_step, y_range.x()+y_step, x_step, y_step, x_msg, y_msg, true ) );
+    }
+
+    painter.restore();
+}
 //------------------------------------------------------~
 namespace
 {

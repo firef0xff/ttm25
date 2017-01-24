@@ -141,8 +141,7 @@ void MainWindow::AddItem( QComboBox& combo, app::StringsSource& source )
 
 //смена вкладки
 void MainWindow::on_tMode_currentChanged(int index)
-{
-    on_bTERMINATE_clicked();    
+{  
     switch (index)
     {
     case 0:

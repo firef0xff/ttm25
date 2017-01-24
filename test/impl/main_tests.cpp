@@ -326,6 +326,7 @@ bool M2_2006::Run()
         mSuccess = false;
         mPData.clear();
         mVData.clear();
+        mZData.clear();
         mGrapfs.reset();
         mLastTime = cpu::CpuMemory::Instance().Sensors.Time();
         mBreakPressure = 0;
