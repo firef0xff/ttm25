@@ -46,13 +46,15 @@ QJsonObject AttestationParams::Serialise() const
 {
     auto obj = Parameters::Serialise();
     obj.insert("PressureSpeed", mPressureSpeed);
+    obj.insert("UpdatePeriod", mUpdatePeriod);
     return obj;
 }
 bool AttestationParams::Deserialize( QJsonObject const& obj )
 {
     Parameters::Deserialize( obj );
-    bool res = obj.contains("PressureSpeed");
+    bool res = obj.contains("PressureSpeed") && obj.contains("UpdatePeriod");
     mPressureSpeed = obj.value("PressureSpeed").toDouble();
+    mUpdatePeriod = obj.value("UpdatePeriod").toInt();
     return res;
 }
 
@@ -71,6 +73,14 @@ double AttestationParams::PressureSpeed() const
 bool AttestationParams::PressureSpeed( QString const& val )
 {
     return ParseValue( mPressureSpeed, val );
+}
+void AttestationParams::UpdatePeriod( int val )
+{
+    mUpdatePeriod = val;
+}
+int AttestationParams::UpdatePeriod() const
+{
+    return mUpdatePeriod;
 }
 }//namespace test
 

@@ -86,32 +86,20 @@ private slots:
     void on_bAPStop_clicked();
     void on_bAPReport_clicked();
     void on_bAPClear_clicked();
+    void on_bAPTerm_clicked();
 
 
     void on_bATStart_clicked();
-
     void on_bATWrite_clicked();
-
     void on_bATStop_clicked();
-
     void on_bATReport_clicked();
-
     void on_bATClear_clicked();
-
-    void on_bAPTStart_clicked();
-
-    void on_bAPTWrite_clicked();
-
-    void on_bAPTStop_clicked();
-
-    void on_bAPTReport_clicked();
-
-    void on_bAPTClear_clicked();
-
-    void on_bAPTerm_clicked();
-
     void on_bATTerm_clicked();
 
+    void on_bAPTStart_clicked();
+    void on_bAPTStop_clicked();
+    void on_bAPTReport_clicked();
+    void on_bAPTClear_clicked();
     void on_bAPTTerm_clicked();
 
 private:

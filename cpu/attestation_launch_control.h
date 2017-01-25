@@ -22,25 +22,25 @@ public:
     void Reset();
 
     void AttPressureStart( bool b );
-    bool const& AttPressureStart() const;
+    bool AttPressureStart() const;
 
     void AttPressureStop( bool b );
-    bool const& AttPressureStop() const;
+    bool AttPressureStop() const;
 
     void AttPressureSave( bool b );
-    bool const& AttPressureSave() const;
+    bool AttPressureSave() const;
 
     void AttTimeStart( bool b );
-    bool const& AttTimeStart() const;
+    bool AttTimeStart() const;
 
     void AttTimeStop( bool b );
-    bool const& AttTimeStop() const;
+    bool AttTimeStop() const;
 
     void AttPressureSpeedStart( bool b );
-    bool const& AttPressureSpeedStart() const;
+    bool AttPressureSpeedStart() const;
 
     void AttPressureSpeedStop( bool b );
-    bool const& AttPressureSpeedStop() const;
+    bool AttPressureSpeedStop() const;
 
     std::unique_lock<std::recursive_mutex> Locker();
 protected:

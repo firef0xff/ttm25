@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>864</width>
-    <height>574</height>
+    <width>1061</width>
+    <height>616</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,7 +36,7 @@
     <item>
      <widget class="QTabWidget" name="tMode">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_3">
        <attribute name="title">
@@ -1186,7 +1186,7 @@
         <item>
          <widget class="QTabWidget" name="tAttestaion">
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="tab_5">
            <attribute name="title">
@@ -1225,7 +1225,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="lATGraph">
+             <widget class="QLabel" name="lAPGraph">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -1316,7 +1316,7 @@
             <item>
              <widget class="QTableWidget" name="tblAttTime">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -1331,6 +1331,19 @@
                 <string>Секундомер</string>
                </property>
               </column>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="lATGraph">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
              </widget>
             </item>
             <item>
@@ -1441,6 +1454,20 @@
                  </widget>
                 </item>
                 <item>
+                 <widget class="QLabel" name="label_13">
+                  <property name="text">
+                   <string>Период замера, сек</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="bxPeriod">
+                  <property name="maximum">
+                   <number>99999</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
                  <spacer name="horizontalSpacer_4">
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
@@ -1456,24 +1483,44 @@
                </layout>
               </item>
               <item>
-               <widget class="QTableWidget" name="tblAttPressureSpeed">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
+               <layout class="QHBoxLayout" name="horizontalLayout_16">
+                <property name="topMargin">
+                 <number>0</number>
                 </property>
-                <column>
-                 <property name="text">
-                  <string>Время, сек</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>Давление, МПа</string>
-                 </property>
-                </column>
-               </widget>
+                <item>
+                 <widget class="QTableWidget" name="tblAttPressureSpeed">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <column>
+                   <property name="text">
+                    <string>Время, сек</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Давление, МПа</string>
+                   </property>
+                  </column>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="lAPTGraph">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </item>
              </layout>
             </item>
@@ -1486,13 +1533,6 @@
                <widget class="QPushButton" name="bAPTStart">
                 <property name="text">
                  <string>СТАРТ</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="bAPTWrite">
-                <property name="text">
-                 <string>ЗАПИСЬ</string>
                 </property>
                </widget>
               </item>
@@ -1561,8 +1601,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>864</width>
-     <height>21</height>
+     <width>1061</width>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">

@@ -16,12 +16,12 @@ Attestaion::Attestaion ( QString const& name, uint8_t id ):
     mControls(cpu::CpuMemory::Instance().AttestationLaunchControls)
 {}
 
-void Attestaion::Start( bool const& flag )
+void Attestaion::Start()
 {
     mControls.Reset();
     mControls.Write();
 
-    while( !flag )
+    while( !StopBit() )
     {
         mControls.Read();
         UpdateData();
@@ -52,6 +52,7 @@ void Attestaion::Start( bool const& flag )
         mControls.Write();
         std::this_thread::sleep_for( std::chrono::milliseconds(100) );
     }
+    return;
 }
 bool Attestaion::Success() const
 {
@@ -251,7 +252,7 @@ AttPressure::AttPressure():
 
 bool AttPressure::Run()
 {
-    Start( mControls.AttPressureStop() );
+    Start();
     if ( IsStopped() )
         return false;
 
@@ -291,6 +292,10 @@ void AttPressure::SetStartBit( bool b )
 void AttPressure::SetStopBit( bool b )
 {
     mControls.AttPressureStop( b );
+}
+bool AttPressure::StopBit()
+{
+    return mControls.AttPressureStop();
 }
 
 void AttPressure::Reset()
@@ -570,7 +575,7 @@ AttTime::AttTime():
 }
 bool AttTime::Run()
 {
-    Start( mControls.AttTimeStop() );
+    Start();
     if ( IsStopped() )
         return false;
 
@@ -656,7 +661,10 @@ void AttTime::SetStopBit( bool b )
 {
     mControls.AttTimeStop( b );
 }
-
+bool AttTime::StopBit()
+{
+    return mControls.AttTimeStop();
+}
 bool AttTime::DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) const
 {
     QFont text_font = painter.font();
@@ -737,6 +745,104 @@ bool AttTime::DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) con
 
     return res;
 }
+
+
+namespace
+{
+QVector<ff0x::GraphBuilder::LinePoints> Process( AttTime::DataSet const& src, QPointF& x_range, QPointF& y_range )
+{
+    QVector<ff0x::GraphBuilder::LinePoints> result;
+    result.resize(2);
+
+    for ( int i = 0; i < src.size(); ++i )
+    {
+        double const& y1 = src[i].mCpuTime;
+        double const& y2 = src[i].mResult;
+
+        double x = i + 1;
+
+        double max_y = std::max( y1, y2 );
+        double min_y = std::min( y1, y2 );
+        if ( !i )
+        {
+            x_range.setX( x );
+            x_range.setY( x );
+            y_range.setX( max_y );
+            y_range.setY( min_y );
+        }
+        else
+        {
+            if ( x > x_range.x() )
+                x_range.setX( x );
+            if ( x < x_range.y() )
+                x_range.setY( x );
+
+            if ( max_y > y_range.x() )
+                y_range.setX( max_y );
+            if ( min_y < y_range.y() )
+                y_range.setY( min_y );
+        }
+
+        result[0].push_back( QPointF( x, y1 ) );
+        result[1].push_back( QPointF( x, y2 ) );
+    }
+
+    return std::move( result );
+}
+
+}
+
+class AttTime::GrapfData
+{
+public:
+    GrapfData( AttTime const* test )
+    {
+        data = Process( test->mData, x_range, y_range );
+    }
+
+    QVector<ff0x::GraphBuilder::LinePoints> data;
+
+
+    QPointF x_range;
+    QPointF y_range;
+};
+
+void AttTime::PaintGraph(QPainter& painter, QFont const& font, const QRect &rect, double skale) const
+{
+    mGrapfs.reset( new GrapfData( this ) );
+
+    painter.save();
+
+    QString x_msg = "Номер измерения";
+    QString y_msg = "Время, сек";
+
+
+    QFont f = font;
+    f.setPointSize( 12 );
+    int w = (rect.width())*skale;
+    int h = (rect.height())*skale;
+
+    ff0x::GraphBuilder builder ( w, h, ff0x::GraphBuilder::PlusPlus, f );
+    ff0x::BasicGraphBuilder::GraphDataLine lines;
+    lines.push_back( ff0x::BasicGraphBuilder::Line(mGrapfs->data[0], ff0x::BasicGraphBuilder::LabelInfo( "Результат", Qt::darkGreen ) ) );
+    lines.push_back( ff0x::BasicGraphBuilder::Line(mGrapfs->data[1], ff0x::BasicGraphBuilder::LabelInfo( "Контрольное значение", Qt::darkBlue ) ) );
+
+    QRect p1(rect.left(), rect.top(), w, h );
+    {
+        QPointF x_range;
+        QPointF y_range;
+        QPointF xi_range(mGrapfs->x_range.x(), 0);
+        QPointF yi_range(mGrapfs->y_range.x(), 0);
+        double x_step = 0;
+        double y_step = 0;
+        ff0x::DataLength( xi_range,x_range, x_step );
+        ff0x::DataLength( yi_range,y_range, y_step );
+
+        painter.drawPixmap( p1, builder.Draw( lines, x_range.x()+x_step, y_range.x()+y_step, x_step, y_step, x_msg, y_msg, true ) );
+    }
+
+    painter.restore();
+}
 //------------------------------------------------------~
 namespace
 {
@@ -789,7 +895,7 @@ AttPressureSpeed::AttPressureSpeed():
 }
 bool AttPressureSpeed::Run()
 {
-    Start( mControls.AttPressureSpeedStop() );
+    Start();
     if ( IsStopped() )
         return false;
 
@@ -797,38 +903,39 @@ bool AttPressureSpeed::Run()
 }
 void AttPressureSpeed::Reset()
 {
-    mCurrenPos = 0;
+    mCurrenTime = 0;
     mData.clear();
     mData.push_back(Data());
 }
 void AttPressureSpeed::UpdateData()
 {
     auto const& mem = cpu::CpuMemory::Instance().Sensors;
-    if (mCurrenPos<mData.size())
-    {
-        auto& dt = mData[mCurrenPos];
-        dt.mCpuTime = mem.Time();
-        dt.mResult = mem.Pressure();
-        if ( mRunMarker && *mRunMarker )
-        {
-            *mRunMarker = false;
-            ++mCurrenPos;
-            mData.push_back(Data());
-        }
-    }
+    int time = mem.Time();
+    int ofset = AttestationParams::Instance().UpdatePeriod();
+    if ( mCurrenTime == time )
+        return;
+
+    if ( time < mCurrenTime + ofset )
+        return;
+
+    mCurrenTime = time;
+    Data dt;
+    dt.mCpuTime = mem.Time();
+    dt.mResult = mem.Pressure();
+    mData.push_back(dt);
 }
 
 QJsonObject AttPressureSpeed::Serialise() const
 {
     QJsonObject obj = Attestaion::Serialise();
-    obj.insert("CurrenPos",mCurrenPos);
+    obj.insert("CurrenPos",mCurrenTime);
     obj.insert("Data", ToJson(mData));
     return obj;
 }
 bool AttPressureSpeed::Deserialize( QJsonObject const& obj )
 {
     FromJson( mData, obj.value("Data").toArray() );
-    mCurrenPos = obj.value("CurrenPos").toInt();
+    mCurrenTime = obj.value("CurrenPos").toInt();
     Attestaion::Deserialize( obj );
     return true;
 }
@@ -841,7 +948,10 @@ void AttPressureSpeed::SetStopBit( bool b )
 {
     mControls.AttPressureSpeedStop( b );
 }
-
+bool AttPressureSpeed::StopBit()
+{
+    return mControls.AttPressureSpeedStop();
+}
 AttPressureSpeed::DataSet const& AttPressureSpeed::GetData() const
 {
     return mData;
@@ -931,4 +1041,103 @@ bool AttPressureSpeed::DrawBody( uint32_t& num, QPainter& painter, QRect &free_r
 
     return res;
 }
+
+namespace
+{
+QVector<ff0x::GraphBuilder::LinePoints> Process( AttPressureSpeed::DataSet const& src, QPointF& x_range, QPointF& y_range )
+{
+    QVector<ff0x::GraphBuilder::LinePoints> result;
+    result.resize(2);
+
+    double speed = AttestationParams::Instance().PressureSpeed();
+    for ( int i = 0; i < src.size(); ++i )
+    {
+        double x = src[i].mCpuTime;
+
+        double const& y1 = src[i].mResult;
+        double const& y2 = x * speed;
+
+        double max_y = std::max( y1, y2 );
+        double min_y = std::min( y1, y2 );
+        if ( !i )
+        {
+            x_range.setX( x );
+            x_range.setY( x );
+            y_range.setX( max_y );
+            y_range.setY( min_y );
+        }
+        else
+        {
+            if ( x > x_range.x() )
+                x_range.setX( x );
+            if ( x < x_range.y() )
+                x_range.setY( x );
+
+            if ( max_y > y_range.x() )
+                y_range.setX( max_y );
+            if ( min_y < y_range.y() )
+                y_range.setY( min_y );
+        }
+
+        result[0].push_back( QPointF( x, y1 ) );
+        result[1].push_back( QPointF( x, y2 ) );
+    }
+
+    return std::move( result );
+}
+
+}
+
+class AttPressureSpeed::GrapfData
+{
+public:
+    GrapfData( AttPressureSpeed const* test )
+    {
+        data = Process( test->mData, x_range, y_range );
+    }
+
+    QVector<ff0x::GraphBuilder::LinePoints> data;
+
+
+    QPointF x_range;
+    QPointF y_range;
+};
+
+void AttPressureSpeed::PaintGraph(QPainter& painter, QFont const& font, const QRect &rect, double skale) const
+{
+    mGrapfs.reset( new GrapfData( this ) );
+
+    painter.save();
+
+    QString x_msg = "Время, сек";
+    QString y_msg = "Давление, МПа";
+
+
+    QFont f = font;
+    f.setPointSize( 12 );
+    int w = (rect.width())*skale;
+    int h = (rect.height())*skale;
+
+    ff0x::GraphBuilder builder ( w, h, ff0x::GraphBuilder::PlusPlus, f );
+    ff0x::BasicGraphBuilder::GraphDataLine lines;
+    lines.push_back( ff0x::BasicGraphBuilder::Line(mGrapfs->data[0], ff0x::BasicGraphBuilder::LabelInfo( "Результат", Qt::darkBlue ) ) );
+    lines.push_back( ff0x::BasicGraphBuilder::Line(mGrapfs->data[1], ff0x::BasicGraphBuilder::LabelInfo( "Контрольное значение", Qt::darkRed ) ) );
+
+    QRect p1(rect.left(), rect.top(), w, h );
+    {
+        QPointF x_range;
+        QPointF y_range;
+        QPointF xi_range(mGrapfs->x_range.x(), 0);
+        QPointF yi_range(mGrapfs->y_range.x(), 0);
+        double x_step = 0;
+        double y_step = 0;
+        ff0x::DataLength( xi_range,x_range, x_step );
+        ff0x::DataLength( yi_range,y_range, y_step );
+
+        painter.drawPixmap( p1, builder.Draw( lines, x_range.x()+x_step, y_range.x()+y_step, x_step, y_step, x_msg, y_msg, true ) );
+    }
+
+    painter.restore();
+}
+
 }

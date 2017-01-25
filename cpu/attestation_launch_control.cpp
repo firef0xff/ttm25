@@ -49,7 +49,7 @@ void AttestationLaunchControls::AttPressureStart( bool b )
 {
     *W10_02 = b;
 }
-bool const& AttestationLaunchControls::AttPressureStart() const
+bool AttestationLaunchControls::AttPressureStart() const
 {
     return *W10_02;
 }
@@ -58,7 +58,7 @@ void AttestationLaunchControls::AttPressureStop( bool b )
 {
     *W10_03 = b;
 }
-bool const& AttestationLaunchControls::AttPressureStop() const
+bool AttestationLaunchControls::AttPressureStop() const
 {
     return *W10_03;
 }
@@ -67,7 +67,7 @@ void AttestationLaunchControls::AttPressureSave( bool b )
 {
     *W10_04 = b;
 }
-bool const& AttestationLaunchControls::AttPressureSave() const
+bool AttestationLaunchControls::AttPressureSave() const
 {
     return *W10_04;
 }
@@ -76,7 +76,7 @@ void AttestationLaunchControls::AttTimeStart( bool b )
 {
     *W10_00 = b;
 }
-bool const& AttestationLaunchControls::AttTimeStart() const
+bool AttestationLaunchControls::AttTimeStart() const
 {
     return *W10_00;
 }
@@ -85,7 +85,7 @@ void AttestationLaunchControls::AttTimeStop( bool b )
 {
     *W10_01 = b;
 }
-bool const& AttestationLaunchControls::AttTimeStop() const
+bool AttestationLaunchControls::AttTimeStop() const
 {
     return *W10_01;
 }
@@ -94,7 +94,7 @@ void AttestationLaunchControls::AttPressureSpeedStart( bool b )
 {
     *W10_05 = b;
 }
-bool const& AttestationLaunchControls::AttPressureSpeedStart() const
+bool AttestationLaunchControls::AttPressureSpeedStart() const
 {
     return *W10_05;
 }
@@ -103,7 +103,7 @@ void AttestationLaunchControls::AttPressureSpeedStop( bool b )
 {
     *W10_06 = b;
 }
-bool const& AttestationLaunchControls::AttPressureSpeedStop() const
+bool AttestationLaunchControls::AttPressureSpeedStop() const
 {
     return *W10_06;
 }

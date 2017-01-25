@@ -23,12 +23,15 @@ public:
     double PressureSpeed() const;
     bool PressureSpeed( QString const& );
 
+    void UpdatePeriod( int );
+    int UpdatePeriod() const;
 private:
     AttestationParams();
     AttestationParams( AttestationParams const& ) = delete;
     void operator = ( AttestationParams const& ) = delete;
 
     double mPressureSpeed;
+    int mUpdatePeriod;
 };
 
 }//namespace test

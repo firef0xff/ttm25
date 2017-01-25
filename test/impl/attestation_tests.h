@@ -11,13 +11,14 @@ class Attestaion  : public Test
 public:
     Attestaion ( QString const& name, uint8_t id );
 
-    void Start( bool const& flag );
+    void Start();
     virtual bool Success() const override;
 
     virtual void Reset() = 0;
     virtual void UpdateData() = 0;
     virtual void SetStartBit( bool b ) = 0;
     virtual void SetStopBit( bool b ) = 0;
+    virtual bool StopBit() = 0;
 
     virtual QJsonObject Serialise() const override;
     virtual bool Deserialize( QJsonObject const& obj ) override;
@@ -65,6 +66,7 @@ public:
     virtual void UpdateData() override;
     virtual void SetStartBit( bool b ) override;
     virtual void SetStopBit( bool b ) override;
+    virtual bool StopBit() override;
 
     void Reset();
     DataSet const& GetData() const;
@@ -87,6 +89,7 @@ private:
 class AttTime : public Attestaion
 {
 public:
+    class GrapfData;
     struct Data
     {
         Data();
@@ -108,20 +111,26 @@ public:
     virtual void UpdateData();
     virtual void SetStartBit( bool b );
     virtual void SetStopBit( bool b );
+    virtual bool StopBit() override;
 
     virtual QJsonObject Serialise() const override;
     virtual bool Deserialize( QJsonObject const& obj ) override;
+
+    virtual void PaintGraph(QPainter& painter, QFont const& font, const QRect &rect,
+                    double skale) const override;
 private:
     virtual bool DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) const;
 
     DataSet mData;
     int32_t mCurrenPos;
     bool mWait;
+    mutable std::unique_ptr<GrapfData> mGrapfs;
 };
 
 class AttPressureSpeed : public Attestaion
 {
 public:
+    class GrapfData;
     struct Data
     {
         Data();
@@ -144,14 +153,18 @@ public:
     virtual void UpdateData();
     virtual void SetStartBit( bool b );
     virtual void SetStopBit( bool b );
+    virtual bool StopBit() override;
 
     virtual QJsonObject Serialise() const override;
     virtual bool Deserialize( QJsonObject const& obj ) override;
 
+    virtual void PaintGraph(QPainter& painter, QFont const& font, const QRect &rect,
+                    double skale) const override;
 private:
     virtual bool DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) const;
 
     DataSet mData;
-    int32_t mCurrenPos;
+    int32_t mCurrenTime;
+    mutable std::unique_ptr<GrapfData> mGrapfs;
 };
 }//namespace test

@@ -28,6 +28,7 @@ void MainWindow::on_bAPStart_clicked()
     params.Date( QDateTime::currentDateTime() );
     params.User( app::Settings::Instance().User() );
     params.PressureSpeed( ui->cbPressureSpeed->currentText() );
+    params.UpdatePeriod( ui->bxPeriod->value() );
 
     mWorker.reset( new Worker() );
     QObject::connect( mWorker.get(), &Worker::to_exec, this, &MainWindow::exec );
@@ -186,19 +187,6 @@ void MainWindow::on_bAPTStart_clicked()
     on_bAPTClear_clicked();
     on_bAPStart_clicked();
 }
-void MainWindow::on_bAPTWrite_clicked()
-{
-    auto & wp = test::AttestationParams::Instance();
-    auto* test = wp.TestForExec();
-    if ( !test || test->ID() != 2 )
-        return;
-
-    //кнопка записать
-    if (mWorker)
-    {
-        mWorker->test();
-    }
-}
 void MainWindow::on_bAPTStop_clicked()
 {
     on_bAPStop_clicked();
@@ -252,7 +240,7 @@ void RepaintGraph( test::Attestaion const& test, QLabel *label )
 }
 void UpdatePresureTest( test::AttPressure const& test, Ui::MainWindow *ui )
 {
-    RepaintGraph( test, ui->lATGraph );
+    RepaintGraph( test, ui->lAPGraph );
     auto const& data = test.GetData();
     auto* table = ui->tblAttPressure;
     for( size_t it = 0, end = data.size(); it < end; ++it )
@@ -320,6 +308,7 @@ void UpdatePresureTest( test::AttPressure const& test, Ui::MainWindow *ui )
 }
 void UpdateTimeTest( test::AttTime const& test, Ui::MainWindow *ui )
 {
+    RepaintGraph( test, ui->lATGraph );
     auto const& data = test.GetData();
     auto* table = ui->tblAttTime;
 
@@ -385,6 +374,7 @@ void UpdateTimeTest( test::AttTime const& test, Ui::MainWindow *ui )
 }
 void UpdatePresureSpeedTest( test::AttPressureSpeed const& test, Ui::MainWindow *ui )
 {
+    RepaintGraph( test, ui->lAPTGraph );
     auto const& data = test.GetData();
     auto* table = ui->tblAttPressureSpeed;
 
