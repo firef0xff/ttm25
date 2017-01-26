@@ -306,7 +306,7 @@ void AttPressure::Reset()
     for ( int i = 5; i <= 100; i += 5  )
     {
         Data d;
-        d.mTask = i;
+        d.mTask = round(100*i*1/10.19716212978)/100.0;
         if ( i == 5 )
             d.mCurrent = true;
         mData.push_back( std::move( d ) );
@@ -1055,7 +1055,7 @@ QVector<ff0x::GraphBuilder::LinePoints> Process( AttPressureSpeed::DataSet const
         double x = src[i].mCpuTime;
 
         double const& y1 = src[i].mResult;
-        double const& y2 = x * speed;
+        double const& y2 = x * speed/60.0;
 
         double max_y = std::max( y1, y2 );
         double min_y = std::min( y1, y2 );
