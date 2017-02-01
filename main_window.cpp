@@ -142,6 +142,10 @@ void MainWindow::AddItem( QComboBox& combo, app::StringsSource& source )
 //смена вкладки
 void MainWindow::on_tMode_currentChanged(int index)
 {  
+    cpu::CpuMemory::Instance().LaunchControl.Reset();
+    cpu::CpuMemory::Instance().LaunchControl.Write();
+    cpu::CpuMemory::Instance().AttestationLaunchControls.Reset();
+    cpu::CpuMemory::Instance().AttestationLaunchControls.Write();
     switch (index)
     {
     case 0:
@@ -317,6 +321,7 @@ void ControlsUpdater::run()
     {
         cpu::CpuMemory::Instance().Controls.Read();
         cpu::CpuMemory::Instance().Sensors.Read();
+        cpu::CpuMemory::Instance().Indication.Read();
         emit update();
         msleep(100);
     }

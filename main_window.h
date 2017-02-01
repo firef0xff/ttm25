@@ -94,7 +94,6 @@ private slots:
     void on_bATStop_clicked();
     void on_bATReport_clicked();
     void on_bATClear_clicked();
-    void on_bATTerm_clicked();
 
     void on_bAPTStart_clicked();
     void on_bAPTStop_clicked();

@@ -4,6 +4,7 @@
 #include "params.h"
 #include "launch_control.h"
 #include "attestation_launch_control.h"
+#include "indication.h"
 
 namespace cpu
 {
@@ -19,6 +20,7 @@ public:
     data::Params Params;        //параметры проведения испытаний
     data::LaunchControl LaunchControl; //Управление запуском тестов
     data::AttestationLaunchControls AttestationLaunchControls; //управление проведением аттестации
+    data::Indication Indication;
 private:
     CpuMemory();
     CpuMemory( CpuMemory const& ) = delete;

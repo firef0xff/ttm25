@@ -94,6 +94,18 @@ void MainWindow::UpdateMarks()
     UpdateButton( ui->bFeedOnOff,       controls.FeedOnOff()         );
     UpdateButton( ui->bAirOnOff,        controls.AirOnOff()          );
     UpdateButton( ui->bVacuumOnOff,     controls.VacuumOnOff()       );
+
+    auto & indication = cpu::CpuMemory::Instance().Indication;
+//    UpdateMark( ui->lPBU, true , indication.PBU() ? Qt::red : Qt::green );
+//    UpdateMark( ui->lMUP, indication.MUP(), Qt::green );
+    UpdateMark( ui->lNVK, indication.NVK(), Qt::green );
+    UpdateMark( ui->lUVN, indication.UVN(), Qt::green );
+    UpdateMark( ui->lUVM, indication.UVM(), Qt::red );
+//    UpdateButton( ui->bBuzen,     indication.ZVN()       );
+//    UpdateMark( ui->lKPO, true, indication.KPO() ? Qt::red : Qt::green );
+//    UpdateMark( ui->lKPZ, true, indication.KPZ() ? Qt::red : Qt::green );
+    UpdateMark( ui->lXO, indication.XO(), Qt::green );
+    UpdateMark( ui->lXZ, indication.XZ(), Qt::green );
 }
 void MainWindow::UpdateData()
 {

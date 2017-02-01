@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1061</width>
-    <height>616</height>
+    <width>864</width>
+    <height>574</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -368,7 +368,7 @@
                     <number>0</number>
                    </property>
                    <item row="1" column="2">
-                    <widget class="QLabel" name="label_6">
+                    <widget class="QLabel" name="lXO">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -390,7 +390,7 @@
                     </widget>
                    </item>
                    <item row="1" column="1">
-                    <widget class="QLabel" name="label_18">
+                    <widget class="QLabel" name="lKPZ">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -412,7 +412,7 @@
                     </widget>
                    </item>
                    <item row="0" column="1">
-                    <widget class="QLabel" name="label_11">
+                    <widget class="QLabel" name="lMUP">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -434,7 +434,7 @@
                     </widget>
                    </item>
                    <item row="0" column="2">
-                    <widget class="QLabel" name="label_10">
+                    <widget class="QLabel" name="lNVK">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -456,7 +456,7 @@
                     </widget>
                    </item>
                    <item row="0" column="0">
-                    <widget class="QLabel" name="label_12">
+                    <widget class="QLabel" name="lPBU">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -478,7 +478,7 @@
                     </widget>
                    </item>
                    <item row="1" column="0">
-                    <widget class="QLabel" name="label_4">
+                    <widget class="QLabel" name="lKPO">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -500,7 +500,7 @@
                     </widget>
                    </item>
                    <item row="0" column="3">
-                    <widget class="QLabel" name="label_9">
+                    <widget class="QLabel" name="lUVN">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -522,7 +522,7 @@
                     </widget>
                    </item>
                    <item row="0" column="4">
-                    <widget class="QLabel" name="label_8">
+                    <widget class="QLabel" name="lUVM">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -544,7 +544,7 @@
                     </widget>
                    </item>
                    <item row="1" column="3">
-                    <widget class="QLabel" name="label_7">
+                    <widget class="QLabel" name="lXZ">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -1387,20 +1387,6 @@
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="bATTerm">
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>60</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>АВАРИЙНЫЙ
-СТОП</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <spacer name="verticalSpacer_3">
                 <property name="orientation">
                  <enum>Qt::Vertical</enum>
@@ -1601,8 +1587,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1061</width>
-     <height>19</height>
+     <width>864</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">

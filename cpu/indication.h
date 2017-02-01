@@ -20,6 +20,20 @@ public:
     void Read();
     void Reset();
 
+    bool PBU() const;
+    bool MUP() const;
+
+    bool NVK() const;
+    bool UVN() const;
+
+    bool UVM() const;
+    bool ZVN() const;
+
+    bool KPO() const;
+    bool KPZ() const;
+
+    bool XO() const;
+    bool XZ() const;
 protected:
     bool* W5_00;    //ПБУ
     bool* W5_01;    //МУП

@@ -38,6 +38,51 @@ void Indication::Reset()
     fins::AddElement< fins::BOOL >( mData, &W5_09, false );
 }
 
+bool Indication::PBU() const
+{
+    return *W5_00;
+}
+bool Indication::MUP() const
+{
+    return *W5_01;
+}
+
+bool Indication::NVK() const
+{
+    return *W5_02;
+}
+bool Indication::UVN() const
+{
+    return *W5_03;
+}
+
+bool Indication::UVM() const
+{
+    return *W5_04;
+}
+bool Indication::ZVN() const
+{
+    return *W5_05;
+}
+
+bool Indication::KPO() const
+{
+    return *W5_06;
+}
+bool Indication::KPZ() const
+{
+    return *W5_07;
+}
+
+bool Indication::XO() const
+{
+    return *W5_08;
+}
+bool Indication::XZ() const
+{
+    return *W5_09;
+}
+
 } //namespace deta
 
 } //namespace cpu

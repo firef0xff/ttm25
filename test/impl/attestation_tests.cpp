@@ -597,7 +597,7 @@ void AttTime::UpdateData()
     if (mCurrenPos<mData.size())
     {
         auto& dt = mData[mCurrenPos];
-        dt.mCpuTime = mem.Time();
+        dt.mCpuTime = round( mem.Time() *100 )/100.0;
         if ( mRunMarker && *mRunMarker )
         {
             *mRunMarker = false;
@@ -920,7 +920,7 @@ void AttPressureSpeed::UpdateData()
 
     mCurrenTime = time;
     Data dt;
-    dt.mCpuTime = mem.Time();
+    dt.mCpuTime = round( mem.Time()*100)/100.0;
     dt.mResult = mem.Pressure();
     mData.push_back(dt);
 }

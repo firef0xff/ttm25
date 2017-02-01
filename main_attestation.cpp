@@ -177,10 +177,6 @@ void MainWindow::on_bATClear_clicked()
     table->clearContents();
     table->setRowCount(0);
 }
-void MainWindow::on_bATTerm_clicked()
-{
-    on_bAPTerm_clicked();
-}
 
 void MainWindow::on_bAPTStart_clicked()
 {
