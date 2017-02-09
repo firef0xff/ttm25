@@ -903,7 +903,6 @@ bool AttPressureSpeed::Run()
 }
 void AttPressureSpeed::Reset()
 {
-    mCurrenTime = 0;
     mData.clear();
     mData.push_back(Data());
 }
