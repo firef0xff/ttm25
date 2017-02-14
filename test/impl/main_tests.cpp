@@ -772,25 +772,43 @@ void M2_2006::Question()
 
 
 EK_OON_106::EK_OON_106():
-    M2_2006( "Правило ЕЭК ООН №106", 2 ),
-    mConstPressureTime( 0 )
+    M2_2006( "Правило ЕЭК ООН №106", 2 )
 {}
 void EK_OON_106::UpdateData()
 {
     M2_2006::UpdateData();
 }
-QJsonObject EK_OON_106::Serialise() const
-{
-    auto obj = M2_2006::Serialise();
-    obj.insert("ConstPressureTime",mConstPressureTime);
-    return obj;
-}
-bool EK_OON_106::Deserialize( QJsonObject const& obj )
-{
-    mConstPressureTime = obj.value("ConstPressureTime").toInt();
-    return M2_2006::Deserialize( obj );
-}
 
+namespace
+{
+double CalcConstPressureTime(M2_2006::DataSet const& src, double val, double tube = 0.03)
+{
+    auto min = (val - tube*val);
+    auto max = (val + tube*val);
+    bool progress = false;
+    int32_t start = 0;
+    int32_t stop = 0;
+    for ( auto it = src.begin(), end = src.end(); it != end; ++it )
+    {
+        M2_2006::Point const& p = *it;
+        stop = p.X();
+
+        if ( !progress && ( min <= p.Y() && p.Y() <= max ) )
+        {
+            start = p.X();
+            progress = true;
+            continue;
+        }
+
+        if ( progress && ( min > p.Y() || p.Y() > max ) )
+            progress = false;
+    }
+
+    auto dist = stop - start;
+    auto res = dist/60+dist%60/100.0;
+    return res;
+}
+}
 bool EK_OON_106::DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) const
 {
     QFont text_font = painter.font();
@@ -842,9 +860,9 @@ bool EK_OON_106::DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) 
         {
             QString row =   "<tr>";
             row +=              "<td>"+params.TireNo()+"</td>"
-                                "<td>"+ToString(mBreakPressure)+"</td>"
-                                "<td>"+ToString(params.Pressure())+"</td>"
-                                "<td>"+ToString(mConstPressureTime)+"</td>"
+                                "<td>"+ToString(round(mBreakPressure*100.0)/100.0)+"</td>"
+                                "<td>"+ToString(round(params.Pressure()*100.0)/100.0)+"</td>"
+                                "<td>"+ToString(CalcConstPressureTime( mPData, params.Pressure() ))+"</td>"
                                 "<td>"+ToString(params.ConstPressureTime())+"</td>"
                                 "<td>"+mState+"</td>";
             row +=          "</tr>";

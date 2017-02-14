@@ -96,8 +96,6 @@ class EK_OON_106: public M2_2006
 public:
     EK_OON_106();
     void UpdateData() override;
-    QJsonObject Serialise() const;
-    bool Deserialize( QJsonObject const& obj );
 
     virtual bool DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) const override;
     virtual QString TableTitle() const override;
