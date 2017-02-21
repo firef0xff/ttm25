@@ -902,7 +902,7 @@ bool AttPressureSpeed::Run()
     return Success();
 }
 void AttPressureSpeed::Reset()
-{
+{        
     mData.clear();
     mData.push_back(Data());
 }
@@ -911,13 +911,20 @@ void AttPressureSpeed::UpdateData()
     auto const& mem = cpu::CpuMemory::Instance().Sensors;
     int time = mem.Time();
     int ofset = AttestationParams::Instance().UpdatePeriod();
-    if ( mCurrenTime == time )
-        return;
 
+    auto last_time = mData[mData.size()-1].mCpuTime;
+    if ( time - last_time > ofset )
+    {
+        mCurrenTime = last_time;
+        return;
+    }
+    if ( time < mCurrenTime )
+        mCurrenTime = time;
     if ( time < mCurrenTime + ofset )
         return;
 
     mCurrenTime = time;
+
     Data dt;
     dt.mCpuTime = round( mem.Time()*100)/100.0;
     dt.mResult = mem.Pressure();

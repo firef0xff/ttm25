@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>864</width>
-    <height>574</height>
+    <width>996</width>
+    <height>616</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -367,7 +367,7 @@
                    <property name="leftMargin">
                     <number>0</number>
                    </property>
-                   <item row="1" column="2">
+                   <item row="1" column="0">
                     <widget class="QLabel" name="lXO">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -389,51 +389,7 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="1" column="1">
-                    <widget class="QLabel" name="lKPZ">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="toolTip">
-                      <string>сигнализирует о достижении заслокни клапана положения &quot;закрыто&quot;</string>
-                     </property>
-                     <property name="toolTipDuration">
-                      <number>1000</number>
-                     </property>
-                     <property name="text">
-                      <string>КПЗ</string>
-                     </property>
-                     <property name="alignment">
-                      <set>Qt::AlignCenter</set>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="1">
-                    <widget class="QLabel" name="lMUP">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="toolTip">
-                      <string>сигнализирует об установлении разрешения режима местного управления в насосной установке</string>
-                     </property>
-                     <property name="toolTipDuration">
-                      <number>1000</number>
-                     </property>
-                     <property name="text">
-                      <string>МУП</string>
-                     </property>
-                     <property name="alignment">
-                      <set>Qt::AlignCenter</set>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="2">
+                   <item row="0" column="0">
                     <widget class="QLabel" name="lNVK">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -455,51 +411,7 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="lPBU">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="toolTip">
-                      <string>сигнализирует о наличии питания блока управления и датчика давления</string>
-                     </property>
-                     <property name="toolTipDuration">
-                      <number>1000</number>
-                     </property>
-                     <property name="text">
-                      <string>ПБУ</string>
-                     </property>
-                     <property name="alignment">
-                      <set>Qt::AlignCenter</set>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="0">
-                    <widget class="QLabel" name="lKPO">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="toolTip">
-                      <string>сигнализирует о достижении заслокни клапана положения &quot;открыто&quot;</string>
-                     </property>
-                     <property name="toolTipDuration">
-                      <number>1000</number>
-                     </property>
-                     <property name="text">
-                      <string>КПО</string>
-                     </property>
-                     <property name="alignment">
-                      <set>Qt::AlignCenter</set>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="3">
+                   <item row="0" column="1">
                     <widget class="QLabel" name="lUVN">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -521,7 +433,7 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="0" column="4">
+                   <item row="0" column="2">
                     <widget class="QLabel" name="lUVM">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -543,7 +455,7 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="1" column="3">
+                   <item row="1" column="1">
                     <widget class="QLabel" name="lXZ">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -565,7 +477,7 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="1" column="5">
+                   <item row="1" column="3">
                     <widget class="QToolButton" name="bBuzen">
                      <property name="enabled">
                       <bool>true</bool>
@@ -590,7 +502,7 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="0" column="5">
+                   <item row="0" column="3">
                     <widget class="QLabel" name="lConnect">
                      <property name="toolTip">
                       <string>сигнализирует о наличии связи с утановкой</string>
@@ -1448,6 +1360,9 @@
                 </item>
                 <item>
                  <widget class="QSpinBox" name="bxPeriod">
+                  <property name="minimum">
+                   <number>1</number>
+                  </property>
                   <property name="maximum">
                    <number>99999</number>
                   </property>
@@ -1587,8 +1502,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>864</width>
-     <height>21</height>
+     <width>996</width>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">

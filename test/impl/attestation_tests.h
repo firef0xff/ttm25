@@ -164,7 +164,7 @@ private:
     virtual bool DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) const;
 
     DataSet mData;
-    int32_t mCurrenTime;
+    int32_t mCurrenTime = 0;
     mutable std::unique_ptr<GrapfData> mGrapfs;
 };
 }//namespace test
