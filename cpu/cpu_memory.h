@@ -5,6 +5,7 @@
 #include "launch_control.h"
 #include "attestation_launch_control.h"
 #include "indication.h"
+#include "err_codes.h"
 
 namespace cpu
 {
@@ -21,6 +22,7 @@ public:
     data::LaunchControl LaunchControl; //Управление запуском тестов
     data::AttestationLaunchControls AttestationLaunchControls; //управление проведением аттестации
     data::Indication Indication;
+    data::ErrCodes ErrCodes;
 private:
     CpuMemory();
     CpuMemory( CpuMemory const& ) = delete;

@@ -11,7 +11,7 @@ namespace test
 {
 
 Attestaion::Attestaion ( QString const& name, uint8_t id ):
-    Test(name, id),
+    TestCommonData(name, id),
     mSuccess(false),
     mControls(cpu::CpuMemory::Instance().AttestationLaunchControls)
 {}
@@ -20,6 +20,7 @@ void Attestaion::Start()
 {
     mControls.Reset();
     mControls.Write();
+    StartTime.start();
 
     while( !StopBit() )
     {
@@ -52,6 +53,7 @@ void Attestaion::Start()
         mControls.Write();
         std::this_thread::sleep_for( std::chrono::milliseconds(100) );
     }
+    TestingTime = StartTime.elapsed()/1000;
     return;
 }
 bool Attestaion::Success() const

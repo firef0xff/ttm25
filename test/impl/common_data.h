@@ -19,7 +19,7 @@ protected:
     QJsonObject Serialise() const;
     bool Deserialize( QJsonObject const& obj );
 
-    void Start();
+    virtual void Start();
     bool CheckErrors();
     virtual uint8_t CommandID();
     virtual void UpdateData(){}

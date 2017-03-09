@@ -9,7 +9,28 @@ namespace test
 
 QString ErrMsg()
 {
+    auto& codes = cpu::CpuMemory::Instance().ErrCodes;
+    codes.Read();
+
     QString str_errs;
+    if (codes.IsFaucetClose())
+        str_errs += "кран закрыт\n";
+    if (codes.IsLowWaterLavel())
+        str_errs += "низкий уровень воды в баке\n";
+    if (codes.IsHightPressureSpeed())
+        str_errs += "скорость нарастания давления выше допустимого\n";
+    if (codes.IsLowPressure())
+        str_errs += "давление удержания ниже заданного\n";
+    if (codes.IsHightPressure())
+        str_errs += "давление удержания выше заданного\n";
+    if (codes.IsLowPumpFrequency())
+        str_errs += "частота привода насоса ниже допустимого\n";
+
+    if (!str_errs.isEmpty())
+    {
+        codes.Reset();
+        codes.Write();
+    }
     return str_errs;
 }
 

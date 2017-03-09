@@ -781,7 +781,7 @@ void EK_OON_106::UpdateData()
 
 namespace
 {
-double CalcConstPressureTime(M2_2006::DataSet const& src, double val, double tube = 0.03)
+double CalcConstPressureTime(M2_2006::DataSet const& src, double val, double tube = 0.1)
 {
     auto min = (val - tube*val);
     auto max = (val + tube*val);
@@ -793,7 +793,7 @@ double CalcConstPressureTime(M2_2006::DataSet const& src, double val, double tub
         M2_2006::Point const& p = *it;
         stop = p.X();
 
-        if ( !progress && ( min <= p.Y() && p.Y() <= max ) )
+        if ( !progress && ( val <= p.Y() && p.Y() <= max ) )
         {
             start = p.X();
             progress = true;

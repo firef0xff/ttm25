@@ -60,7 +60,8 @@ SOURCES += main.cpp\
     test/impl/work_params.cpp \
     test/impl/main_tests.cpp \
     cpu/attestation_launch_control.cpp \
-    test/impl/defect_question.cpp
+    test/impl/defect_question.cpp \
+    cpu/err_codes.cpp
 
 HEADERS  += main_window.h \
     communication/fins/endpoint.h \
@@ -105,7 +106,8 @@ HEADERS  += main_window.h \
     test/impl/main_tests.h \
     test/impl/attestation_tests.h \
     cpu/attestation_launch_control.h \
-    test/impl/defect_question.h
+    test/impl/defect_question.h \
+    cpu/err_codes.h
 
 FORMS    += main_window.ui\
             test/viewer.ui\

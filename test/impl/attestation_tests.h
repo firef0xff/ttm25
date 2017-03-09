@@ -1,17 +1,18 @@
 #pragma once
 #include "test/test.h"
 #include "cpu/cpu_memory.h"
+#include "common_data.h"
 #include <QVector>
 
 namespace test
 {
 
-class Attestaion  : public Test
+class Attestaion  : public TestCommonData
 {
 public:
     Attestaion ( QString const& name, uint8_t id );
 
-    void Start();
+    virtual void Start() override;
     virtual bool Success() const override;
 
     virtual void Reset() = 0;
