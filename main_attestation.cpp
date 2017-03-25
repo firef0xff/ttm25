@@ -37,41 +37,7 @@ void MainWindow::on_bAPStart_clicked()
 
     mWorker->fill();
 }
-void MainWindow::on_bAPWrite_clicked()
-{
-    auto & wp = test::AttestationParams::Instance();
-    auto* test = wp.TestForExec();
-    if ( !test || test->ID() != 0 )
-        return;
 
-    auto *ptr = static_cast<test::AttPressure*>(test);
-
-    auto& data = ptr->GetData();
-    for ( auto i = 0; i < data.size(); ++i )
-    {
-        test::AttPressure::Data &lnk = data[i];
-        if ( lnk.mCurrent )
-        {
-            auto* item = ui->tblAttPressure->item(i,2);
-            if ( !test::ParseValue( lnk.mFact, item->text() ) )
-                item->setBackgroundColor(Qt::red);
-            else
-            {
-                item->setBackgroundColor(Qt::green);
-                lnk.mCurrent = false;
-                if ( i < data.size() - 1 )
-                    data[i+1].mCurrent = true;
-                break;
-            }
-        }
-    }
-
-    //кнопка записать
-    if (mWorker)
-    {
-        mWorker->test();
-    }
-}
 void MainWindow::on_bAPStop_clicked()
 {//кнопка стоп
     if (mWorker)
@@ -251,21 +217,21 @@ void UpdatePresureTest( test::AttPressure const& test, Ui::MainWindow *ui )
             std::unique_ptr<QTableWidgetItem> i_task( new QTableWidgetItem );
             std::unique_ptr<QTableWidgetItem> i_result( new QTableWidgetItem );
             std::unique_ptr<QTableWidgetItem> i_fact( new QTableWidgetItem );
+            std::unique_ptr<QTableWidgetItem> i_error( new QTableWidgetItem );
 
             if (dt.mCurrent)
             {
-                mark->setText("*");
-                i_fact->setFlags( Qt::ItemIsEnabled|Qt::ItemIsEditable|Qt::ItemIsSelectable );
+                mark->setText("*");                
             }
             else
             {
-                mark->setText("");
-                i_fact->setFlags( Qt::ItemIsEnabled );
+                mark->setText("");                
             }
 
             i_task->setText(test::ToString( dt.mTask ));
             i_result->setText(test::ToString( dt.mResult ));
             i_fact->setText(test::ToString( dt.mFact ));
+            i_error->setText(test::ToString( dt.Error() ));
 
             i_task->setFlags( Qt::ItemIsEnabled );
             i_result->setFlags( Qt::ItemIsEnabled );
@@ -274,6 +240,7 @@ void UpdatePresureTest( test::AttPressure const& test, Ui::MainWindow *ui )
             table->setItem(table->rowCount() - 1, 0, i_task.release());
             table->setItem(table->rowCount() - 1, 1, i_result.release());
             table->setItem(table->rowCount() - 1, 2, i_fact.release());
+            table->setItem(table->rowCount() - 1, 3, i_error.release());
         }
         else
         {
@@ -281,24 +248,21 @@ void UpdatePresureTest( test::AttPressure const& test, Ui::MainWindow *ui )
             QTableWidgetItem *i_task = table->item(it, 0);
             QTableWidgetItem *i_result = table->item(it, 1);
             QTableWidgetItem *i_fact = table->item(it, 2);
+            QTableWidgetItem *i_error = table->item(it, 3);
 
             if (dt.mCurrent)
             {
                 mark->setText("*");
-                Qt::ItemFlags f = Qt::ItemIsEnabled|Qt::ItemIsEditable|Qt::ItemIsSelectable;
-                if ( i_fact->flags() != f )
-                    i_fact->setFlags( f );
             }
             else
             {
                 mark->setText("");
-                i_fact->setFlags( Qt::ItemIsEnabled );
             }
 
             i_task->setText(test::ToString( dt.mTask ));
             i_result->setText(test::ToString( dt.mResult ));
-            if (!dt.mCurrent)
-                i_fact->setText(test::ToString( dt.mFact ));
+            i_fact->setText(test::ToString( dt.mFact ));
+            i_error->setText(test::ToString( dt.Error() ));
         }
     }
 }

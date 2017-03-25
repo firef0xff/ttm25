@@ -36,7 +36,7 @@
     <item>
      <widget class="QTabWidget" name="tMode">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_3">
        <attribute name="title">
@@ -1115,7 +1115,7 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>320</width>
+                <width>410</width>
                 <height>0</height>
                </size>
               </property>
@@ -1132,6 +1132,11 @@
               <column>
                <property name="text">
                 <string>Факт</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Погрешность</string>
                </property>
               </column>
              </widget>
@@ -1158,13 +1163,6 @@
                <widget class="QPushButton" name="bAPStart">
                 <property name="text">
                  <string>СТАРТ</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="bAPWrite">
-                <property name="text">
-                 <string>ЗАПИСЬ</string>
                 </property>
                </widget>
               </item>

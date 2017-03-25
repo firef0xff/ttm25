@@ -54,6 +54,8 @@ public:
         QJsonObject Serialise() const;
         bool Deserialize( QJsonObject const& obj );
 
+        double Error() const;
+
         double mTask;
         double mResult;
         double mFact;

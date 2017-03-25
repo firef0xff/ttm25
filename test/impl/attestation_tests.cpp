@@ -245,6 +245,15 @@ bool AttPressure::Data::Deserialize( QJsonObject const& obj )
     return true;
 }
 
+double AttPressure::Data::Error() const
+{
+    if ( !mFact )
+        return 0.0;
+
+    auto delta = abs(mFact - mResult);
+    return round(delta/mFact*10000)/100; //вывод погрешности в %
+}
+
 
 AttPressure::AttPressure():
     Attestaion("Аттестация по давлению", 0)
@@ -275,17 +284,14 @@ void AttPressure::UpdateData()
             }
             dt.mCurrent = true;
             mWait = true;
+            //в этой точке опросить метран
+            dt.mFact = dt.mResult;
+            //продолжить тест
+            if (mControls.AttPressureSave())
+                mControls.AttPressureSave(false);
             ++mCurrenPos;
         }
     }
-    if ( mRunMarker && *mRunMarker )
-    {
-        *mRunMarker = false;
-        mWait = false;
-        if (mControls.AttPressureSave())
-            mControls.AttPressureSave(false);
-    }
-
 }
 void AttPressure::SetStartBit( bool b )
 {
@@ -305,11 +311,11 @@ void AttPressure::Reset()
     mCurrenPos = 0;
     mWait=false;
     mData.clear();
-    for ( int i = 5; i <= 100; i += 5  )
+    for ( int i = 10; i <= 100; i += 10  )
     {
         Data d;
         d.mTask = round(100*i*1/10.19716212978)/100.0;
-        if ( i == 5 )
+        if ( i == 10 )
             d.mCurrent = true;
         mData.push_back( std::move( d ) );
     }
@@ -358,11 +364,12 @@ bool AttPressure::DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect )
                  "</style>"
                 "</head>"
                 "<body>"
-                "<table valign='middle' width='50%' border='1.5' cellspacing='-0.5' cellpadding='-0.5'>"
+                "<table valign='middle' width='70%' border='1.5' cellspacing='-0.5' cellpadding='-0.5'>"
                 "<tr>"
                   "<th>Заданное<br>давление, МПа</th>"
                   "<th>Достигнутое<br>значение, МПа</th>"
                   "<th>Контрольное<br>значение, МПа</th>"
+                  "<th>Погрешность,<br> %</th>"
                 "</tr>";
 
         QString footer = "</table>"
@@ -375,7 +382,8 @@ bool AttPressure::DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect )
             QString row =   "<tr>";
             row +=              "<td>"+ToString(dt.mTask)+"</td>"
                                 "<td>"+ToString(dt.mResult)+"</td>"
-                                "<td>"+ToString(dt.mFact)+"</td>";
+                                "<td>"+ToString(dt.mFact)+"</td>"
+                                "<td>"+ToString(dt.Error())+"</td>";
             row +=          "</tr>";
             return row;
         };
