@@ -38,6 +38,10 @@ void AttestationLaunchControls::Reset()
 
     fins::AddElement< fins::BOOL >( mData, &W10_05, false );
     fins::AddElement< fins::BOOL >( mData, &W10_06, false );
+
+    fins::AddElement< fins::BOOL >( mData, &W10_07, false );
+    fins::AddElement< fins::BOOL >( mData, &W10_08, false );
+    fins::AddElement< fins::BOOL >( mData, &W10_09, false );
 }
 
 std::unique_lock< std::recursive_mutex > AttestationLaunchControls::Locker()
@@ -108,5 +112,31 @@ bool AttestationLaunchControls::AttPressureSpeedStop() const
     return *W10_06;
 }
 
+void AttestationLaunchControls::AttPressureTimeStart( bool b )
+{
+    *W10_07 = b;
+}
+bool AttestationLaunchControls::AttPressureTimeStart() const
+{
+    return *W10_07;
+}
+
+void AttestationLaunchControls::AttPressureTimeStop( bool b )
+{
+    *W10_08 = b;
+}
+bool AttestationLaunchControls::AttPressureTimeStop() const
+{
+    return *W10_08;
+}
+
+void AttestationLaunchControls::AttPressureTimeSave( bool b )
+{
+    *W10_09 = b;
+}
+bool AttestationLaunchControls::AttPressureTimeSave() const
+{
+    return *W10_09;
+}
 }//namespace data
 }//namespace cpu

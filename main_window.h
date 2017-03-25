@@ -100,6 +100,12 @@ private slots:
     void on_bAPTClear_clicked();
     void on_bAPTTerm_clicked();
 
+    void on_bAPPStart_clicked();
+    void on_bAPPStop_clicked();
+    void on_bAPPReport_clicked();
+    void on_bAPPClear_clicked();
+    void on_bAPPTerm_clicked();
+
 private:
     //главное окно
     void closeEvent(QCloseEvent *e);

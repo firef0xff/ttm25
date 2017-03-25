@@ -331,3 +331,4 @@ void ControlsUpdater::stop()
     mStopSignal = true;
     wait();
 }
+

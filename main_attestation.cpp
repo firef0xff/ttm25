@@ -10,6 +10,7 @@ void MainWindow::InitAttestationModule()
     wp.AddTest( std::unique_ptr<test::Test>( new test::AttPressure() ) );
     wp.AddTest( std::unique_ptr<test::Test>( new test::AttTime() ) );
     wp.AddTest( std::unique_ptr<test::Test>( new test::AttPressureSpeed() ) );
+    wp.AddTest( std::unique_ptr<test::Test>( new test::AttPressureTime() ) );
 }
 
 void MainWindow::on_tAttestaion_currentChanged(int index)
@@ -181,6 +182,43 @@ void MainWindow::on_bAPTTerm_clicked()
     on_bAPTerm_clicked();
 }
 
+void MainWindow::on_bAPPStart_clicked()
+{
+    on_bAPPClear_clicked();
+    on_bAPStart_clicked();
+}
+void MainWindow::on_bAPPStop_clicked()
+{
+    on_bAPStop_clicked();
+}
+void MainWindow::on_bAPPReport_clicked()
+{
+    on_a_proto_triggered();
+}
+void MainWindow::on_bAPPClear_clicked()
+{
+    auto & wp = test::AttestationParams::Instance();
+    auto* test = wp.TestForExec();
+    if ( !test || test->ID() != 3 )
+        return;
+
+    on_bAPPStop_clicked();
+
+    auto *ptr = static_cast<test::AttPressureTime*>(test);
+    ptr->Reset();
+    auto* table = ui->tblAttPressureTime;
+
+    // Deselects all selected items
+    table->clearSelection();
+    table->disconnect();
+    table->clearContents();
+    table->setRowCount(0);
+}
+void MainWindow::on_bAPPTerm_clicked()
+{
+    on_bAPTerm_clicked();
+}
+
 //обновление данных на вкладке
 namespace
 {
@@ -235,6 +273,8 @@ void UpdatePresureTest( test::AttPressure const& test, Ui::MainWindow *ui )
 
             i_task->setFlags( Qt::ItemIsEnabled );
             i_result->setFlags( Qt::ItemIsEnabled );
+            i_fact->setFlags( Qt::ItemIsEnabled );
+            i_error->setFlags( Qt::ItemIsEnabled );
 
             table->setVerticalHeaderItem(table->rowCount() - 1, mark.release());
             table->setItem(table->rowCount() - 1, 0, i_task.release());
@@ -304,6 +344,7 @@ void UpdateTimeTest( test::AttTime const& test, Ui::MainWindow *ui )
 
             i_result->setFlags( Qt::ItemIsEnabled );
 
+
             table->setVerticalHeaderItem(table->rowCount() - 1, mark.release());
             table->setItem(table->rowCount() - 1, 0, i_result.release());
             table->setItem(table->rowCount() - 1, 1, i_fact.release());
@@ -354,6 +395,7 @@ void UpdatePresureSpeedTest( test::AttPressureSpeed const& test, Ui::MainWindow 
             i_fact->setText(test::ToString( dt.mResult ));
 
             i_result->setFlags( Qt::ItemIsEnabled );
+            i_fact->setFlags( Qt::ItemIsEnabled );
 
             table->setItem(table->rowCount() - 1, 0, i_result.release());
             table->setItem(table->rowCount() - 1, 1, i_fact.release());
@@ -365,6 +407,49 @@ void UpdatePresureSpeedTest( test::AttPressureSpeed const& test, Ui::MainWindow 
 
             i_result->setText(test::ToString( dt.mCpuTime ));
             i_fact->setText(test::ToString( dt.mResult ));
+        }
+    }
+}
+void UpdatePresureTimeTest( test::AttPressureTime const& test, Ui::MainWindow *ui )
+{
+    RepaintGraph( test, ui->lAPPGraph );
+    auto const& data = test.GetData();
+    auto* table = ui->tblAttPressureTime;
+
+    for( size_t it = 0, end = data.size(); it < end; ++it )
+    {
+        test::AttPressureTime::Data const& dt = data[it];
+
+        if ( static_cast<size_t>( table->rowCount() ) <= it )
+        {
+            table->insertRow(table->rowCount());
+
+            std::unique_ptr<QTableWidgetItem> i_result( new QTableWidgetItem );
+            std::unique_ptr<QTableWidgetItem> i_fact( new QTableWidgetItem );
+            std::unique_ptr<QTableWidgetItem> i_error( new QTableWidgetItem );
+
+
+            i_result->setText(test::ToString( dt.mPtask ));
+            i_fact->setText(test::ToString( dt.mPmax ));
+            i_error->setText(test::ToString( dt.Error() ));
+
+            i_result->setFlags( Qt::ItemIsEnabled );
+            i_fact->setFlags( Qt::ItemIsEnabled );
+            i_error->setFlags( Qt::ItemIsEnabled );
+
+            table->setItem(table->rowCount() - 1, 0, i_result.release());
+            table->setItem(table->rowCount() - 1, 1, i_fact.release());
+            table->setItem(table->rowCount() - 1, 2, i_error.release());
+        }
+        else
+        {
+            QTableWidgetItem *i_result = table->item(it, 0);
+            QTableWidgetItem *i_fact = table->item(it, 1);
+            QTableWidgetItem *i_error = table->item(it, 2);
+
+            i_result->setText(test::ToString( dt.mPtask ));
+            i_fact->setText(test::ToString( dt.mPmax ));
+            i_error->setText(test::ToString( dt.Error() ));
         }
     }
 }
@@ -387,6 +472,9 @@ void MainWindow::UpdateAttestation()
         break;
     case 2:
         UpdatePresureSpeedTest( static_cast<test::AttPressureSpeed const&>( *test ), ui );
+        break;
+    case 3:
+        UpdatePresureTimeTest( static_cast<test::AttPressureTime const&>( *test ), ui );
         break;
     default:
         break;

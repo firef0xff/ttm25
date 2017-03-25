@@ -275,15 +275,14 @@ void AttPressure::UpdateData()
     if (mCurrenPos<mData.size())
     {
         auto& dt = mData[mCurrenPos];
+        dt.mCurrent = true;
         dt.mResult = mem.Pressure();
-        if (mControls.AttPressureSave() && !mWait)
+        if (mControls.AttPressureSave() )
         {
             for ( auto it = mData.begin(), end = mData.end(); it != end; ++it )
             {
                 it->mCurrent = false;
             }
-            dt.mCurrent = true;
-            mWait = true;
             //в этой точке опросить метран
             dt.mFact = dt.mResult;
             //продолжить тест
@@ -309,13 +308,20 @@ bool AttPressure::StopBit()
 void AttPressure::Reset()
 {
     mCurrenPos = 0;
-    mWait=false;
     mData.clear();
-    for ( int i = 10; i <= 100; i += 10  )
+//    for ( int i = 10; i <= 100; i += 10  )
+//    {
+//        Data d;
+//        d.mTask = round(100*i*1/10.19716212978)/100.0;
+//        if ( i == 10 )
+//            d.mCurrent = true;
+//        mData.push_back( std::move( d ) );
+//    }
+    for ( int i = 1; i <= 10; i += 1  )
     {
         Data d;
-        d.mTask = round(100*i*1/10.19716212978)/100.0;
-        if ( i == 10 )
+        d.mTask = i;
+        if ( i == 1 )
             d.mCurrent = true;
         mData.push_back( std::move( d ) );
     }
@@ -334,14 +340,12 @@ QJsonObject AttPressure::Serialise() const
     QJsonObject obj = Attestaion::Serialise();
     obj.insert("CurrenPos",mCurrenPos);
     obj.insert("Data", ToJson(mData));
-    obj.insert("Wait",mWait);
     return obj;
 }
 bool AttPressure::Deserialize( QJsonObject const& obj )
 {
     FromJson( mData, obj.value("Data").toArray() );
     mCurrenPos = obj.value("CurrenPos").toInt();
-    mWait = obj.value("Wait").toBool();
     Attestaion::Deserialize( obj );
     return true;
 }
@@ -998,7 +1002,7 @@ bool AttPressureSpeed::DrawBody( uint32_t& num, QPainter& painter, QRect &free_r
                 "<table valign='middle' width='50%' border='1.5' cellspacing='-0.5' cellpadding='-0.5'>"
                 "<tr>"
                   "<th>Время, сек</th>"
-                  "<th>Давление, сек</th>"
+                  "<th>Давление, МПа</th>"
                 "</tr>";
 
         QString footer = "</table>"
@@ -1126,6 +1130,328 @@ void AttPressureSpeed::PaintGraph(QPainter& painter, QFont const& font, const QR
     painter.save();
 
     QString x_msg = "Время, сек";
+    QString y_msg = "Давление, МПа";
+
+
+    QFont f = font;
+    f.setPointSize( 12 );
+    int w = (rect.width())*skale;
+    int h = (rect.height())*skale;
+
+    ff0x::GraphBuilder builder ( w, h, ff0x::GraphBuilder::PlusPlus, f );
+    ff0x::BasicGraphBuilder::GraphDataLine lines;
+    lines.push_back( ff0x::BasicGraphBuilder::Line(mGrapfs->data[0], ff0x::BasicGraphBuilder::LabelInfo( "Результат", Qt::darkBlue ) ) );
+    lines.push_back( ff0x::BasicGraphBuilder::Line(mGrapfs->data[1], ff0x::BasicGraphBuilder::LabelInfo( "Контрольное значение", Qt::darkRed ) ) );
+
+    QRect p1(rect.left(), rect.top(), w, h );
+    {
+        QPointF x_range;
+        QPointF y_range;
+        QPointF xi_range(mGrapfs->x_range.x(), 0);
+        QPointF yi_range(mGrapfs->y_range.x(), 0);
+        double x_step = 0;
+        double y_step = 0;
+        ff0x::DataLength( xi_range,x_range, x_step );
+        ff0x::DataLength( yi_range,y_range, y_step );
+
+        painter.drawPixmap( p1, builder.Draw( lines, x_range.x()+x_step, y_range.x()+y_step, x_step, y_step, x_msg, y_msg, true ) );
+    }
+
+    painter.restore();
+}
+//------------------------------------------------------~
+namespace
+{
+QJsonArray ToJson( AttPressureTime::DataSet const& data )
+{
+    QJsonArray arr;
+    foreach ( AttPressureTime::Data const& d, data )
+    {
+        arr.insert( arr.end(), d.Serialise() );
+    }
+    return std::move( arr );
+}
+void FromJson( AttPressureTime::DataSet& data, QJsonArray const& arr )
+{
+    data.clear();
+
+    foreach (QJsonValue const& v, arr)
+    {
+        AttPressureTime::Data d;
+        if ( d.Deserialize( v.toObject() ) )
+            data.insert( data.end(), d );
+    }
+}
+}
+
+AttPressureTime::Data::Data():
+    mPmax(0),
+    mPtask(0),
+    mPvpd(0),
+    mCurrent(false)
+{}
+
+QJsonObject AttPressureTime::Data::Serialise() const
+{
+    QJsonObject obj;
+    obj.insert("Pmax",  mPmax);
+    obj.insert("Ptask", mPtask);
+    obj.insert("Pvpd",  mPvpd);
+    return obj;
+}
+bool AttPressureTime::Data::Deserialize( QJsonObject const& obj )
+{
+    mPmax   = obj.value("Pmax").toDouble();
+    mPtask   = obj.value("Ptask").toDouble();
+    mPvpd   = obj.value("Pvpd").toDouble();
+
+    return true;
+}
+
+double AttPressureTime::Data::Error() const
+{
+    if ( !mPmax )
+        return 0.0;
+    return round((mPmax - mPtask)/mPvpd*10000)/100; //вывод погрешности в %
+}
+
+AttPressureTime::AttPressureTime():
+    Attestaion("Поддержание давления в течении времени", 3)
+{
+    Reset();
+}
+bool AttPressureTime::Run()
+{
+    Start();
+    if ( IsStopped() )
+        return false;
+
+    return Success();
+}
+void AttPressureTime::Reset()
+{
+    mData.clear();
+    Data d;
+    d.mPtask = 3;
+    d.mPvpd = 4;
+    mData.push_back( std::move( d ) );
+    d.mPtask = 5;
+    d.mPvpd = 6;
+    mData.push_back( std::move( d ) );
+    d.mPtask = 9;
+    d.mPvpd = 10;
+    mData.push_back( std::move( d ) );
+}
+void AttPressureTime::UpdateData()
+{
+    auto const& mem = cpu::CpuMemory::Instance().Sensors;
+    if (mCurrenPos<mData.size())
+    {
+        auto& dt = mData[mCurrenPos];
+        dt.mCurrent = true;
+        auto cur_press = mem.Pressure();
+        if ( dt.mPmax < cur_press )
+            dt.mPmax = cur_press;
+
+        if ( mControls.AttPressureTimeSave() )
+        {
+            for ( auto it = mData.begin(), end = mData.end(); it != end; ++it )
+            {
+                it->mCurrent = false;
+            }
+            //продолжить тест
+            ++mCurrenPos;
+            mControls.AttPressureTimeSave(false);
+        }
+    }
+}
+
+QJsonObject AttPressureTime::Serialise() const
+{
+    QJsonObject obj = Attestaion::Serialise();
+    obj.insert("CurrenPos",mCurrenPos);
+    obj.insert("Data", ToJson(mData));
+    return obj;
+}
+bool AttPressureTime::Deserialize( QJsonObject const& obj )
+{
+    FromJson( mData, obj.value("Data").toArray() );
+    mCurrenPos = obj.value("CurrenPos").toInt();
+    Attestaion::Deserialize( obj );
+    return true;
+}
+
+void AttPressureTime::SetStartBit( bool b )
+{
+    mControls.AttPressureTimeStart( b );
+}
+void AttPressureTime::SetStopBit( bool b )
+{
+    mControls.AttPressureTimeStop( b );
+}
+bool AttPressureTime::StopBit()
+{
+    return mControls.AttPressureTimeStop();
+}
+AttPressureTime::DataSet const& AttPressureTime::GetData() const
+{
+    return mData;
+}
+AttPressureTime::DataSet& AttPressureTime::GetData()
+{
+    return mData;
+}
+
+bool AttPressureTime::DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) const
+{
+    QFont text_font = painter.font();
+    text_font.setFamily("Arial");
+    text_font.setPointSize( 12 );
+
+    bool res = true;
+    {
+        QString header = "<html>"
+                "<head>"
+                  "<meta charset='utf-8'>"
+                  "<style type='text/css'>"
+                       "td { text-align: center;}"
+                       "th { font-weight: normal;}"
+                       "table {border-collapse: collapse; border-style: solid;}"
+                 "</style>"
+                "</head>"
+                "<body>"
+                "<table valign='middle' width='50%' border='1.5' cellspacing='-0.5' cellpadding='-0.5'>"
+                "<tr>"
+                  "<th>Удерживаемое давление, МПа</th>"
+                  "<th>Максимальное давление, МПа</th>"
+                  "<th>Погрешность, %</th>"
+                "</tr>";
+
+        QString footer = "</table>"
+                "</body>"
+                "</html>";
+
+        QString table = header;
+        auto MakeRow = [ this ]( Data const& dt) -> QString
+        {
+            QString row =   "<tr>";
+            row +=              "<td>"+ToString(dt.mPtask)+"</td>"
+                                "<td>"+ToString(dt.mPmax)+"</td>"
+                                "<td>"+ToString(dt.Error())+"</td>";
+            row +=          "</tr>";
+            return row;
+        };
+
+        QTextDocument doc;
+        doc.setUndoRedoEnabled( false );
+        doc.setTextWidth( free_rect.width() );
+        doc.setUseDesignMetrics( true );
+        doc.setDefaultTextOption ( QTextOption (Qt::AlignHCenter )  );
+
+        int rows_prapared = 0;
+        for ( auto i = PrintedRows; i < mData.size(); ++i ) //PrintedRows
+        {
+            QString row = MakeRow( mData[i] );
+            QString tmp = table + row + footer;
+            doc.setHtml( tmp );
+            auto h = doc.documentLayout()->documentSize().height();
+            if ( h > free_rect.height() )
+                break;
+            ++rows_prapared;
+            table += row;
+        }
+        if ( PrintedRows && rows_prapared )
+            num += PrintedPage;
+        else if( PrintedPage )
+            num += PrintedPage - 1;
+        PrintedRows += rows_prapared;
+        table += footer;
+
+        doc.setHtml( table );
+        auto h = doc.documentLayout()->documentSize().height();
+
+        res = DrawLine( num, free_rect, text_font,
+        [ this, &painter, &doc, &text_font ]( QRect const& rect )
+        {
+            painter.save();
+            QRectF r( 0, 0, rect.width(), rect.height() );
+            painter.translate( rect.topLeft() );
+            doc.drawContents( &painter, r);
+            painter.restore();
+            ++PrintedPage;
+        }, 1, h );
+    }
+
+    return res;
+}
+
+namespace
+{
+QVector<ff0x::GraphBuilder::LinePoints> Process( AttPressureTime::DataSet const& src, QPointF& x_range, QPointF& y_range )
+{
+    QVector<ff0x::GraphBuilder::LinePoints> result;
+    result.resize(2);
+
+    for ( int i = 0; i < src.size(); ++i )
+    {
+        double const& y1 = src[i].mPmax;
+        double const& y2 = src[i].mPtask;
+
+        double x = i + 1;
+
+        double max_y = std::max( y1, y2 );
+        double min_y = std::min( y1, y2 );
+        if ( !i )
+        {
+            x_range.setX( x );
+            x_range.setY( x );
+            y_range.setX( max_y );
+            y_range.setY( min_y );
+        }
+        else
+        {
+            if ( x > x_range.x() )
+                x_range.setX( x );
+            if ( x < x_range.y() )
+                x_range.setY( x );
+
+            if ( max_y > y_range.x() )
+                y_range.setX( max_y );
+            if ( min_y < y_range.y() )
+                y_range.setY( min_y );
+        }
+
+        result[0].push_back( QPointF( x, y1 ) );
+        result[1].push_back( QPointF( x, y2 ) );
+    }
+
+    return std::move( result );
+}
+
+}
+
+class AttPressureTime::GrapfData
+{
+public:
+    GrapfData( AttPressureTime const* test )
+    {
+        data = Process( test->mData, x_range, y_range );
+    }
+
+    QVector<ff0x::GraphBuilder::LinePoints> data;
+
+
+    QPointF x_range;
+    QPointF y_range;
+};
+
+void AttPressureTime::PaintGraph(QPainter& painter, QFont const& font, const QRect &rect, double skale) const
+{
+    mGrapfs.reset( new GrapfData( this ) );
+
+    painter.save();
+
+    QString x_msg = "Номер измерения";
     QString y_msg = "Давление, МПа";
 
 

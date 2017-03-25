@@ -42,6 +42,15 @@ public:
     void AttPressureSpeedStop( bool b );
     bool AttPressureSpeedStop() const;
 
+    void AttPressureTimeStart( bool b );
+    bool AttPressureTimeStart() const;
+
+    void AttPressureTimeStop( bool b );
+    bool AttPressureTimeStop() const;
+
+    void AttPressureTimeSave( bool b );
+    bool AttPressureTimeSave() const;
+
     std::unique_lock<std::recursive_mutex> Locker();
 protected:
     bool* W10_00;    //Старт по времени
@@ -53,6 +62,10 @@ protected:
 
     bool* W10_05;    //Старт по нарастанию давления
     bool* W10_06;    //Стоп по нарастанию давления
+
+    bool* W10_07;    //Старт по удержанию давления
+    bool* W10_08;    //Стоп по удержанию давления
+    bool* W10_09;    //Стоп по удержанию давления
 
 private:
     friend class cpu::CpuMemory;

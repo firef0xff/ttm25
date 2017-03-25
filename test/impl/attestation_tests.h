@@ -85,7 +85,6 @@ private:
 
     DataSet mData;
     int32_t mCurrenPos;
-    bool mWait;
     mutable std::unique_ptr<GrapfData> mGrapfs;
 };
 
@@ -170,4 +169,50 @@ private:
     int32_t mCurrenTime = 0;
     mutable std::unique_ptr<GrapfData> mGrapfs;
 };
+
+class AttPressureTime : public Attestaion
+{
+public:
+    class GrapfData;
+    struct Data
+    {
+        Data();
+
+        QJsonObject Serialise() const;
+        bool Deserialize( QJsonObject const& obj );
+
+        double Error() const;
+
+        double mPmax;
+        double mPtask;
+        double mPvpd;
+        bool mCurrent;
+    };
+    typedef QVector<Data> DataSet;
+
+    AttPressureTime();
+    virtual bool Run() override;
+
+    DataSet const& GetData() const;
+    DataSet& GetData();
+
+    void Reset();
+    virtual void UpdateData();
+    virtual void SetStartBit( bool b );
+    virtual void SetStopBit( bool b );
+    virtual bool StopBit() override;
+
+    virtual QJsonObject Serialise() const override;
+    virtual bool Deserialize( QJsonObject const& obj ) override;
+
+    virtual void PaintGraph(QPainter& painter, QFont const& font, const QRect &rect,
+                    double skale) const override;
+private:
+    virtual bool DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) const;
+
+    DataSet mData;
+    int32_t mCurrenPos = 0;
+    mutable std::unique_ptr<GrapfData> mGrapfs;
+};
+
 }//namespace test
