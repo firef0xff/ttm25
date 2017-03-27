@@ -61,7 +61,11 @@ SOURCES += main.cpp\
     test/impl/main_tests.cpp \
     cpu/attestation_launch_control.cpp \
     test/impl/defect_question.cpp \
-    cpu/err_codes.cpp
+    cpu/err_codes.cpp \
+    communication/metran/metran_command.cpp \
+    communication/metran/metran_paskage.cpp \
+    communication/metran/funcs/metran_read.cpp \
+    communication/metran/funcs/metran_write.cpp
 
 HEADERS  += main_window.h \
     communication/fins/endpoint.h \
@@ -107,7 +111,12 @@ HEADERS  += main_window.h \
     test/impl/attestation_tests.h \
     cpu/attestation_launch_control.h \
     test/impl/defect_question.h \
-    cpu/err_codes.h
+    cpu/err_codes.h \
+    communication/metran/metran_command.h \
+    communication/buffer_tools.h \
+    communication/metran/metran_paskage.h \
+    communication/metran/funcs/metran_read.h \
+    communication/metran/funcs/metran_write.h
 
 FORMS    += main_window.ui\
             test/viewer.ui\

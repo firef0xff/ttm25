@@ -35,6 +35,7 @@ size_t CurrentValues::ReadImpl( uint8_t const* buf, size_t size, bool& res )
     CRC = *reinterpret_cast<int16_t const*>( head );
     head += sizeof( CRC );
     res = true;
+    return head - buf;
 }
 
 
