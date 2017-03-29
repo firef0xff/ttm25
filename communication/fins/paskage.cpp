@@ -50,10 +50,10 @@ bool Paskage::SetResponce( uint8_t const* buf, size_t size )
         return false;
 
     bool res = false;
-    head += mSource.Check( head, HEADER_SIZE - ( head - mOutBuf ), res );
+    head += mSource.Check( head, HEADER_SIZE - ( head - buf ), res );
     if (!res)
         return false;
-    head += mDestination.Check( head, HEADER_SIZE - ( head - mOutBuf ), res );
+    head += mDestination.Check( head, HEADER_SIZE - ( head - buf ), res );
     if (!res)
         return false;
     if (*(head++) != mSID )

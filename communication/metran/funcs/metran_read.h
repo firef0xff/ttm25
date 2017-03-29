@@ -6,7 +6,7 @@ namespace metran
 class Read : public Command
 {
 public:
-    Read( uint16_t reg, uint16_t count, uint16_t* resp, size_t resp_size );
+    Read( uint16_t reg, uint16_t count, uint16_t* resp );
 
 private:
     virtual size_t WriteImpl( uint8_t* buf, size_t size ) override;
@@ -18,9 +18,7 @@ private:
     uint16_t mRegNo;
     uint16_t mRegCount;
 
-    uint8_t mRespPkgSize;
     uint16_t* mResponce;
-    size_t mRespSize;
 };
 
 }

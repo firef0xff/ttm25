@@ -285,9 +285,8 @@ void AttPressure::UpdateData()
             }
             //в этой точке опросить метран
             dt.mFact = dt.mResult;
-            //продолжить тест
-            if (mControls.AttPressureSave())
-                mControls.AttPressureSave(false);
+            //продолжить тест            
+            mControls.AttPressureSave(false);
             ++mCurrenPos;
         }
     }
