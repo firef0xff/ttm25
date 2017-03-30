@@ -66,7 +66,8 @@ SOURCES += main.cpp\
     communication/metran/metran_paskage.cpp \
     communication/metran/funcs/metran_read.cpp \
     communication/metran/funcs/metran_write.cpp \
-    unit_tests/test_metran.cpp
+    unit_tests/test_metran.cpp \
+    cpu/metran/metran.cpp
 
 HEADERS  += main_window.h \
     communication/fins/endpoint.h \
@@ -117,7 +118,8 @@ HEADERS  += main_window.h \
     communication/buffer_tools.h \
     communication/metran/metran_paskage.h \
     communication/metran/funcs/metran_read.h \
-    communication/metran/funcs/metran_write.h
+    communication/metran/funcs/metran_write.h \
+    cpu/metran/metran.h
 
 FORMS    += main_window.ui\
             test/viewer.ui\
@@ -149,7 +151,7 @@ release {
 #DEFINES += DEMO
 DEFINES += LOG
 DEFINES += DEBUG
-DEFINES += TESTS
+#DEFINES += TESTS
 
 DISTFILES += \    
     data/* \

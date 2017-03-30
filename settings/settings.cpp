@@ -216,6 +216,17 @@ QString Settings::ComAddr() const
     return mDocument.object().value("ComAddr").toString();
 }
 
+void Settings::MetranAddr( qint8 v )
+{
+    auto obj = mDocument.object();
+    obj.insert( "MetranAddr", v );
+    mDocument.setObject( obj );
+}
+qint8 Settings::MetranAddr() const
+{
+    return mDocument.object().value("MetranAddr").toInt();
+}
+
 bool Settings::CheckUser( QString const& user, QString const& pass )
 {
     if ( user.isEmpty() || pass.isEmpty() )

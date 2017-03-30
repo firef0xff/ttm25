@@ -73,6 +73,7 @@ void settings_wnd::on_buttonBox_accepted()
     app::Settings::Instance().TestPath( ui->TestingParams->text() );
     app::Settings::Instance().ResultPath( ui->TestingResults->text() );
     app::Settings::Instance().ComAddr( ui->ComAddr->text() );
+    app::Settings::Instance().MetranAddr( ui->MetranAddr->value() );
     app::Settings::Instance().Save();
     close();
 }

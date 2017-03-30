@@ -55,6 +55,9 @@ public:
 
     void ComAddr( QString const& v);
     QString ComAddr() const;
+
+    void MetranAddr( qint8 v );
+    qint8 MetranAddr() const;
 private:
     Settings();
     Settings( Settings const& ) = delete;
