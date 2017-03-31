@@ -19,7 +19,10 @@ Metran& Metran::Instance()
     static Metran m;
     return m;
 }
-
+void Metran::Disconnect()
+{
+    mPort.reset();
+}
 void Metran::Init()
 {
     //подготовка  таймаутов
@@ -74,9 +77,7 @@ void Metran::Read()
     uint16_t const reg = 0x000F;            //первый регистр для чтения
     uint8_t const count = sizeof(mData)/sizeof(*mData);    //количество читаемых регистров
 
-    uint16_t data[count] = {0};
-
-    metran::Read cmd( reg, count, data );
+    metran::Read cmd( reg, count, mData );
     metran::Paskage pkg( addr, cmd );
 
 

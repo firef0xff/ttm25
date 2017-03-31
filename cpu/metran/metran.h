@@ -17,6 +17,7 @@ public:
     ~Metran();
     static Metran& Instance();
 
+    void Disconnect();
     void Read();
 
     float Pressure();

@@ -6,6 +6,7 @@
 #include <QTextDocument>
 #include <QAbstractTextDocumentLayout>
 #include <GraphBuilder/graph_builder.h>
+#include <cpu/metran/metran.h>
 
 namespace test
 {
@@ -264,6 +265,7 @@ AttPressure::AttPressure():
 bool AttPressure::Run()
 {
     Start();
+    cpu::Metran::Instance().Disconnect();
     if ( IsStopped() )
         return false;
 
@@ -284,7 +286,17 @@ void AttPressure::UpdateData()
                 it->mCurrent = false;
             }
             //в этой точке опросить метран
-            dt.mFact = dt.mResult;
+            try
+            {
+                auto& mt = cpu::Metran::Instance();
+                mt.Read();
+                dt.mFact = mt.Pressure();
+            }
+            catch (std::exception const& e)
+            {
+                Log( QString("Испытание прервано: ") + e.what()  );
+                SetStopBit( true );
+            }
             //продолжить тест            
             mControls.AttPressureSave(false);
             ++mCurrenPos;

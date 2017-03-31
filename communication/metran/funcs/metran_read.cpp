@@ -45,7 +45,7 @@ size_t Read::RequestSizeImpl() const
 }
 size_t Read::ResponseSizeImpl() const
 {
-    return mRegCount*sizeof(*mResponce);
+    return mRegCount*sizeof(*mResponce) + sizeof(uint8_t);
 }
 
 }

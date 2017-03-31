@@ -16,7 +16,15 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-    auto &inst = cpu::Metran::Instance();
-    inst.Read();
-    ui->label->setText( QString::number( inst.Pressure() ) );
+    try
+    {
+        auto &inst = cpu::Metran::Instance();
+        inst.Read();
+        ui->Pressure->setText( QString::number( inst.Pressure() ) );
+    }
+    catch( std::exception &e )
+    {
+        ui->Pressure->setText( e.what() );
+    }
+
 }

@@ -8,7 +8,7 @@ class Paskage
 public:
     enum // размеры элементов пакета
     {
-        HEADER_SIZE = sizeof(uint8_t) + sizeof(uint32_t),  //размер заголовка
+        HEADER_SIZE = sizeof(uint8_t) + sizeof(uint16_t),  //размер заголовка
         BODY_SIZE = 1024*4,
         PASKAGE_SIZE = HEADER_SIZE + BODY_SIZE
     };
