@@ -3,7 +3,6 @@
 #include "communication/metran/funcs/metran_read.h"
 #include "communication/metran/metran_paskage.h"
 #include "settings/settings.h"
-#include <chrono>
 namespace cpu
 {
 
@@ -32,18 +31,18 @@ void Metran::Init()
     TimeOuts->WriteTotalTimeoutConstant =0;
 
     QString Addr = app::Settings::Instance().ComAddr();
-    mPort.reset(new COMPort( Addr.toStdString(), std::move( TimeOuts ), COMPort::CommMasks::ev_rxchar, 4096, 4096 )  );
+    mPort.reset(new COMPort( Addr.toStdString(), std::move( TimeOuts ), COMPort::CommMasks::ev_rxchar, 4096, 2048 )  );
 
     //корректировка настроек порта DCB
 
     std::unique_ptr< DCB> settings = mPort->Get_port_Settings();
     settings->BaudRate =COMPort::BaudRates::BR_9600;
     settings->ByteSize = 8;
-    settings->Parity = COMPort::Paritys::NOparity;
+    settings->Parity = COMPort::Paritys::EVENparity;
     settings->StopBits = COMPort::StopBits::ONE;
     settings->fAbortOnError = FALSE;
-    settings->fDtrControl = DTR_CONTROL_DISABLE;
-    settings->fRtsControl = RTS_CONTROL_DISABLE;
+    settings->fDtrControl = DTR_CONTROL_ENABLE;
+    settings->fRtsControl = RTS_CONTROL_TOGGLE;
     settings->fBinary = TRUE;
     settings->fParity = COMPort::fParitys::OFF;
     settings->fInX = FALSE;
@@ -58,6 +57,7 @@ void Metran::Init()
     settings->XoffLim = 1024;
     settings->fDsrSensitivity=FALSE;
     mPort->Set_DCB_Settings( std::move( settings ) );
+
 }
 
 void Metran::Read()
@@ -72,7 +72,7 @@ void Metran::Read()
     uint8_t const addr = app::Settings::Instance().MetranAddr(); //адрес устройства
 
     uint16_t const reg = 0x000F;            //первый регистр для чтения
-    uint8_t const count = sizeof(mData);    //количество читаемых регистров
+    uint8_t const count = sizeof(mData)/sizeof(*mData);    //количество читаемых регистров
 
     uint16_t data[count] = {0};
 
@@ -83,27 +83,24 @@ void Metran::Read()
     const int len = 1096;
     char buff[len] = {0};
     char* p_buff = &buff[0];
-    size_t remain_len = pkg.ResponseSize();
-    bool end = false;
+    size_t ans_len = pkg.ResponseSize();
+    size_t remain_len = len;
 
-//    port.DTR_On();
-//    port->Clear_Com_Buff(	COMPort::Purge_flags::TXABORT|
-//                            COMPort::Purge_flags::RXABORT|
-//                            COMPort::Purge_flags::TXCLEAR|
-//                            COMPort::Purge_flags::RXCLEAR);
-//    port.Write( pkg.Data(), pkg.Size() );
-//    port.DTR_oFF();
-    auto start = std::chrono::system_clock::now();
+    port.Clear_Com_Buff(	COMPort::Purge_flags::TXABORT|
+                            COMPort::Purge_flags::RXABORT|
+                            COMPort::Purge_flags::TXCLEAR|
+                            COMPort::Purge_flags::RXCLEAR);
+    port.Write( pkg.Data(), pkg.Size() );
+
+    size_t total_readed = 0;
     do
     {
         size_t readed = port.Read( reinterpret_cast<BYTE*>( p_buff ), remain_len );
-        remain_len -= std::min( readed, remain_len );
+        total_readed += readed;
+        remain_len -= readed;
         p_buff += readed;
-
-//        if ( (std::chrono::system_clock::now() - start) > std::chrono::seconds(10) )
-//            throw COMError("Read timeout");
     }
-    while( !end && remain_len );    
+    while( total_readed < ans_len );
     pkg.SetResponce( reinterpret_cast<uint8_t*>( buff ), len - remain_len );
 }
 
