@@ -11,6 +11,15 @@
 namespace test
 {
 
+namespace
+{
+double BarToMPa( double b )
+{
+    return round(100*b*1/10.19716212978)/100.0;
+}
+
+}
+
 Attestaion::Attestaion ( QString const& name, uint8_t id ):
     TestCommonData(name, id),
     mSuccess(false),
@@ -1243,14 +1252,14 @@ void AttPressureTime::Reset()
 {
     mData.clear();
     Data d;
-    d.mPtask = 3;
-    d.mPvpd = 4;
+    d.mPtask = BarToMPa(3);
+    d.mPvpd = BarToMPa(4);
     mData.push_back( std::move( d ) );
-    d.mPtask = 5;
-    d.mPvpd = 6;
+    d.mPtask = BarToMPa(5);
+    d.mPvpd = BarToMPa(6);
     mData.push_back( std::move( d ) );
-    d.mPtask = 9;
-    d.mPvpd = 10;
+    d.mPtask = BarToMPa(9);
+    d.mPvpd = BarToMPa(10);
     mData.push_back( std::move( d ) );
 }
 void AttPressureTime::UpdateData()
