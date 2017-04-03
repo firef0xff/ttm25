@@ -189,6 +189,8 @@ public:
         bool mCurrent;
     };
     typedef QVector<Data> DataSet;
+    typedef std::map<int32_t, double> StepDataSet;
+    typedef QVector<StepDataSet> Steps;
 
     AttPressureTime();
     virtual bool Run() override;
@@ -211,7 +213,11 @@ private:
     virtual bool DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) const;
 
     DataSet mData;
-    int32_t mCurrenPos = 0;
+    Steps mSteps;
+
+    QTime mTime;
+    bool mSaveGraphData = false;
+    int32_t mCurrenPos = 0;    
     mutable std::unique_ptr<GrapfData> mGrapfs;
 };
 

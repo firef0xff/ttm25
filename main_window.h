@@ -80,6 +80,7 @@ private slots:
     void OnEndTests();
 
     //аттестация
+    void RunAttestation();
     void on_tAttestaion_currentChanged(int index);
     void on_bAPStart_clicked();
     void on_bAPStop_clicked();

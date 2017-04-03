@@ -22,14 +22,12 @@ void MainWindow::on_tAttestaion_currentChanged(int index)
 }
 
 //управление аттестацией
-void MainWindow::on_bAPStart_clicked()
+void MainWindow::RunAttestation()
 {
     LockSkreen( mdAttestation );
     auto& params = test::AttestationParams::Instance();
     params.Date( QDateTime::currentDateTime() );
     params.User( app::Settings::Instance().User() );
-    params.PressureSpeed( ui->cbPressureSpeed->currentText() );
-    params.UpdatePeriod( ui->bxPeriod->value() );
 
     mWorker.reset( new Worker() );
     QObject::connect( mWorker.get(), &Worker::to_exec, this, &MainWindow::exec );
@@ -37,6 +35,15 @@ void MainWindow::on_bAPStart_clicked()
     mWorker->start();
 
     mWorker->fill();
+}
+void MainWindow::on_bAPStart_clicked()
+{
+    on_bAPClear_clicked();
+
+    auto& params = test::AttestationParams::Instance();
+    params.PressureSpeed( ui->cbPressureSpeed->itemText(1) );
+
+    RunAttestation();
 }
 
 void MainWindow::on_bAPStop_clicked()
@@ -82,7 +89,8 @@ void MainWindow::on_bAPTerm_clicked()
 void MainWindow::on_bATStart_clicked()
 {
     on_bATClear_clicked();
-    on_bAPStart_clicked();
+
+    RunAttestation();
 }
 void MainWindow::on_bATWrite_clicked()
 {
@@ -148,7 +156,12 @@ void MainWindow::on_bATClear_clicked()
 void MainWindow::on_bAPTStart_clicked()
 {
     on_bAPTClear_clicked();
-    on_bAPStart_clicked();
+
+    auto& params = test::AttestationParams::Instance();
+    params.PressureSpeed( ui->cbPressureSpeed->currentText() );
+    params.UpdatePeriod( ui->bxPeriod->value() );
+
+    RunAttestation();
 }
 void MainWindow::on_bAPTStop_clicked()
 {
@@ -185,7 +198,11 @@ void MainWindow::on_bAPTTerm_clicked()
 void MainWindow::on_bAPPStart_clicked()
 {
     on_bAPPClear_clicked();
-    on_bAPStart_clicked();
+
+    auto& params = test::AttestationParams::Instance();
+    params.PressureSpeed( ui->cbPressureSpeed->itemText(0) );
+
+    RunAttestation();
 }
 void MainWindow::on_bAPPStop_clicked()
 {

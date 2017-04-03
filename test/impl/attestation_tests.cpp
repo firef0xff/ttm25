@@ -1193,6 +1193,45 @@ void FromJson( AttPressureTime::DataSet& data, QJsonArray const& arr )
             data.insert( data.end(), d );
     }
 }
+
+QJsonObject ToJson( AttPressureTime::StepDataSet const& data )
+{
+    QJsonObject obj;
+    for( auto it = data.begin(), end = data.end(); it != end; ++it )
+    {
+        auto const& item = *it;
+        obj.insert( QString::number( item.first ), item.second );
+    }
+    return std::move( obj );
+}
+void FromJson( AttPressureTime::StepDataSet& data, QJsonObject const& obj )
+{
+    data.clear();
+    for ( auto it = obj.begin(), end = obj.end(); it != end; ++it )
+        data.insert( std::make_pair( it.key().toInt(), it.value().toDouble() ) );
+}
+
+QJsonArray ToJson( AttPressureTime::Steps const& data )
+{
+    QJsonArray arr;
+    foreach ( AttPressureTime::StepDataSet const& d, data )
+    {
+        arr.insert( arr.end(), ToJson( d ) );
+    }
+    return std::move( arr );
+}
+void FromJson( AttPressureTime::Steps& data, QJsonArray const& arr )
+{
+    data.clear();
+
+    foreach (QJsonValue const& v, arr)
+    {
+        AttPressureTime::StepDataSet d;
+        FromJson( d, v.toObject() );
+        data.insert( data.end(), d );
+    }
+}
+
 }
 
 AttPressureTime::Data::Data():
@@ -1233,6 +1272,7 @@ AttPressureTime::AttPressureTime():
 }
 bool AttPressureTime::Run()
 {
+    mSaveGraphData = false;
     Start();
     if ( IsStopped() )
         return false;
@@ -1261,6 +1301,18 @@ void AttPressureTime::UpdateData()
         auto& dt = mData[mCurrenPos];
         dt.mCurrent = true;
         auto cur_press = mem.Pressure();
+        if ( !mSaveGraphData && cur_press >= dt.mPtask - dt.mPtask*0.1 )
+        {
+            mSaveGraphData = true;
+            mTime.start();
+        }
+
+        if ( mSaveGraphData )
+        {
+            int32_t sec = mTime.elapsed()/1000;
+            mSteps[mCurrenPos][sec] = cur_press;
+        }
+
         if ( dt.mPmax < cur_press )
             dt.mPmax = cur_press;
 
@@ -1272,6 +1324,7 @@ void AttPressureTime::UpdateData()
             }
             //продолжить тест
             ++mCurrenPos;
+            mSaveGraphData = false;
             mControls.AttPressureTimeSave(false);
         }
     }
@@ -1282,11 +1335,13 @@ QJsonObject AttPressureTime::Serialise() const
     QJsonObject obj = Attestaion::Serialise();
     obj.insert("CurrenPos",mCurrenPos);
     obj.insert("Data", ToJson(mData));
+    obj.insert("Steps", ToJson(mSteps));
     return obj;
 }
 bool AttPressureTime::Deserialize( QJsonObject const& obj )
 {
     FromJson( mData, obj.value("Data").toArray() );
+    FromJson( mSteps, obj.value("Steps").toArray() );
     mCurrenPos = obj.value("CurrenPos").toInt();
     Attestaion::Deserialize( obj );
     return true;
@@ -1398,42 +1453,41 @@ bool AttPressureTime::DrawBody( uint32_t& num, QPainter& painter, QRect &free_re
 
 namespace
 {
-QVector<ff0x::GraphBuilder::LinePoints> Process( AttPressureTime::DataSet const& src, QPointF& x_range, QPointF& y_range )
+QVector<ff0x::GraphBuilder::LinePoints> Process( AttPressureTime::Steps const& src, QPointF& x_range, QPointF& y_range )
 {
     QVector<ff0x::GraphBuilder::LinePoints> result;
-    result.resize(2);
+    result.resize(src.size());
 
     for ( int i = 0; i < src.size(); ++i )
     {
-        double const& y1 = src[i].mPmax;
-        double const& y2 = src[i].mPtask;
-
-        double x = i + 1;
-
-        double max_y = std::max( y1, y2 );
-        double min_y = std::min( y1, y2 );
-        if ( !i )
+        for ( auto it = src[i].begin(), end = src[i].end(); it != end; ++it )
         {
-            x_range.setX( x );
-            x_range.setY( x );
-            y_range.setX( max_y );
-            y_range.setY( min_y );
-        }
-        else
-        {
-            if ( x > x_range.x() )
+            double const& x = it->first;
+            double const& y = it->second;
+
+            if ( !i && it == src[i].begin() )
+            {
                 x_range.setX( x );
-            if ( x < x_range.y() )
                 x_range.setY( x );
+                y_range.setX( y );
+                y_range.setY( y );
+            }
+            else
+            {
+                if ( x > x_range.x() )
+                    x_range.setX( x );
+                if ( x < x_range.y() )
+                    x_range.setY( x );
 
-            if ( max_y > y_range.x() )
-                y_range.setX( max_y );
-            if ( min_y < y_range.y() )
-                y_range.setY( min_y );
+                if ( y > y_range.x() )
+                    y_range.setX( y );
+                if ( y < y_range.y() )
+                    y_range.setY( y );
+            }
+
+            result[i].push_back( QPoint( x, y ) );
         }
 
-        result[0].push_back( QPointF( x, y1 ) );
-        result[1].push_back( QPointF( x, y2 ) );
     }
 
     return std::move( result );
@@ -1446,7 +1500,7 @@ class AttPressureTime::GrapfData
 public:
     GrapfData( AttPressureTime const* test )
     {
-        data = Process( test->mData, x_range, y_range );
+        data = Process( test->mSteps, x_range, y_range );
     }
 
     QVector<ff0x::GraphBuilder::LinePoints> data;
@@ -1462,7 +1516,7 @@ void AttPressureTime::PaintGraph(QPainter& painter, QFont const& font, const QRe
 
     painter.save();
 
-    QString x_msg = "Номер измерения";
+    QString x_msg = "Время выдержки, сек";
     QString y_msg = "Давление, МПа";
 
 
@@ -1473,8 +1527,8 @@ void AttPressureTime::PaintGraph(QPainter& painter, QFont const& font, const QRe
 
     ff0x::GraphBuilder builder ( w, h, ff0x::GraphBuilder::PlusPlus, f );
     ff0x::BasicGraphBuilder::GraphDataLine lines;
-    lines.push_back( ff0x::BasicGraphBuilder::Line(mGrapfs->data[0], ff0x::BasicGraphBuilder::LabelInfo( "Результат", Qt::darkBlue ) ) );
-    lines.push_back( ff0x::BasicGraphBuilder::Line(mGrapfs->data[1], ff0x::BasicGraphBuilder::LabelInfo( "Контрольное значение", Qt::darkRed ) ) );
+    for ( int i = 0; i < mGrapfs->data.size(); ++i )
+        lines.push_back( ff0x::BasicGraphBuilder::Line(mGrapfs->data[1], ff0x::BasicGraphBuilder::LabelInfo( "Результат " + QString::number(i), Qt::darkBlue ) ) );
 
     QRect p1(rect.left(), rect.top(), w, h );
     {
