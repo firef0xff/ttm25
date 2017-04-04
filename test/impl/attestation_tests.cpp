@@ -1292,6 +1292,8 @@ void AttPressureTime::Reset()
     d.mPtask = 9;
     d.mPvpd = 10;
     mData.push_back( std::move( d ) );
+    mSteps.clear();
+    mSteps.resize(3);
 }
 void AttPressureTime::UpdateData()
 {
@@ -1301,7 +1303,7 @@ void AttPressureTime::UpdateData()
         auto& dt = mData[mCurrenPos];
         dt.mCurrent = true;
         auto cur_press = mem.Pressure();
-        if ( !mSaveGraphData && cur_press >= dt.mPtask - dt.mPtask*0.1 )
+        if ( !mSaveGraphData && cur_press >= dt.mPtask - dt.mPtask*0.02 )
         {
             mSaveGraphData = true;
             mTime.start();
@@ -1485,7 +1487,7 @@ QVector<ff0x::GraphBuilder::LinePoints> Process( AttPressureTime::Steps const& s
                     y_range.setY( y );
             }
 
-            result[i].push_back( QPoint( x, y ) );
+            result[i].push_back( QPointF( x, y ) );
         }
 
     }
@@ -1528,7 +1530,7 @@ void AttPressureTime::PaintGraph(QPainter& painter, QFont const& font, const QRe
     ff0x::GraphBuilder builder ( w, h, ff0x::GraphBuilder::PlusPlus, f );
     ff0x::BasicGraphBuilder::GraphDataLine lines;
     for ( int i = 0; i < mGrapfs->data.size(); ++i )
-        lines.push_back( ff0x::BasicGraphBuilder::Line(mGrapfs->data[1], ff0x::BasicGraphBuilder::LabelInfo( "Результат " + QString::number(i), Qt::darkBlue ) ) );
+        lines.push_back( ff0x::BasicGraphBuilder::Line(mGrapfs->data[i], ff0x::BasicGraphBuilder::LabelInfo( "Результат " + QString::number(i+1), Qt::darkBlue ) ) );
 
     QRect p1(rect.left(), rect.top(), w, h );
     {
