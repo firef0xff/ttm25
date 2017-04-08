@@ -22,12 +22,15 @@ void Viewer::Init()
     mPages.clear();
     QPixmap pixmap( 793, 1123 );
     QPainter painter(&pixmap);
+
+    bool print_all_tests = test::CURRENT_PARAMS->PrintAll();
     QRect rc = PreparePage( painter, QRect(0,0,793,1123) ); //397 562
 
-
-    test::CURRENT_PARAMS->Draw( painter, rc, CompareWidth );
-    if ( test::Test* test =  test::CURRENT_PARAMS->TestForExec() )
+    auto PrintTest = [&]( test::Test* test )
     {
+        if (!test)
+            return;
+
         test->ResetDrawLine();
 
         bool draw = false;
@@ -47,6 +50,23 @@ void Viewer::Init()
             QFontMetrics m (painter.font());
             rc.setTop( rc.top() + m.height() );
         }
+    };
+
+    test::CURRENT_PARAMS->Draw( painter, rc, CompareWidth );
+
+    if ( print_all_tests )
+    {
+        auto const& tc = test::CURRENT_PARAMS->TestsCase();
+        for ( auto it = tc.begin(), end = tc.end(); it != end; ++it   )
+        {
+           test::Test* test = it->second.get();
+           PrintTest( test );
+        }
+    }
+    else
+    {
+        test::Test* test = test::CURRENT_PARAMS->TestForExec();
+        PrintTest( test );
     }
 
     if ( test::CURRENT_PARAMS->HasResults() )
@@ -134,11 +154,15 @@ void Viewer::on_SavePDF_clicked()
         QPoint start (0,0);
         start -= printer.pageRect().topLeft();
         painter.translate( start );
+
+        bool print_all_tests = test::CURRENT_PARAMS->PrintAll();
         QRect rc = PreparePage( painter, printer.paperRect() );
 
-        test::CURRENT_PARAMS->Draw( painter, rc, CompareWidth );
-        if( test::Test* test= test::CURRENT_PARAMS->TestForExec() )
+        auto PrintTest = [&]( test::Test* test )
         {
+            if (!test)
+                return;
+
             test->ResetDrawLine();
 
             bool draw = false;
@@ -153,7 +177,25 @@ void Viewer::on_SavePDF_clicked()
                 QFontMetrics m (painter.font());
                 rc.setTop( rc.top() + m.height() );
             }
+        };
+
+        test::CURRENT_PARAMS->Draw( painter, rc, CompareWidth );
+
+        if ( print_all_tests )
+        {
+            auto const& tc = test::CURRENT_PARAMS->TestsCase();
+            for ( auto it = tc.begin(), end = tc.end(); it != end; ++it   )
+            {
+               test::Test* test = it->second.get();
+               PrintTest( test );
+            }
         }
+        else
+        {
+            test::Test* test = test::CURRENT_PARAMS->TestForExec();
+            PrintTest( test );
+        }
+
         if ( test::CURRENT_PARAMS->HasResults() )
         {
             printer.newPage();
@@ -173,20 +215,8 @@ QRect Viewer::PreparePage( QPainter& painter, QRect const& page_rect )
 {
     painter.fillRect( page_rect, Qt::white );
     QRect work_area( 76, 76, 698, 1010 );// 698 x 1010 19 = 5мм
-    QRect print_area( work_area.left() + 38, work_area.top() + 10, work_area.width() - ( 38 + 19 ), work_area.height() - 19 );
 
-    QRect header_rect( 0, 0, 55, 55 );
-    header_rect.setHeight( logo.height() * header_rect.width() / logo.width() );
-
-    painter.save();
-    QPoint header_point( work_area.center().x() - header_rect.width()/2, work_area.top() - header_rect.height() - 2 );
-    painter.translate( header_point );
-    painter.drawPixmap( header_rect, logo );
-    painter.restore();
-
-//    painter.drawRect( work_area );
-
-//    painter.drawRect( print_area );
+    test::CURRENT_PARAMS->DrawLogo( painter, work_area, logo );
 
     return work_area;
 }

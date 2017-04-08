@@ -7,8 +7,8 @@
 void MainWindow::InitAttestationModule()
 {
     auto & wp = test::AttestationParams::Instance();
-    wp.AddTest( std::unique_ptr<test::Test>( new test::AttPressure() ) );
     wp.AddTest( std::unique_ptr<test::Test>( new test::AttTime() ) );
+    wp.AddTest( std::unique_ptr<test::Test>( new test::AttPressure() ) );
     wp.AddTest( std::unique_ptr<test::Test>( new test::AttPressureSpeed() ) );
     wp.AddTest( std::unique_ptr<test::Test>( new test::AttPressureTime() ) );
 }
@@ -61,7 +61,7 @@ void MainWindow::on_bAPClear_clicked()
 {
     auto & wp = test::AttestationParams::Instance();
     auto* test = wp.TestForExec();
-    if ( !test || test->ID() != 0 )
+    if ( !test || test->ID() != 1 )
         return;
 
     on_bAPStop_clicked();
@@ -96,7 +96,7 @@ void MainWindow::on_bATWrite_clicked()
 {
     auto & wp = test::AttestationParams::Instance();
     auto* test = wp.TestForExec();
-    if ( !test || test->ID() != 1 )
+    if ( !test || test->ID() != 0 )
         return;
 
     auto *ptr = static_cast<test::AttTime*>(test);
@@ -137,7 +137,7 @@ void MainWindow::on_bATClear_clicked()
 {
     auto & wp = test::AttestationParams::Instance();
     auto* test = wp.TestForExec();
-    if ( !test || test->ID() != 1 )
+    if ( !test || test->ID() != 0 )
         return;
 
     on_bATStop_clicked();
@@ -441,30 +441,35 @@ void UpdatePresureTimeTest( test::AttPressureTime const& test, Ui::MainWindow *u
         {
             table->insertRow(table->rowCount());
 
-            std::unique_ptr<QTableWidgetItem> i_result( new QTableWidgetItem );
+            std::unique_ptr<QTableWidgetItem> i_task( new QTableWidgetItem );
+            std::unique_ptr<QTableWidgetItem> i_vpd( new QTableWidgetItem );
             std::unique_ptr<QTableWidgetItem> i_fact( new QTableWidgetItem );
             std::unique_ptr<QTableWidgetItem> i_error( new QTableWidgetItem );
 
 
-            i_result->setText(test::ToString( dt.mPtask ));
+            i_task->setText(test::ToString( dt.mPtask ));
+            i_vpd->setText(test::ToString( dt.mPvpd ));
             i_fact->setText(test::ToString( dt.mPmax ));
             i_error->setText(test::ToString( dt.Error() ));
 
-            i_result->setFlags( Qt::ItemIsEnabled );
+            i_task->setFlags( Qt::ItemIsEnabled );
             i_fact->setFlags( Qt::ItemIsEnabled );
             i_error->setFlags( Qt::ItemIsEnabled );
 
-            table->setItem(table->rowCount() - 1, 0, i_result.release());
-            table->setItem(table->rowCount() - 1, 1, i_fact.release());
-            table->setItem(table->rowCount() - 1, 2, i_error.release());
+            table->setItem(table->rowCount() - 1, 0, i_task.release());
+            table->setItem(table->rowCount() - 1, 1, i_vpd.release());
+            table->setItem(table->rowCount() - 1, 2, i_fact.release());
+            table->setItem(table->rowCount() - 1, 3, i_error.release());
         }
         else
         {
-            QTableWidgetItem *i_result = table->item(it, 0);
-            QTableWidgetItem *i_fact = table->item(it, 1);
-            QTableWidgetItem *i_error = table->item(it, 2);
+            QTableWidgetItem *i_task = table->item(it, 0);
+            QTableWidgetItem *i_vpd = table->item(it, 1);
+            QTableWidgetItem *i_fact = table->item(it, 2);
+            QTableWidgetItem *i_error = table->item(it, 3);
 
-            i_result->setText(test::ToString( dt.mPtask ));
+            i_task->setText(test::ToString( dt.mPtask ));
+            i_vpd->setText(test::ToString( dt.mPvpd ));
             i_fact->setText(test::ToString( dt.mPmax ));
             i_error->setText(test::ToString( dt.Error() ));
         }
@@ -482,10 +487,10 @@ void MainWindow::UpdateAttestation()
     switch (test->ID())
     {
     case 0:
-        UpdatePresureTest( static_cast<test::AttPressure const&>( *test ), ui );
+        UpdateTimeTest( static_cast<test::AttTime const&>( *test ), ui );
         break;
     case 1:
-        UpdateTimeTest( static_cast<test::AttTime const&>( *test ), ui );
+        UpdatePresureTest( static_cast<test::AttPressure const&>( *test ), ui );
         break;
     case 2:
         UpdatePresureSpeedTest( static_cast<test::AttPressureSpeed const&>( *test ), ui );

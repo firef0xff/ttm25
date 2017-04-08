@@ -82,7 +82,7 @@ bool Attestaion::Draw( QPainter& painter, QRect &free_rect, QString  const& /*co
     res = DrawHeader(num, painter,free_rect);
     res = DrawGraph( num, painter, free_rect );
     res = DrawBody(num, painter,free_rect);
-    res = DrawFoter(num, painter,free_rect);
+//    res = DrawFoter(num, painter,free_rect);
 
     if (res )
         free_rect.setHeight( 0 );
@@ -99,30 +99,20 @@ bool Attestaion::DrawHeader( uint32_t& num, QPainter& painter, QRect &free_rect 
 
     DrawHelper drw( painter, free_rect );
 
-    bool res = DrawLine( num, free_rect, header_font,
-    [ this, &painter, &drw, &header_font ]( QRect const& rect )
+    auto rows = Name().split('\n');
+
+    bool res = false;
+    for ( auto it = rows.begin(), end = rows.end(); it != end; ++it )
     {
-        drw.DrawRowCenter( rect, header_font, Qt::black, "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ");
-    }, 1.5 );
-    res = DrawLine( num, free_rect, header_font,
-    [ this, &painter, &drw, &header_font ]( QRect const& rect )
-    {
-        drw.DrawRowCenter( rect, header_font, Qt::black, "ШИННЫЙ ИСПЫТАТЕЛЬНЫЙ ЦЕНТР «ВЕРШИНА»");
-    }, 1.5 );
-    res = DrawLine( num, free_rect, header_font,
-    []( QRect const& )
-    {
-    }, 1.5 );
-    res = DrawLine( num, free_rect, header_font,
-    [ this, &painter, &drw, &header_font, &params ]( QRect const& rect )
-    {
-        drw.DrawRowCenter( rect, header_font, Qt::black, "Протокол No _____ от " + params.Date().toString("dd.MM.yyyy") );
-    }, 1.5 );
-    res = DrawLine( num, free_rect, header_font,
-    [ this, &painter, &drw, &header_font, &params ]( QRect const& rect )
-    {
-        drw.DrawRowCenter( rect, header_font, Qt::black, Name() );
-    }, 1.5 );
+        QString str = *it;
+        if ( it == rows.begin() )
+            str = QString::number( ID() + 1 ) + ". " + str;
+        res = DrawLine( num, free_rect, header_font,
+        [ this, &painter, &drw, &header_font, &params, &str ]( QRect const& rect )
+        {
+            drw.DrawRowCenter( rect, header_font, Qt::black, str );
+        }, 1.5 );
+    }
     res = DrawLine( num, free_rect, header_font,
     []( QRect const& )
     {
@@ -257,7 +247,7 @@ double AttPressure::Data::Error() const
 
 
 AttPressure::AttPressure():
-    Attestaion("Аттестация по давлению", 0)
+    Attestaion("Определение приведённой погрешности достижения\nзаданного внутреннего давления в шине", 1)
 {
     Reset();
 }
@@ -443,6 +433,17 @@ bool AttPressure::DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect )
         }, 1, h );
     }
 
+    DrawHelper drw( painter, free_rect );
+    res = DrawLine( num, free_rect, text_font,
+    [ this, &painter, &drw, &text_font ]( QRect const& rect )
+    {
+        drw.DrawRowLeft( rect, text_font, Qt::black, "Допускаемая приведенная погрешность достижения заданного внутреннего давления" );
+    }, 1.5 );
+    res = DrawLine( num, free_rect, text_font,
+    [ this, &painter, &drw, &text_font ]( QRect const& rect )
+    {
+        drw.DrawRowLeft( rect, text_font, Qt::black, "в шине от ВПД \u00B1 3,0%"  );
+    }, 1.5 );
     return res;
 }
 
@@ -594,7 +595,7 @@ bool AttTime::Data::Deserialize( QJsonObject const& obj )
 
 
 AttTime::AttTime():
-    Attestaion("Аттестация по времени", 1)
+    Attestaion("Аттестация машинного времени", 0)
 {
     Reset();
 }
@@ -914,7 +915,7 @@ bool AttPressureSpeed::Data::Deserialize( QJsonObject const& obj )
 
 
 AttPressureSpeed::AttPressureSpeed():
-    Attestaion("Аттестация по времени нарастания давления", 2)
+    Attestaion("Определение средней скорости нарастания давления", 2)
 {
     Reset();
 }
@@ -1070,6 +1071,22 @@ bool AttPressureSpeed::DrawBody( uint32_t& num, QPainter& painter, QRect &free_r
         }, 1, h );
     }
 
+    DrawHelper drw( painter, free_rect );
+    res = DrawLine( num, free_rect, text_font,
+    [ this, &painter, &drw, &text_font ]( QRect const& rect )
+    {
+        drw.DrawRowLeft( rect, text_font, Qt::black, "Скорости нарастания давления в шине:" );
+    }, 1.5 );
+    res = DrawLine( num, free_rect, text_font,
+    [ this, &painter, &drw, &text_font ]( QRect const& rect )
+    {
+        drw.DrawRowLeft( rect, text_font, Qt::black, "- в режиме 1 не более 0.2 МПа/мин"  );
+    }, 1.5 );
+    res = DrawLine( num, free_rect, text_font,
+    [ this, &painter, &drw, &text_font ]( QRect const& rect )
+    {
+        drw.DrawRowLeft( rect, text_font, Qt::black, "- в режиме 2 не более 0.5 МПа/мин"  );
+    }, 1.5 );
     return res;
 }
 
@@ -1266,7 +1283,7 @@ double AttPressureTime::Data::Error() const
 }
 
 AttPressureTime::AttPressureTime():
-    Attestaion("Поддержание давления в течении времени", 3)
+    Attestaion("Определение приведенной погрешности для каждого\nдиапазона поддержания заданного давления в шине\nв течении определенного времени", 3)
 {
     Reset();
 }
@@ -1388,11 +1405,12 @@ bool AttPressureTime::DrawBody( uint32_t& num, QPainter& painter, QRect &free_re
                  "</style>"
                 "</head>"
                 "<body>"
-                "<table valign='middle' width='50%' border='1.5' cellspacing='-0.5' cellpadding='-0.5'>"
+                "<table valign='middle' width='80%' border='1.5' cellspacing='-0.5' cellpadding='-0.5'>"
                 "<tr>"
-                  "<th>Удерживаемое давление, МПа</th>"
-                  "<th>Максимальное давление, МПа</th>"
-                  "<th>Погрешность, %</th>"
+                  "<th>Удерживаемое<br>давление, МПа</th>"
+                  "<th>Давление ВПД,<br>МПа</th>"
+                  "<th>Максимальное<br>давление, МПа</th>"
+                  "<th>Приведенная <br>погрешность, %</th>"
                 "</tr>";
 
         QString footer = "</table>"
@@ -1404,6 +1422,7 @@ bool AttPressureTime::DrawBody( uint32_t& num, QPainter& painter, QRect &free_re
         {
             QString row =   "<tr>";
             row +=              "<td>"+ToString(dt.mPtask)+"</td>"
+                                "<td>"+ToString(dt.mPvpd)+"</td>"
                                 "<td>"+ToString(dt.mPmax)+"</td>"
                                 "<td>"+ToString(dt.Error())+"</td>";
             row +=          "</tr>";
@@ -1449,6 +1468,18 @@ bool AttPressureTime::DrawBody( uint32_t& num, QPainter& painter, QRect &free_re
             ++PrintedPage;
         }, 1, h );
     }
+
+    DrawHelper drw( painter, free_rect );
+    res = DrawLine( num, free_rect, text_font,
+    [ this, &painter, &drw, &text_font ]( QRect const& rect )
+    {
+        drw.DrawRowLeft( rect, text_font, Qt::black, "Допускаемая приведенная погрешность поддержания заданного внутреннего давления" );
+    }, 1.5 );
+    res = DrawLine( num, free_rect, text_font,
+    [ this, &painter, &drw, &text_font ]( QRect const& rect )
+    {
+        drw.DrawRowLeft( rect, text_font, Qt::black, "в шине от ВПД в течение 2-х минут \u00B1 3,0%"  );
+    }, 1.5 );
 
     return res;
 }

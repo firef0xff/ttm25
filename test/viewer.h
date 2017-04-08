@@ -33,12 +33,12 @@ private:
     Ui::Viewer *ui;
     int mPageNo;
 
-    QVector< QPixmap > mPages;
+    QVector< QPixmap > mPages;    
     QPixmap logo;
 
     QString CompareWidth;
 
     void DrawPage();
 
-    QRect PreparePage( QPainter& painter, QRect const& page_rect );
+    QRect PreparePage(QPainter& painter, QRect const& page_rect );
 };

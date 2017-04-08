@@ -25,6 +25,10 @@ public:
 
     void UpdatePeriod( int );
     int UpdatePeriod() const;
+
+    bool PrintAll() const;
+    void DrawLogo(QPainter &, QRect &, const QPixmap &) const;
+    bool Draw(QPainter &painter, QRect &free_rect , const QString &compare_width) const;
 private:
     AttestationParams();
     AttestationParams( AttestationParams const& ) = delete;

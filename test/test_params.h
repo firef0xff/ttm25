@@ -29,8 +29,10 @@ public:
     virtual void StendDeInit() const;
     virtual void WriteToController() const;
 
-    virtual bool Draw(QPainter &painter, QRect &free_rect , const QString &compare_width) const;
+    virtual void DrawLogo(QPainter &painter, QRect &free_rect , const QPixmap &logo) const;
+    virtual bool Draw(QPainter &painter, QRect &free_rect, const QString &compare_width) const;
     virtual bool DrawResults(QPainter &/*painter*/, QRect &/*free_rect*/ ) const;
+    virtual bool PrintAll() const;
 
     virtual bool HasResults()
     {
@@ -53,12 +55,13 @@ public:
 
     void AddTest( TestPtr t);
     TestCase const& TestsCase();
+
 protected:
 
     Test* mTestForExec;        //тест для выполнения
     QDateTime mDate;            //дата проведения испытаний
     QString   mUser;            //испытатель.
-    TestCase mTests;
+    TestCase mTests;    
 };
 
 extern Parameters* CURRENT_PARAMS;

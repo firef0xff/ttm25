@@ -26,8 +26,8 @@ public:
 private:
     void Build();
 
-    Command& mRequest;
     uint8_t mEndpoint = 0;
+    Command& mRequest;
     uint16_t mCrc = 0;
 
     uint8_t mOutBuf[HEADER_SIZE + BODY_SIZE] = {0};

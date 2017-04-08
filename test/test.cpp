@@ -73,12 +73,12 @@ bool AllocatePlace( QRect& place, int height, QRect& source )
 
     return true;
 }
-bool Test::DrawLine ( uint32_t& num, QRect& source, QFont font, DrawLineHandler do_draw, double space, int custom_height ) const
+bool DrawLine ( uint32_t& printed, uint32_t& num, QRect& source, QFont font, DrawLineHandler do_draw, double space, int custom_height )
 {
     bool res = false;
-    if ( mDrawLine > num )
+    if ( printed > num )
         res = true;
-    else if ( mDrawLine < num )
+    else if ( printed < num )
         res = false;
     else
     {
@@ -89,7 +89,7 @@ bool Test::DrawLine ( uint32_t& num, QRect& source, QFont font, DrawLineHandler 
         if ( AllocatePlace( place, height, source ) )
         {
             do_draw( place );
-            ++mDrawLine;
+            ++printed;
             res = true;
         }
         else
@@ -97,6 +97,10 @@ bool Test::DrawLine ( uint32_t& num, QRect& source, QFont font, DrawLineHandler 
     }
     ++num;
     return res;
+}
+bool Test::DrawLine ( uint32_t& num, QRect& source, QFont font, DrawLineHandler do_draw, double space, int custom_height ) const
+{
+    return test::DrawLine( mDrawLine, num, source, font, do_draw, space, custom_height );
 }
 
 

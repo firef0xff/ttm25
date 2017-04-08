@@ -10,6 +10,8 @@ namespace test
 {
 
 bool AllocatePlace(QRect& place, int height, QRect& source );
+typedef std::function< void ( QRect const& ) > DrawLineHandler;
+bool DrawLine ( uint32_t& printed, uint32_t& num, QRect& source, QFont font, DrawLineHandler do_draw, double space = 1, int custom_height = 0 );
 
 class Test
 {
@@ -41,7 +43,7 @@ protected:
     LaunchFunction Launcher;
     QString mName;
 
-    typedef std::function< void ( QRect const& ) > DrawLineHandler;
+
     bool DrawLine ( uint32_t &num, QRect& source, QFont font, DrawLineHandler do_draw, double space = 1, int custom_height = 0 ) const;
 
 protected:

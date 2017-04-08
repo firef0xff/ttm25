@@ -1100,6 +1100,101 @@
           <property name="currentIndex">
            <number>0</number>
           </property>
+          <widget class="QWidget" name="tab_6">
+           <attribute name="title">
+            <string>По времени</string>
+           </attribute>
+           <layout class="QHBoxLayout" name="horizontalLayout_13">
+            <item>
+             <widget class="QTableWidget" name="tblAttTime">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <column>
+               <property name="text">
+                <string>Время PLC</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Секундомер</string>
+               </property>
+              </column>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="lATGraph">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_7">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QPushButton" name="bATStart">
+                <property name="text">
+                 <string>СТАРТ</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="bATWrite">
+                <property name="text">
+                 <string>ЗАПИСЬ</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="bATStop">
+                <property name="text">
+                 <string>СТОП</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="bATReport">
+                <property name="text">
+                 <string>ОТЧЕТ</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="bATClear">
+                <property name="text">
+                 <string>СБРОС</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="verticalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
           <widget class="QWidget" name="tab_5">
            <attribute name="title">
             <string>По давлению</string>
@@ -1203,101 +1298,6 @@
               </item>
               <item>
                <spacer name="verticalSpacer">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="tab_6">
-           <attribute name="title">
-            <string>По времени</string>
-           </attribute>
-           <layout class="QHBoxLayout" name="horizontalLayout_13">
-            <item>
-             <widget class="QTableWidget" name="tblAttTime">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <column>
-               <property name="text">
-                <string>Время PLC</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Секундомер</string>
-               </property>
-              </column>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="lATGraph">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_7">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <item>
-               <widget class="QPushButton" name="bATStart">
-                <property name="text">
-                 <string>СТАРТ</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="bATWrite">
-                <property name="text">
-                 <string>ЗАПИСЬ</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="bATStop">
-                <property name="text">
-                 <string>СТОП</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="bATReport">
-                <property name="text">
-                 <string>ОТЧЕТ</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="bATClear">
-                <property name="text">
-                 <string>СБРОС</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="verticalSpacer_3">
                 <property name="orientation">
                  <enum>Qt::Vertical</enum>
                 </property>
@@ -1502,13 +1502,21 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>320</width>
+                <width>410</width>
                 <height>0</height>
                </size>
               </property>
+              <attribute name="verticalHeaderVisible">
+               <bool>false</bool>
+              </attribute>
               <column>
                <property name="text">
                 <string>Задание</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>ВПД</string>
                </property>
               </column>
               <column>

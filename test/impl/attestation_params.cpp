@@ -5,7 +5,7 @@
 #include <QJsonArray>
 #include <memory>
 #include <mutex>
-
+#include "../test.h"
 namespace test
 {
 namespace
@@ -82,5 +82,46 @@ int AttestationParams::UpdatePeriod() const
 {
     return mUpdatePeriod;
 }
+
+bool AttestationParams::PrintAll() const
+{
+    return true;
+}
+
+void AttestationParams::DrawLogo( QPainter &/*painter*/, QRect &/*work_area*/, const QPixmap & ) const
+{}
+bool AttestationParams::Draw(QPainter &painter, QRect &free_rect , const QString &/*compare_width*/) const
+{
+    bool res = false;
+    uint32_t num = 0;
+    uint32_t printed = 0;
+
+    QFont header_font = painter.font();
+    header_font.setFamily("Arial");
+    header_font.setPointSize( 14 );
+    header_font.setBold(true);
+    auto& params = AttestationParams::Instance();
+
+    DrawHelper drw( painter, free_rect );
+
+    res = DrawLine( printed, num, free_rect, header_font,
+    [ this, &painter, &drw, &header_font ]( QRect const& rect )
+    {
+        drw.DrawRowCenter( rect, header_font, Qt::black, "ПРИЛОЖЕНИЕ");
+    }, 1.5 );
+
+    header_font.setPointSize( 12 );
+    res = DrawLine( printed, num, free_rect, header_font,
+    [ this, &painter, &drw, &header_font, &params ]( QRect const& rect )
+    {
+        drw.DrawRowCenter( rect, header_font, Qt::black, "к протоколу No _____ от " + params.Date().toString("dd.MM.yy г.") + " переодической аттестации стенда СИШ-25" );
+    }, 1.5 );
+    res = DrawLine( printed, num, free_rect, header_font,
+    []( QRect const& )
+    {
+    }, 1.5 );
+    return res;
+}
+
 }//namespace test
 

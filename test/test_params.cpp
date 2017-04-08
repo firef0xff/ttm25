@@ -144,6 +144,17 @@ void Parameters::StendDeInit() const
 void Parameters::WriteToController() const
 {}
 
+void Parameters::DrawLogo( QPainter &painter, QRect &work_area, QPixmap const& logo ) const
+{
+    QRect header_rect( 0, 0, 55, 55 );
+    header_rect.setHeight( logo.height() * header_rect.width() / logo.width() );
+
+    painter.save();
+    QPoint header_point( work_area.center().x() - header_rect.width()/2, work_area.top() - header_rect.height() - 2 );
+    painter.translate( header_point );
+    painter.drawPixmap( header_rect, logo );
+    painter.restore();
+}
 bool Parameters::Draw(QPainter &/*painter*/, QRect &/*free_rect*/, QString const& /*compare_width*/ ) const
 {
     return true;
@@ -151,6 +162,10 @@ bool Parameters::Draw(QPainter &/*painter*/, QRect &/*free_rect*/, QString const
 bool Parameters::DrawResults(QPainter &/*painter*/, QRect &/*free_rect*/ ) const
 {
     return true;
+}
+bool Parameters::PrintAll() const
+{
+    return false;
 }
 
 QString Parameters::ToString() const
