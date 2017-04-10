@@ -114,7 +114,7 @@ bool AttestationParams::Draw(QPainter &painter, QRect &free_rect , const QString
     res = DrawLine( printed, num, free_rect, header_font,
     [ this, &painter, &drw, &header_font, &params ]( QRect const& rect )
     {
-        drw.DrawRowCenter( rect, header_font, Qt::black, "к протоколу No _____ от " + params.Date().toString("dd.MM.yy г.") + " переодической аттестации стенда СИШ-25" );
+        drw.DrawRowCenter( rect, header_font, Qt::black, "к протоколу No _____ от ________ переодической аттестации стенда СИШ-25" );
     }, 1.5 );
     res = DrawLine( printed, num, free_rect, header_font,
     []( QRect const& )
