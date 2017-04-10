@@ -34,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->ePressureSpeed->setValidator( new QDoubleValidator( INT32_MIN, INT32_MAX , 2, this ) );
     ui->eExpenditure->setValidator( new QDoubleValidator( INT32_MIN, INT32_MAX , 2, this ) );
     ui->eTFV->setValidator( new QDoubleValidator( INT32_MIN, INT32_MAX , 2, this ) );
+
     LockSkreen( mdNone );
 }
 
@@ -66,20 +67,19 @@ void MainWindow::resizeEvent( QResizeEvent *e )
 
 void MainWindow::CheckRights()
 {
+    ui->tab_4->setEnabled(true);
+    ui->tMode->tabBar()->setVisible(true);
+    ui->menu_2->setEnabled(true);
+
     if ( app::Settings::Instance().UserAccess() != app::Admin )
     {
-//        ui->Users->setEnabled( false );
+        ui->menu_2->setEnabled(false);
         if ( app::Settings::Instance().UserAccess() != app::Master )
         {
-//            ui->ManualControl->setEnabled( false );
-//            ui->TestCase1->setEnabled( false );
-//            ui->TestCase2->setEnabled( false );
-//            ui->TestCase3->setEnabled( false );
-//            ui->TestCase4->setEnabled( false );
-//            ui->menu_3->setEnabled( false );
-//            ui->menu_4->setEnabled( false );
-        }
-    }
+            ui->tab_4->setEnabled(false);
+            ui->tMode->tabBar()->setVisible(false);
+        }           
+    }    
 }
 
 void MainWindow::ShowChildWindow( ChildPtr child, bool maximized )
@@ -309,6 +309,8 @@ void MainWindow::LockSkreen( Mode m )
         break;
     }
     }
+
+    CheckRights();
 }
 
 ControlsUpdater::ControlsUpdater():
