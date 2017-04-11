@@ -1298,6 +1298,8 @@ bool AttPressureTime::Run()
 }
 void AttPressureTime::Reset()
 {
+    mCurrenPos = 0;
+    mSaveGraphData = false;
     mData.clear();
     Data d;
     d.mPtask = 3;
