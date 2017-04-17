@@ -30,7 +30,6 @@ void Attestaion::Start()
         if ( IsStopped() )
         {
             SetStopBit( true );
-            mControls.Write();
             Log( "Испытание прервано" );
             return;
         }
@@ -51,7 +50,6 @@ void Attestaion::Start()
             *mPauseMarker = false;
         }
 
-        mControls.Write();
         std::this_thread::sleep_for( std::chrono::milliseconds(100) );
     }
     TestingTime = StartTime.elapsed()/1000;

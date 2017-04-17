@@ -73,6 +73,8 @@ private:
     AttestationLaunchControls( const AttestationLaunchControls& ) = delete;
     void operator = ( const AttestationLaunchControls& ) = delete;
 
+    void WriteElement( int i );
+
     fins::Elements mData;
     fins::BIT_WR mAddr;
     std::recursive_mutex mMutex;

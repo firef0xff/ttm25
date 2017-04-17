@@ -19,6 +19,30 @@ void AttestationLaunchControls::Write()
     fins::MemoryAreaWrite cmd( mAddr, mData );
     NetConnection::Execute( cmd );
 }
+void AttestationLaunchControls::WriteElement( int i )
+{
+    auto lock = Locker();
+    fins::BIT_WR addr(mAddr.mAddr, mAddr.mBit + i);
+    fins::Elements data;
+    auto item = fins::BOOL::Create();
+    auto* real_type = static_cast<fins::BOOL*>( item.get() );
+
+    int pos = 0;
+    for ( auto it = mData.begin(), end = mData.end(); it != end; ++it, ++pos )
+    {
+        fins::Element::Ptr& ptr = *it;
+        fins::BOOL* ptr_elem = static_cast<fins::BOOL*>(ptr.get());
+        if ( pos == i )
+        {
+            *real_type = *ptr_elem;
+            break;
+        }
+    }
+
+    data.push_back( std::move( item ) );
+    fins::MemoryAreaWrite cmd( addr, data );
+    NetConnection::Execute( cmd );
+}
 void AttestationLaunchControls::Read()
 {
     auto lock = Locker();
@@ -52,6 +76,7 @@ std::unique_lock< std::recursive_mutex > AttestationLaunchControls::Locker()
 void AttestationLaunchControls::AttPressureStart( bool b )
 {
     *W10_02 = b;
+    WriteElement(2);
 }
 bool AttestationLaunchControls::AttPressureStart() const
 {
@@ -61,6 +86,7 @@ bool AttestationLaunchControls::AttPressureStart() const
 void AttestationLaunchControls::AttPressureStop( bool b )
 {
     *W10_03 = b;
+    WriteElement(3);
 }
 bool AttestationLaunchControls::AttPressureStop() const
 {
@@ -70,6 +96,7 @@ bool AttestationLaunchControls::AttPressureStop() const
 void AttestationLaunchControls::AttPressureSave( bool b )
 {
     *W10_04 = b;
+    WriteElement(4);
 }
 bool AttestationLaunchControls::AttPressureSave() const
 {
@@ -79,6 +106,7 @@ bool AttestationLaunchControls::AttPressureSave() const
 void AttestationLaunchControls::AttTimeStart( bool b )
 {
     *W10_00 = b;
+    WriteElement(0);
 }
 bool AttestationLaunchControls::AttTimeStart() const
 {
@@ -88,6 +116,7 @@ bool AttestationLaunchControls::AttTimeStart() const
 void AttestationLaunchControls::AttTimeStop( bool b )
 {
     *W10_01 = b;
+    WriteElement(1);
 }
 bool AttestationLaunchControls::AttTimeStop() const
 {
@@ -97,6 +126,7 @@ bool AttestationLaunchControls::AttTimeStop() const
 void AttestationLaunchControls::AttPressureSpeedStart( bool b )
 {
     *W10_05 = b;
+    WriteElement(5);
 }
 bool AttestationLaunchControls::AttPressureSpeedStart() const
 {
@@ -106,6 +136,7 @@ bool AttestationLaunchControls::AttPressureSpeedStart() const
 void AttestationLaunchControls::AttPressureSpeedStop( bool b )
 {
     *W10_06 = b;
+    WriteElement(6);
 }
 bool AttestationLaunchControls::AttPressureSpeedStop() const
 {
@@ -115,6 +146,7 @@ bool AttestationLaunchControls::AttPressureSpeedStop() const
 void AttestationLaunchControls::AttPressureTimeStart( bool b )
 {
     *W10_07 = b;
+    WriteElement(7);
 }
 bool AttestationLaunchControls::AttPressureTimeStart() const
 {
@@ -124,6 +156,7 @@ bool AttestationLaunchControls::AttPressureTimeStart() const
 void AttestationLaunchControls::AttPressureTimeStop( bool b )
 {
     *W10_08 = b;
+    WriteElement(8);
 }
 bool AttestationLaunchControls::AttPressureTimeStop() const
 {
@@ -133,6 +166,7 @@ bool AttestationLaunchControls::AttPressureTimeStop() const
 void AttestationLaunchControls::AttPressureTimeSave( bool b )
 {
     *W10_09 = b;
+    WriteElement(9);
 }
 bool AttestationLaunchControls::AttPressureTimeSave() const
 {
