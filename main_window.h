@@ -139,6 +139,7 @@ private:
     //вкладка аттестации
     void InitAttestationModule();
     void UpdateAttestation();
+    void ClearAttestation();
 
     Ui::MainWindow *ui;
     ChildPtr mChildWindow;

@@ -140,6 +140,8 @@ public:
         QJsonObject Serialise() const;
         bool Deserialize( QJsonObject const& obj );
 
+        double Speed( Data const& prev ) const;
+
         double mCpuTime;
         double mResult;
     };

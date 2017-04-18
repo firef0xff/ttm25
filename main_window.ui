@@ -36,7 +36,7 @@
     <item>
      <widget class="QTabWidget" name="tMode">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_3">
        <attribute name="title">
@@ -1098,7 +1098,7 @@
         <item>
          <widget class="QTabWidget" name="tAttestaion">
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="tab_6">
            <attribute name="title">
@@ -1113,14 +1113,20 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <attribute name="horizontalHeaderDefaultSectionSize">
+               <number>120</number>
+              </attribute>
+              <attribute name="horizontalHeaderMinimumSectionSize">
+               <number>30</number>
+              </attribute>
               <column>
                <property name="text">
-                <string>Время PLC</string>
+                <string>Время PLC, сек</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Секундомер</string>
+                <string>Секундомер, сек</string>
                </property>
               </column>
              </widget>
@@ -1210,28 +1216,31 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>410</width>
+                <width>480</width>
                 <height>0</height>
                </size>
               </property>
+              <attribute name="horizontalHeaderDefaultSectionSize">
+               <number>120</number>
+              </attribute>
               <column>
                <property name="text">
-                <string>Задание</string>
+                <string>Задание, МПа</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Результат</string>
+                <string>Результат, МПа</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Факт</string>
+                <string>Факт, МПа</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Погрешность</string>
+                <string>Погрешность, %</string>
                </property>
               </column>
              </widget>
@@ -1394,6 +1403,15 @@
                     <verstretch>0</verstretch>
                    </sizepolicy>
                   </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>430</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <attribute name="horizontalHeaderDefaultSectionSize">
+                   <number>140</number>
+                  </attribute>
                   <column>
                    <property name="text">
                     <string>Время, сек</string>
@@ -1402,6 +1420,11 @@
                   <column>
                    <property name="text">
                     <string>Давление, МПа</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Скорость, МПа/мин</string>
                    </property>
                   </column>
                  </widget>
@@ -1502,31 +1525,34 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>410</width>
+                <width>480</width>
                 <height>0</height>
                </size>
               </property>
+              <attribute name="horizontalHeaderDefaultSectionSize">
+               <number>120</number>
+              </attribute>
               <attribute name="verticalHeaderVisible">
                <bool>false</bool>
               </attribute>
               <column>
                <property name="text">
-                <string>Задание</string>
+                <string>Задание, МПа</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>ВПД</string>
+                <string>ВПД, МПа</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Результат</string>
+                <string>Результат, МПа</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Погрешность</string>
+                <string>Погрешность, %</string>
                </property>
               </column>
              </widget>

@@ -400,30 +400,38 @@ void UpdatePresureSpeedTest( test::AttPressureSpeed const& test, Ui::MainWindow 
     {
         test::AttPressureSpeed::Data const& dt = data[it];
 
+        double speed = it == 0 ? 0 : dt.Speed(data[it-1]);
         if ( static_cast<size_t>( table->rowCount() ) <= it )
         {
             table->insertRow(table->rowCount());
 
             std::unique_ptr<QTableWidgetItem> i_result( new QTableWidgetItem );
             std::unique_ptr<QTableWidgetItem> i_fact( new QTableWidgetItem );
+            std::unique_ptr<QTableWidgetItem> i_speed( new QTableWidgetItem );
 
 
             i_result->setText(test::ToString( dt.mCpuTime ));
             i_fact->setText(test::ToString( dt.mResult ));
+            i_speed->setText(test::ToString( speed ) );
 
             i_result->setFlags( Qt::ItemIsEnabled );
             i_fact->setFlags( Qt::ItemIsEnabled );
+            i_speed->setFlags( Qt::ItemIsEnabled );
 
             table->setItem(table->rowCount() - 1, 0, i_result.release());
             table->setItem(table->rowCount() - 1, 1, i_fact.release());
+            table->setItem(table->rowCount() - 1, 2, i_speed.release());
         }
         else
         {
             QTableWidgetItem *i_result = table->item(it, 0);
             QTableWidgetItem *i_fact = table->item(it, 1);
+            QTableWidgetItem *i_speed = table->item(it, 2);
 
             i_result->setText(test::ToString( dt.mCpuTime ));
-            i_fact->setText(test::ToString( dt.mResult ));
+            i_fact->setText(test::ToString( dt.mResult ) );
+
+            i_speed->setText(test::ToString( speed ));
         }
     }
 }
@@ -476,6 +484,21 @@ void UpdatePresureTimeTest( test::AttPressureTime const& test, Ui::MainWindow *u
     }
 }
 
+}
+void MainWindow::ClearAttestation()
+{
+    auto Clear = []( QTableWidget * table )
+    {
+        // Deselects all selected items
+        table->clearSelection();
+        table->disconnect();
+        table->clearContents();
+        table->setRowCount(0);
+    };
+    Clear( ui->tblAttPressureTime );
+    Clear( ui->tblAttPressureSpeed );
+    Clear( ui->tblAttTime );
+    Clear( ui->tblAttPressure );
 }
 void MainWindow::UpdateAttestation()
 {

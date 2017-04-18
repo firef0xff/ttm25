@@ -370,6 +370,7 @@ void MainWindow::on_aLoadResults_triggered()
         if ( auto ptr = test::AttestationParams::Instance().TestForExec() )
             ui->tAttestaion->setCurrentIndex( ptr->ID() );
         ui->tMode->setCurrentIndex(1);
+        ClearAttestation();
     }
     on_a_proto_triggered();
 }

@@ -910,6 +910,15 @@ bool AttPressureSpeed::Data::Deserialize( QJsonObject const& obj )
     mResult = obj.value("Result").toDouble();
     return true;
 }
+double AttPressureSpeed::Data::Speed( Data const& prev ) const
+{
+    double dP = mResult - prev.mResult;
+    double dT = mCpuTime - prev.mCpuTime;
+
+    double speed = dP/dT; //в МПа/сек;
+
+    return round( speed * 60.0 * 100 )/100; //в МПа/мин
+}
 
 
 AttPressureSpeed::AttPressureSpeed():
@@ -1013,6 +1022,7 @@ bool AttPressureSpeed::DrawBody( uint32_t& num, QPainter& painter, QRect &free_r
                 "<tr>"
                   "<th>Время, сек</th>"
                   "<th>Давление, МПа</th>"
+                  "<th>Скорость, МПа/мин</th>"
                 "</tr>";
 
         QString footer = "</table>"
@@ -1020,11 +1030,14 @@ bool AttPressureSpeed::DrawBody( uint32_t& num, QPainter& painter, QRect &free_r
                 "</html>";
 
         QString table = header;
-        auto MakeRow = [ this ]( Data const& dt) -> QString
+        auto MakeRow = [ this ]( int i ) -> QString
         {
+            auto dt = mData[i];
+            double speed = i == 0 ? 0 : dt.Speed(mData[i-1]);
             QString row =   "<tr>";
             row +=              "<td>"+ToString(dt.mCpuTime)+"</td>"
-                                "<td>"+ToString(dt.mResult)+"</td>";
+                                "<td>"+ToString(dt.mResult)+"</td>"
+                                "<td>"+ToString(speed)+"</td>";
             row +=          "</tr>";
             return row;
         };
@@ -1038,7 +1051,7 @@ bool AttPressureSpeed::DrawBody( uint32_t& num, QPainter& painter, QRect &free_r
         int rows_prapared = 0;
         for ( auto i = PrintedRows; i < mData.size(); ++i ) //PrintedRows
         {
-            QString row = MakeRow( mData[i] );
+            QString row = MakeRow( i );
             QString tmp = table + row + footer;
             doc.setHtml( tmp );
             auto h = doc.documentLayout()->documentSize().height();
