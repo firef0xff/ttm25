@@ -442,7 +442,7 @@ void MainWindow::OnEndTests()
             {
                 QString name = app::Settings::Instance().ResultPath() + "/" +
                                test::CURRENT_PARAMS->Date().toString("dd_MM_yyyy_hh_mm_ss") +
-                               " " +ptr->Name() + ".res";
+                               " " +ptr->Name().left(40) + ".res";
                 test::DataToFile( name, *test::CURRENT_PARAMS );
             }
 
