@@ -282,8 +282,10 @@ void AttPressure::UpdateData()
             }
             catch (std::exception const& e)
             {
-                Log( QString("Испытание прервано: ") + e.what()  );
+                QString err = QString("Испытание прервано: ") + e.what();
+                Log( err  );
                 SetStopBit( true );
+                ShowError( err );
             }
             //продолжить тест            
             mControls.AttPressureSave(false);

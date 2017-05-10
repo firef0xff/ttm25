@@ -21,11 +21,12 @@ protected:
 
     virtual void Start();
     bool CheckErrors();
+    void ShowError( QString const& err );
     virtual uint8_t CommandID();
     virtual void UpdateData(){}
     cpu::data::LaunchControl& mCommand;
     bool mIsPrepare;
 private:
-    void ShowErrors( QString const& err );
+    void ShowErrorsMgs( QString const& err );
 };
 }

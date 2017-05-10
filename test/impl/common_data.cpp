@@ -116,14 +116,20 @@ bool TestCommonData::CheckErrors()
     if ( str_errs.isEmpty() )
         return true;
 
-    std::mutex mutex;
-    std::unique_lock< std::mutex > lock( mutex );
-    Launcher( std::bind( &TestCommonData::ShowErrors, this, str_errs ) );
-
-    mCondVar.wait( lock );
+    ShowError( str_errs );
     return false;
 }
-void TestCommonData::ShowErrors( QString const& err )
+
+void TestCommonData::ShowError( QString const& err )
+{
+    std::mutex mutex;
+    std::unique_lock< std::mutex > lock( mutex );
+    Launcher( std::bind( &TestCommonData::ShowErrorsMgs, this, err ) );
+
+    mCondVar.wait( lock );
+}
+
+void TestCommonData::ShowErrorsMgs( QString const& err )
 {
     QMessageBox msg;
     msg.setWindowTitle( "Ошибки тестирования" );
