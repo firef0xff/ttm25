@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>808</width>
-    <height>574</height>
+    <width>996</width>
+    <height>616</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -1101,6 +1101,9 @@
            <number>0</number>
           </property>
           <widget class="QWidget" name="tab_6">
+           <property name="focusPolicy">
+            <enum>Qt::TabFocus</enum>
+           </property>
            <attribute name="title">
             <string>По времени</string>
            </attribute>
@@ -1647,8 +1650,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>808</width>
-     <height>21</height>
+     <width>996</width>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">

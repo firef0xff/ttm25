@@ -27,7 +27,7 @@ void Attestaion::Start()
     {
         mControls.Read();
         UpdateData();
-        if ( IsStopped() )
+        if ( IsStopped() || !CheckErrors() )
         {
             SetStopBit( true );
             Log( "Испытание прервано" );

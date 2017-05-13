@@ -15,6 +15,28 @@ void MainWindow::InitAttestationModule()
 
 void MainWindow::on_tAttestaion_currentChanged(int index)
 {
+//    QWidget *ptr = ui->tAttestaion->tabBar() ;
+//    QPalette pal = ptr->palette();
+//    pal.setColor(ptr->backgroundRole(), Qt::yellow);
+//    ptr->setPalette(pal);
+//    ptr->setAutoFillBackground(true);
+
+//    QPalette pal = ui->tAttestaion->tabBar()->palette();
+////        pal.setColor(QPalette::Window, QColor(255,0,0));
+//        pal.setColor(QPalette::Inactive, QPalette::Button, QColor(255,255,0));
+////        pal.setColor(QPalette::WindowText, QColor(0,0,255));
+////        pal.setColor(QPalette::ButtonText, QColor(255,0,255));
+////        pal.setColor(QPalette::Base, QColor(0, 200, 0));
+////        pal.setColor(QPalette::AlternateBase, QColor(0, 255, 255));
+////        pal.setColor(QPalette::Text, Qt::white);
+//        ui->tAttestaion->tabBar()->setPalette(pal);
+
+    for ( auto i = 0; i < ui->tAttestaion->tabBar()->count(); ++i )
+    {
+        QColor c = i == index ? Qt::red : Qt::black;
+        ui->tAttestaion->tabBar()->setTabTextColor(i, c);
+    }
+
     auto & wp = test::AttestationParams::Instance();
     auto it = wp.TestsCase().find( index );
     if ( it != wp.TestsCase().end() )
