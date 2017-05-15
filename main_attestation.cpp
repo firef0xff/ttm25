@@ -11,6 +11,8 @@ void MainWindow::InitAttestationModule()
     wp.AddTest( std::unique_ptr<test::Test>( new test::AttPressure() ) );
     wp.AddTest( std::unique_ptr<test::Test>( new test::AttPressureSpeed() ) );
     wp.AddTest( std::unique_ptr<test::Test>( new test::AttPressureTime() ) );
+    ui->ProtoDate->setDate( QDate::currentDate() );
+    ui->ProtoNo->setText( QString::number(1) );
 }
 
 void MainWindow::on_tAttestaion_currentChanged(int index)
@@ -44,12 +46,20 @@ void MainWindow::on_tAttestaion_currentChanged(int index)
 }
 
 //управление аттестацией
+void MainWindow::SetProtoParams()
+{
+    auto& params = test::AttestationParams::Instance();
+    params.ProtoDate( ui->ProtoDate->date().toString( "dd.MM.yyyy" ) );
+    params.ProtoNo( ui->ProtoNo->text() );
+
+}
 void MainWindow::RunAttestation()
 {
     LockSkreen( mdAttestation );
     auto& params = test::AttestationParams::Instance();
     params.Date( QDateTime::currentDateTime() );
     params.User( app::Settings::Instance().User() );
+    SetProtoParams();
 
     mWorker.reset( new Worker() );
     QObject::connect( mWorker.get(), &Worker::to_exec, this, &MainWindow::exec );
@@ -77,6 +87,7 @@ void MainWindow::on_bAPStop_clicked()
 }
 void MainWindow::on_bAPReport_clicked()
 {
+    SetProtoParams();
     on_a_proto_triggered();
 }
 void MainWindow::on_bAPClear_clicked()
@@ -153,6 +164,7 @@ void MainWindow::on_bATStop_clicked()
 }
 void MainWindow::on_bATReport_clicked()
 {
+    SetProtoParams();
     on_a_proto_triggered();
 }
 void MainWindow::on_bATClear_clicked()
@@ -191,6 +203,7 @@ void MainWindow::on_bAPTStop_clicked()
 }
 void MainWindow::on_bAPTReport_clicked()
 {
+    SetProtoParams();
     on_a_proto_triggered();
 }
 void MainWindow::on_bAPTClear_clicked()
@@ -232,6 +245,7 @@ void MainWindow::on_bAPPStop_clicked()
 }
 void MainWindow::on_bAPPReport_clicked()
 {
+    SetProtoParams();
     on_a_proto_triggered();
 }
 void MainWindow::on_bAPPClear_clicked()

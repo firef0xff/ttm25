@@ -47,6 +47,10 @@ QJsonObject AttestationParams::Serialise() const
     auto obj = Parameters::Serialise();
     obj.insert("PressureSpeed", mPressureSpeed);
     obj.insert("UpdatePeriod", mUpdatePeriod);
+
+    obj.insert("ProtoDate", mProtoDate);
+    obj.insert("ProtoNo", mProtoNo);
+
     return obj;
 }
 bool AttestationParams::Deserialize( QJsonObject const& obj )
@@ -55,6 +59,9 @@ bool AttestationParams::Deserialize( QJsonObject const& obj )
     bool res = obj.contains("PressureSpeed") && obj.contains("UpdatePeriod");
     mPressureSpeed = obj.value("PressureSpeed").toDouble();
     mUpdatePeriod = obj.value("UpdatePeriod").toInt();
+
+    mProtoDate = obj.value("ProtoDate").toString();
+    mProtoNo = obj.value("ProtoNo").toString();
     return res;
 }
 
@@ -81,6 +88,24 @@ void AttestationParams::UpdatePeriod( int val )
 int AttestationParams::UpdatePeriod() const
 {
     return mUpdatePeriod;
+}
+
+void AttestationParams::ProtoDate( QString const& val )
+{
+    mProtoDate = val;
+}
+QString AttestationParams::ProtoDate() const
+{
+    return mProtoDate;
+}
+
+void AttestationParams::ProtoNo( QString const& val )
+{
+    mProtoNo = val;
+}
+QString AttestationParams::ProtoNo() const
+{
+    return mProtoNo;
 }
 
 bool AttestationParams::PrintAll() const
@@ -114,7 +139,7 @@ bool AttestationParams::Draw(QPainter &painter, QRect &free_rect , const QString
     res = DrawLine( printed, num, free_rect, header_font,
     [ this, &painter, &drw, &header_font, &params ]( QRect const& rect )
     {
-        drw.DrawRowCenter( rect, header_font, Qt::black, "к протоколу No _____ от ________ переодической аттестации стенда СИШ-25" );
+        drw.DrawRowCenter( rect, header_font, Qt::black, "к протоколу No " + ProtoNo() + " от " + ProtoDate() + " переодической аттестации стенда СИШ-25" );
     }, 1.5 );
     res = DrawLine( printed, num, free_rect, header_font,
     []( QRect const& )

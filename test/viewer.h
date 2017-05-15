@@ -2,6 +2,7 @@
 #include <QWidget>
 #include <QPixmap>
 #include <QVector>
+#include <QPrintEngine>
 
 namespace Ui {
 class Viewer;
@@ -23,6 +24,8 @@ private slots:
 
     void on_Compare_clicked();
 
+    void on_Print_clicked();
+
 signals:
     void closed();
 
@@ -39,6 +42,8 @@ private:
     QString CompareWidth;
 
     void DrawPage();
+
+    void Print( QPrinter& printer );
 
     QRect PreparePage(QPainter& painter, QRect const& page_rect );
 };

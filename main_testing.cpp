@@ -254,36 +254,45 @@ void MainWindow::SaveParams()
 }
 void MainWindow::LoadParams()
 {
-    auto &params = test::WorkParams::Instance();
-
-    ui->eTitleModel->setCurrentIndex( ui->eTitleModel->findText( params.Model() ) );
-    ui->eTitleTire->setCurrentIndex( ui->eTitleTire->findText( params.Size() ) );
-
-    ui->eCustomer->setText( params.Customer() );
-    ui->eOrderNumber->setText( test::ToString( params.OrderNo() ) );
-    ui->eSerialNumber->setText( params.TireNo() );
-
-    ui->eBreakPressure->setChecked( params.BreakPressure() );
-    ui->eConstPressureTime->setText( test::ToString( params.ConstPressureTime() ) );
-    ui->eFRP->setValue( params.Frequency() );
-
-    ui->ePressure->setText( test::ToString( params.Pressure() ) );
-    ui->ePressureSpeed->setText( test::ToString( params.PressureSpeed() ) );
-    ui->eExpenditure->setText( test::ToString( params.Expenditure() ) );
-    ui->eTFV->setText( test::ToString( params.Volume() ) );
-
-    auto * test = params.TestForExec();
-    if (!test)
-        return;
-    QString method = test->Name();
-
-    for ( size_t it = 0, size = ui->eTestingMethod->count(); it < size; ++it )
+    if ( test::CURRENT_PARAMS == &test::WorkParams::Instance() )
     {
-        if ( method == ui->eTestingMethod->itemText( it ) )
+        auto &params = test::WorkParams::Instance();
+
+        ui->eTitleModel->setCurrentIndex( ui->eTitleModel->findText( params.Model() ) );
+        ui->eTitleTire->setCurrentIndex( ui->eTitleTire->findText( params.Size() ) );
+
+        ui->eCustomer->setText( params.Customer() );
+        ui->eOrderNumber->setText( test::ToString( params.OrderNo() ) );
+        ui->eSerialNumber->setText( params.TireNo() );
+
+        ui->eBreakPressure->setChecked( params.BreakPressure() );
+        ui->eConstPressureTime->setText( test::ToString( params.ConstPressureTime() ) );
+        ui->eFRP->setValue( params.Frequency() );
+
+        ui->ePressure->setText( test::ToString( params.Pressure() ) );
+        ui->ePressureSpeed->setText( test::ToString( params.PressureSpeed() ) );
+        ui->eExpenditure->setText( test::ToString( params.Expenditure() ) );
+        ui->eTFV->setText( test::ToString( params.Volume() ) );
+
+        auto * test = params.TestForExec();
+        if (!test)
+            return;
+        QString method = test->Name();
+
+        for ( size_t it = 0, size = ui->eTestingMethod->count(); it < size; ++it )
         {
-            ui->eTestingMethod->setCurrentIndex( it );
-            break;
+            if ( method == ui->eTestingMethod->itemText( it ) )
+            {
+                ui->eTestingMethod->setCurrentIndex( it );
+                break;
+            }
         }
+    }
+    else
+    {
+        auto &params = test::AttestationParams::Instance();
+        ui->ProtoNo->setText( params.ProtoNo() );
+        ui->ProtoDate->setDate( QDate::fromString( params.ProtoDate(), "dd.MM.yyyy" ) );
     }
 }
 

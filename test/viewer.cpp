@@ -4,7 +4,7 @@
 #include "test.h"
 #include <QFileDialog>
 #include "settings/settings.h"
-#include <QPrintEngine>
+#include <QPrintDialog>
 
 Viewer::Viewer(QWidget *parent) :
     QWidget(parent),
@@ -150,59 +150,7 @@ void Viewer::on_SavePDF_clicked()
         printer.setPageMargins( 20, 20, 5, 10, QPrinter::Millimeter );
         printer.setOutputFileName(file_name);
 
-        QPainter painter(&printer);
-        QPoint start (0,0);
-        start -= printer.pageRect().topLeft();
-        painter.translate( start );
-
-        bool print_all_tests = test::CURRENT_PARAMS->PrintAll();
-        QRect rc = PreparePage( painter, printer.paperRect() );
-
-        auto PrintTest = [&]( test::Test* test )
-        {
-            if (!test)
-                return;
-
-            test->ResetDrawLine();
-
-            bool draw = false;
-            while( !draw )
-            {
-                draw = test->Draw( painter, rc, CompareWidth );
-                if ( !draw )
-                {
-                    printer.newPage();
-                    rc = PreparePage( painter, printer.paperRect() );
-                }
-                QFontMetrics m (painter.font());
-                rc.setTop( rc.top() + m.height() );
-            }
-        };
-
-        test::CURRENT_PARAMS->Draw( painter, rc, CompareWidth );
-
-        if ( print_all_tests )
-        {
-            auto const& tc = test::CURRENT_PARAMS->TestsCase();
-            for ( auto it = tc.begin(), end = tc.end(); it != end; ++it   )
-            {
-               test::Test* test = it->second.get();
-               PrintTest( test );
-            }
-        }
-        else
-        {
-            test::Test* test = test::CURRENT_PARAMS->TestForExec();
-            PrintTest( test );
-        }
-
-        if ( test::CURRENT_PARAMS->HasResults() )
-        {
-            printer.newPage();
-            rc = PreparePage( painter, printer.paperRect() );
-            test::CURRENT_PARAMS->DrawResults( painter, rc );
-        }
-        painter.end();
+        Print( printer );
     }
 }
 
@@ -235,4 +183,70 @@ void Viewer::on_Compare_clicked()
     else
         CompareWidth.clear();
     Init();
+}
+
+void Viewer::on_Print_clicked()
+{
+    QPrintDialog printDialog( this );
+    if (printDialog.exec() == QDialog::Accepted)
+    {
+        Print( *printDialog.printer() );
+    }
+}
+
+void Viewer::Print(QPrinter &printer)
+{
+    QPainter painter(&printer);
+    QPoint start (0,0);
+    start -= printer.pageRect().topLeft();
+    painter.translate( start );
+
+    bool print_all_tests = test::CURRENT_PARAMS->PrintAll();
+    QRect rc = PreparePage( painter, printer.paperRect() );
+
+    auto PrintTest = [&]( test::Test* test )
+    {
+        if (!test)
+            return;
+
+        test->ResetDrawLine();
+
+        bool draw = false;
+        while( !draw )
+        {
+            draw = test->Draw( painter, rc, CompareWidth );
+            if ( !draw )
+            {
+                printer.newPage();
+                rc = PreparePage( painter, printer.paperRect() );
+            }
+            QFontMetrics m (painter.font());
+            rc.setTop( rc.top() + m.height() );
+        }
+    };
+
+    test::CURRENT_PARAMS->Draw( painter, rc, CompareWidth );
+
+    if ( print_all_tests )
+    {
+        auto const& tc = test::CURRENT_PARAMS->TestsCase();
+        for ( auto it = tc.begin(), end = tc.end(); it != end; ++it   )
+        {
+           test::Test* test = it->second.get();
+           PrintTest( test );
+        }
+    }
+    else
+    {
+        test::Test* test = test::CURRENT_PARAMS->TestForExec();
+        PrintTest( test );
+    }
+
+    if ( test::CURRENT_PARAMS->HasResults() )
+    {
+        printer.newPage();
+        rc = PreparePage( painter, printer.paperRect() );
+        test::CURRENT_PARAMS->DrawResults( painter, rc );
+    }
+    painter.end();
 }

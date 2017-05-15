@@ -26,6 +26,12 @@ public:
     void UpdatePeriod( int );
     int UpdatePeriod() const;
 
+    void ProtoDate( QString const& );
+    QString ProtoDate() const;
+
+    void ProtoNo( QString const& );
+    QString ProtoNo() const;
+
     bool PrintAll() const;
     void DrawLogo(QPainter &, QRect &, const QPixmap &) const;
     bool Draw(QPainter &painter, QRect &free_rect , const QString &compare_width) const;
@@ -36,6 +42,8 @@ private:
 
     double mPressureSpeed;
     int mUpdatePeriod;
+    QString mProtoDate;
+    QString mProtoNo;
 };
 
 }//namespace test

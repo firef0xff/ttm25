@@ -81,6 +81,7 @@ private slots:
 
     //аттестация
     void RunAttestation();
+    void SetProtoParams();
     void on_tAttestaion_currentChanged(int index);
     void on_bAPStart_clicked();
     void on_bAPStop_clicked();
