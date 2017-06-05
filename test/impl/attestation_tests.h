@@ -146,12 +146,13 @@ public:
         double mResult;
     };
     typedef QVector<Data> DataSet;
+    typedef std::map< double, DataSet > DataStorage;
 
     AttPressureSpeed();
     virtual bool Run() override;
 
-    DataSet const& GetData() const;
-    DataSet& GetData();
+    DataSet const& GetData(double key) const;
+    DataSet &GetData(double key);
 
     void Reset();
     virtual void UpdateData();
@@ -167,7 +168,7 @@ public:
 private:
     virtual bool DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) const;
 
-    DataSet mData;
+    mutable DataStorage mData;
     int32_t mCurrenTime = 0;
     mutable std::unique_ptr<GrapfData> mGrapfs;
 };

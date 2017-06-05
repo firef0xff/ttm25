@@ -429,7 +429,8 @@ void UpdateTimeTest( test::AttTime const& test, Ui::MainWindow *ui )
 void UpdatePresureSpeedTest( test::AttPressureSpeed const& test, Ui::MainWindow *ui )
 {
     RepaintGraph( test, ui->lAPTGraph );
-    auto const& data = test.GetData();
+
+    auto const& data = test.GetData(test::AttestationParams::Instance().PressureSpeed());
     auto* table = ui->tblAttPressureSpeed;
 
     for( size_t it = 0, end = data.size(); it < end; ++it )

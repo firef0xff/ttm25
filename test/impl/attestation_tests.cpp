@@ -245,7 +245,7 @@ double AttPressure::Data::Error() const
 
 
 AttPressure::AttPressure():
-    Attestaion("Определение приведённой погрешности достижения\nзаданного внутреннего давления в шине", 1)
+    Attestaion("Определение относительной погрешности достижения\nзаданного внутреннего давления в шине", 1)
 {
     Reset();
 }
@@ -437,7 +437,7 @@ bool AttPressure::DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect )
     res = DrawLine( num, free_rect, text_font,
     [ this, &painter, &drw, &text_font ]( QRect const& rect )
     {
-        drw.DrawRowLeft( rect, text_font, Qt::black, "Допускаемая приведенная погрешность достижения заданного внутреннего давления" );
+        drw.DrawRowLeft( rect, text_font, Qt::black, "Допускаемая относительная погрешность достижения заданного внутреннего давления" );
     }, 1.5 );
     res = DrawLine( num, free_rect, text_font,
     [ this, &painter, &drw, &text_font ]( QRect const& rect )
@@ -939,7 +939,6 @@ bool AttPressureSpeed::Run()
 void AttPressureSpeed::Reset()
 {        
     mData.clear();
-    mData.push_back(Data());
 }
 void AttPressureSpeed::UpdateData()
 {
@@ -947,7 +946,12 @@ void AttPressureSpeed::UpdateData()
     int time = mem.Time();
     int ofset = AttestationParams::Instance().UpdatePeriod();
 
-    auto last_time = mData[mData.size()-1].mCpuTime;
+    double key = AttestationParams::Instance().PressureSpeed();
+
+    if ( mData[key].empty() )
+        mData[key].push_back( Data() );
+
+    auto last_time = mData[key][mData.size()-1].mCpuTime;
     if ( time - last_time > ofset )
     {
         mCurrenTime = last_time;
@@ -963,19 +967,30 @@ void AttPressureSpeed::UpdateData()
     Data dt;
     dt.mCpuTime = round( mem.Time()*100)/100.0;
     dt.mResult = mem.Pressure();
-    mData.push_back(dt);
+    mData[key].push_back(dt);
 }
 
 QJsonObject AttPressureSpeed::Serialise() const
 {
     QJsonObject obj = Attestaion::Serialise();
     obj.insert("CurrenPos",mCurrenTime);
-    obj.insert("Data", ToJson(mData));
+    QJsonObject data;
+    for( auto it = mData.begin(), end = mData.end(); it != end; ++it )
+        data.insert( ToString(it->first), ToJson(it->second));
+    obj.insert("Data", data);
     return obj;
 }
 bool AttPressureSpeed::Deserialize( QJsonObject const& obj )
 {
-    FromJson( mData, obj.value("Data").toArray() );
+    mData.clear();
+    QJsonObject data = obj.value("Data").toObject();
+    for ( auto it = data.begin(), end = data.end(); it != end; ++it )
+    {
+        double key = 0.0;
+        ParseValue( key, it.key() );
+        FromJson( mData[key], it.value().toArray() );
+    }
+
     mCurrenTime = obj.value("CurrenPos").toInt();
     Attestaion::Deserialize( obj );
     return true;
@@ -993,13 +1008,13 @@ bool AttPressureSpeed::StopBit()
 {
     return mControls.AttPressureSpeedStop();
 }
-AttPressureSpeed::DataSet const& AttPressureSpeed::GetData() const
+AttPressureSpeed::DataSet const& AttPressureSpeed::GetData(double key) const
 {
-    return mData;
+    return mData[ key ];
 }
-AttPressureSpeed::DataSet& AttPressureSpeed::GetData()
+AttPressureSpeed::DataSet& AttPressureSpeed::GetData( double key )
 {
-    return mData;
+    return mData[ key ];
 }
 
 bool AttPressureSpeed::DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) const
@@ -1032,10 +1047,10 @@ bool AttPressureSpeed::DrawBody( uint32_t& num, QPainter& painter, QRect &free_r
                 "</html>";
 
         QString table = header;
-        auto MakeRow = [ this ]( int i ) -> QString
+        auto MakeRow = [ this ]( DataSet const& data, int i ) -> QString
         {
-            auto dt = mData[i];
-            double speed = i == 0 ? 0 : dt.Speed(mData[i-1]);
+            auto dt = data[i];
+            double speed = i == 0 ? 0 : dt.Speed(data[i-1]);
             QString row =   "<tr>";
             row +=              "<td>"+ToString(dt.mCpuTime)+"</td>"
                                 "<td>"+ToString(dt.mResult)+"</td>"
@@ -1050,10 +1065,16 @@ bool AttPressureSpeed::DrawBody( uint32_t& num, QPainter& painter, QRect &free_r
         doc.setUseDesignMetrics( true );
         doc.setDefaultTextOption ( QTextOption (Qt::AlignHCenter )  );
 
-        int rows_prapared = 0;
-        for ( auto i = PrintedRows; i < mData.size(); ++i ) //PrintedRows
+        int rows_prapared = 0;        
+        DataSet all_data;
+        for ( auto it = mData.begin(), end = mData.end(); it != end; ++it )
         {
-            QString row = MakeRow( i );
+            all_data += it->second;
+        }
+
+        for ( auto i = PrintedRows; i < all_data.size(); ++i ) //PrintedRows
+        {
+            QString row = MakeRow( all_data, i );
             QString tmp = table + row + footer;
             doc.setHtml( tmp );
             auto h = doc.documentLayout()->documentSize().height();
@@ -1154,10 +1175,18 @@ class AttPressureSpeed::GrapfData
 public:
     GrapfData( AttPressureSpeed const* test )
     {
-        data = Process( test->mData, x_range, y_range );
+        for ( auto it = test->mData.begin(), end = test->mData.end(); it != end; ++it )
+        {
+            QPointF x_r, y_r;
+            data.push_back( Process( it->second, x_r, y_r ) );
+            ff0x::MergeRanges( x_range, x_r, true );
+            ff0x::MergeRanges( y_range, y_r, true );
+        }
     }
 
-    QVector<ff0x::GraphBuilder::LinePoints> data;
+    typedef QVector<ff0x::GraphBuilder::LinePoints> Data;
+    typedef std::vector< Data > DataSet;
+    DataSet data;
 
 
     QPointF x_range;
@@ -1181,8 +1210,11 @@ void AttPressureSpeed::PaintGraph(QPainter& painter, QFont const& font, const QR
 
     ff0x::GraphBuilder builder ( w, h, ff0x::GraphBuilder::PlusPlus, f );
     ff0x::BasicGraphBuilder::GraphDataLine lines;
-    lines.push_back( ff0x::BasicGraphBuilder::Line(mGrapfs->data[0], ff0x::BasicGraphBuilder::LabelInfo( "Результат", Qt::darkBlue ) ) );
-    lines.push_back( ff0x::BasicGraphBuilder::Line(mGrapfs->data[1], ff0x::BasicGraphBuilder::LabelInfo( "Контрольное значение", Qt::darkRed ) ) );
+    for ( auto it = mGrapfs->data.begin(), end = mGrapfs->data.end(); it != end; ++it  )
+    {
+        lines.push_back( ff0x::BasicGraphBuilder::Line( (*it)[0], ff0x::BasicGraphBuilder::LabelInfo( "Результат", Qt::darkBlue ) ) );
+        lines.push_back( ff0x::BasicGraphBuilder::Line( (*it)[1], ff0x::BasicGraphBuilder::LabelInfo( "Контрольное значение", Qt::darkRed ) ) );
+    }
 
     QRect p1(rect.left(), rect.top(), w, h );
     {

@@ -110,13 +110,17 @@ QString AttestationParams::ProtoNo() const
 
 bool AttestationParams::PrintAll() const
 {
-    return true;
+    return false;
 }
 
 void AttestationParams::DrawLogo( QPainter &/*painter*/, QRect &/*work_area*/, const QPixmap & ) const
 {}
 bool AttestationParams::Draw(QPainter &painter, QRect &free_rect , const QString &/*compare_width*/) const
 {
+    if ( auto ptr = TestForExec() )
+        if ( ptr->ID() != 0 )
+            return true;
+
     bool res = false;
     uint32_t num = 0;
     uint32_t printed = 0;
