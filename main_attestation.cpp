@@ -189,8 +189,6 @@ void MainWindow::on_bATClear_clicked()
 
 void MainWindow::on_bAPTStart_clicked()
 {
-    on_bAPTClear_clicked();
-
     auto& params = test::AttestationParams::Instance();
     params.PressureSpeed( ui->cbPressureSpeed->currentText() );
     params.UpdatePeriod( ui->bxPeriod->value() );
@@ -430,7 +428,7 @@ void UpdatePresureSpeedTest( test::AttPressureSpeed const& test, Ui::MainWindow 
 {
     RepaintGraph( test, ui->lAPTGraph );
 
-    auto const& data = test.GetData(test::AttestationParams::Instance().PressureSpeed());
+    auto const& data = test.GetData();
     auto* table = ui->tblAttPressureSpeed;
 
     for( size_t it = 0, end = data.size(); it < end; ++it )

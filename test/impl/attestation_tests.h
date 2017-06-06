@@ -151,8 +151,7 @@ public:
     AttPressureSpeed();
     virtual bool Run() override;
 
-    DataSet const& GetData(double key) const;
-    DataSet &GetData(double key);
+    DataSet GetData() const;
 
     void Reset();
     virtual void UpdateData();

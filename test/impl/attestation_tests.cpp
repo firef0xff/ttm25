@@ -951,7 +951,8 @@ void AttPressureSpeed::UpdateData()
     if ( mData[key].empty() )
         mData[key].push_back( Data() );
 
-    auto last_time = mData[key][mData.size()-1].mCpuTime;
+    auto& arr = mData[key];
+    auto last_time = arr[arr.size()-1].mCpuTime;
     if ( time - last_time > ofset )
     {
         mCurrenTime = last_time;
@@ -1008,14 +1009,16 @@ bool AttPressureSpeed::StopBit()
 {
     return mControls.AttPressureSpeedStop();
 }
-AttPressureSpeed::DataSet const& AttPressureSpeed::GetData(double key) const
+AttPressureSpeed::DataSet AttPressureSpeed::GetData() const
 {
-    return mData[ key ];
+    DataSet all_data;
+    for ( auto it = mData.begin(), end = mData.end(); it != end; ++it )
+    {
+        all_data += it->second;
+    }
+    return all_data;
 }
-AttPressureSpeed::DataSet& AttPressureSpeed::GetData( double key )
-{
-    return mData[ key ];
-}
+
 
 bool AttPressureSpeed::DrawBody( uint32_t& num, QPainter& painter, QRect &free_rect ) const
 {
@@ -1066,11 +1069,7 @@ bool AttPressureSpeed::DrawBody( uint32_t& num, QPainter& painter, QRect &free_r
         doc.setDefaultTextOption ( QTextOption (Qt::AlignHCenter )  );
 
         int rows_prapared = 0;        
-        DataSet all_data;
-        for ( auto it = mData.begin(), end = mData.end(); it != end; ++it )
-        {
-            all_data += it->second;
-        }
+        DataSet all_data = GetData();
 
         for ( auto i = PrintedRows; i < all_data.size(); ++i ) //PrintedRows
         {
@@ -1179,8 +1178,8 @@ public:
         {
             QPointF x_r, y_r;
             data.push_back( Process( it->second, x_r, y_r ) );
-            ff0x::MergeRanges( x_range, x_r, true );
-            ff0x::MergeRanges( y_range, y_r, true );
+            x_range = ff0x::MergeRanges( x_range, x_r, true );
+            y_range = ff0x::MergeRanges( y_range, y_r, true );
         }
     }
 
