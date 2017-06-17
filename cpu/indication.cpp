@@ -1,5 +1,5 @@
 #include "indication.h"
-#include "communication/fins/funcs/memory_area_read.h"
+#include "fins/funcs/memory_area_read.h"
 #include "net_connection.h"
 
 namespace cpu

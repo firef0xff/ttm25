@@ -1,7 +1,7 @@
 #include "metran.h"
-#include "communication/swap_endian.h"
-#include "communication/metran/funcs/metran_read.h"
-#include "communication/metran/metran_paskage.h"
+#include "swap_endian.h"
+#include "metran/funcs/metran_read.h"
+#include "metran/metran_paskage.h"
 #include "settings/settings.h"
 namespace cpu
 {

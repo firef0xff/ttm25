@@ -1,6 +1,6 @@
-#include "communication/metran/metran_paskage.h"
-#include "communication/metran/funcs/metran_read.h"
-#include "communication/swap_endian.h"
+#include "metran/metran_paskage.h"
+#include "metran/funcs/metran_read.h"
+#include "swap_endian.h"
 
 #include "cstring"
 #include <stdexcept>

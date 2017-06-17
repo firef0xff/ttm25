@@ -1,6 +1,6 @@
 #include "sensors.h"
 #include "net_connection.h"
-#include "communication/fins/funcs/memory_area_read.h"
+#include "fins/funcs/memory_area_read.h"
 
 namespace cpu
 {

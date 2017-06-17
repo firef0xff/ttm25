@@ -1,15 +1,15 @@
-#include "communication/fins/paskage.h"
-#include "communication/fins/endpoint.h"
-#include "communication/fins/funcs/memory_area_read.h"
-#include "communication/fins/funcs/memory_area_write.h"
-#include "communication/fins/funcs/memory_area_fill.h"
-#include "communication/fins/funcs/multiple_memory_area_read.h"
-#include "communication/fins/funcs/memory_area_transfer.h"
+#include "fins/paskage.h"
+#include "fins/endpoint.h"
+#include "fins/funcs/memory_area_read.h"
+#include "fins/funcs/memory_area_write.h"
+#include "fins/funcs/memory_area_fill.h"
+#include "fins/funcs/multiple_memory_area_read.h"
+#include "fins/funcs/memory_area_transfer.h"
 #include <cstring>
 #include <stdexcept>
 #include <vector>
-#include "communication/fins/communicator.h"
-#include "communication/fins/mem_type.h"
+#include "fins/communicator.h"
+#include "fins/mem_type.h"
 namespace test
 {
 

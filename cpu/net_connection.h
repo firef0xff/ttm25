@@ -1,8 +1,8 @@
 #pragma once
 #include <QString>
 #include <stdint.h>
-#include <communication/fins/communicator.h>
-#include <communication/fins/endpoint.h>
+#include <fins/communicator.h>
+#include <fins/endpoint.h>
 
 namespace fins
 {

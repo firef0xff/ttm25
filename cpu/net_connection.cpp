@@ -1,6 +1,6 @@
 #include "net_connection.h"
 
-#include <communication/fins/endpoint.h>
+#include <fins/endpoint.h>
 
 #include <memory>
 #include <mutex>

@@ -1,6 +1,6 @@
 #include "err_codes.h"
-#include "communication/fins/funcs/memory_area_read.h"
-#include "communication/fins/funcs/memory_area_write.h"
+#include "fins/funcs/memory_area_read.h"
+#include "fins/funcs/memory_area_write.h"
 
 #include "net_connection.h"
 
