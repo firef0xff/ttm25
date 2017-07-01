@@ -14,14 +14,14 @@ QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN/lib\''
 TARGET = ttm25
 TEMPLATE = app
 
-INCLUDEPATH += ../mylib/Widgets\
-               ../mylib/communication\
+INCLUDEPATH += Widgets\
+               communication\
 
 SOURCES += main.cpp\
         main_window.cpp \
-    ../mylib/communication/fins/endpoint.cpp \
-    ../mylib/communication/fins/paskage.cpp \
-    ../mylib/communication/fins/command.cpp \
+    communication/fins/endpoint.cpp \
+    communication/fins/paskage.cpp \
+    communication/fins/command.cpp \
     unit_tests/test_fins.cpp\
     test/test.cpp\
     test/test_params.cpp \
@@ -31,22 +31,22 @@ SOURCES += main.cpp\
     settings/settings_wnd.cpp\
     users/users.cpp\
     users/login.cpp \
-    ../mylib/Widgets/GraphBuilder/graph_builder.cpp \
-    ../mylib/Widgets/RoundDial/round_dial.cpp \
-    ../mylib/COMPort/ComPort.cpp \
+    Widgets/GraphBuilder/graph_builder.cpp \
+    Widgets/RoundDial/round_dial.cpp \
+    COMPort/ComPort.cpp \
     test/impl/common_data.cpp \
     settings/strings_source.cpp \
     settings/textitem.cpp \
-    ../mylib/communication/acr/current_values.cpp \
-    ../mylib/communication/acr/acr_command.cpp \
+    communication/acr/current_values.cpp \
+    communication/acr/acr_command.cpp \
     unit_tests/test_acr.cpp \
-    ../mylib/communication/fins/funcs/memory_area_read.cpp \
-    ../mylib/communication/fins/memoryaddr.cpp \
-    ../mylib/communication/fins/funcs/memory_area_write.cpp \
-    ../mylib/communication/fins/communicator.cpp \
-    ../mylib/communication/fins/funcs/memory_area_fill.cpp \
-    ../mylib/communication/fins/funcs/multiple_memory_area_read.cpp \
-    ../mylib/communication/fins/funcs/memory_area_transfer.cpp \
+    communication/fins/funcs/memory_area_read.cpp \
+    communication/fins/memoryaddr.cpp \
+    communication/fins/funcs/memory_area_write.cpp \
+    communication/fins/communicator.cpp \
+    communication/fins/funcs/memory_area_fill.cpp \
+    communication/fins/funcs/multiple_memory_area_read.cpp \
+    communication/fins/funcs/memory_area_transfer.cpp \
     cpu/controls.cpp\
     cpu/cpu_memory.cpp \
     cpu/net_connection.cpp \
@@ -63,17 +63,17 @@ SOURCES += main.cpp\
     cpu/attestation_launch_control.cpp \
     test/impl/defect_question.cpp \
     cpu/err_codes.cpp \
-    ../mylib/communication/metran/metran_command.cpp \
-    ../mylib/communication/metran/metran_paskage.cpp \
-    ../mylib/communication/metran/funcs/metran_read.cpp \
-    ../mylib/communication/metran/funcs/metran_write.cpp \
+    communication/metran/metran_command.cpp \
+    communication/metran/metran_paskage.cpp \
+    communication/metran/funcs/metran_read.cpp \
+    communication/metran/funcs/metran_write.cpp \
     unit_tests/test_metran.cpp \
     cpu/metran/metran.cpp
 
 HEADERS  += main_window.h \
-    ../mylib/communication/fins/endpoint.h \
-    ../mylib/communication/fins/paskage.h \
-    ../mylib/communication/fins/command.h \
+    communication/fins/endpoint.h \
+    communication/fins/paskage.h \
+    communication/fins/command.h \
     cpu/data_block_base.h \
     test/test.h\
     test/test_params.h \
@@ -83,24 +83,24 @@ HEADERS  += main_window.h \
     settings/settings_wnd.h\
     users/users.h\
     users/login.h \
-    ../mylib/Widgets/GraphBuilder/graph_builder.h\
-    ../mylib/Widgets/RoundDial/round_dial.h \
-    ../mylib/COMPort/ComPort.h \
+    Widgets/GraphBuilder/graph_builder.h\
+    Widgets/RoundDial/round_dial.h \
+    COMPort/ComPort.h \
     test/impl/common_data.h \
     settings/strings_source.h \
     settings/textitem.h \
-    ../mylib/communication/acr/command.h \
-    ../mylib/communication/acr/current_values.h \
-    ../mylib/communication/swap_endian.h \
-    ../mylib/communication/fins/funcs/memory_area_read.h \
-    ../mylib/communication/fins/memoryaddr.h \
-    ../mylib/communication/fins/mem_type.h \
-    ../mylib/communication/fins/funcs/memory_area_write.h \
-    ../mylib/communication/fins/data_element.h \
-    ../mylib/communication/fins/communicator.h \
-    ../mylib/communication/fins/funcs/memory_area_fill.h \
-    ../mylib/communication/fins/funcs/multiple_memory_area_read.h \
-    ../mylib/communication/fins/funcs/memory_area_transfer.h \
+    communication/acr/command.h \
+    communication/acr/current_values.h \
+    communication/swap_endian.h \
+    communication/fins/funcs/memory_area_read.h \
+    communication/fins/memoryaddr.h \
+    communication/fins/mem_type.h \
+    communication/fins/funcs/memory_area_write.h \
+    communication/fins/data_element.h \
+    communication/fins/communicator.h \
+    communication/fins/funcs/memory_area_fill.h \
+    communication/fins/funcs/multiple_memory_area_read.h \
+    communication/fins/funcs/memory_area_transfer.h \
     cpu/controls.h\
     cpu/cpu_memory.h \
     cpu/net_connection.h \
@@ -115,11 +115,11 @@ HEADERS  += main_window.h \
     cpu/attestation_launch_control.h \
     test/impl/defect_question.h \
     cpu/err_codes.h \
-    ../mylib/communication/metran/metran_command.h \
-    ../mylib/communication/buffer_tools.h \
-    ../mylib/communication/metran/metran_paskage.h \
-    ../mylib/communication/metran/funcs/metran_read.h \
-    ../mylib/communication/metran/funcs/metran_write.h \
+    communication/metran/metran_command.h \
+    communication/buffer_tools.h \
+    communication/metran/metran_paskage.h \
+    communication/metran/funcs/metran_read.h \
+    communication/metran/funcs/metran_write.h \
     cpu/metran/metran.h
 
 FORMS    += main_window.ui\

@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "E:/ttm25/cpu/metran/metran.h"
+#include "cpu/metran/metran.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),

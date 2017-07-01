@@ -12,11 +12,11 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = test
 TEMPLATE = app
 
-INCLUDEPATH += E:\ttm25\communication\
+INCLUDEPATH += communication\
 
 SOURCES += test_app\main.cpp\
         test_app\mainwindow.cpp\
-        ..\mylib\COMPort\COMPort.cpp\
+        COMPort\COMPort.cpp\
         communication\metran\metran_command.cpp\
         communication\metran\metran_paskage.cpp\
         communication\metran\funcs\metran_read.cpp\
@@ -25,7 +25,7 @@ SOURCES += test_app\main.cpp\
         settings\settings.cpp
 
 HEADERS  += test_app\mainwindow.h\
-        ..\mylib\COMPort\*.h\
+        COMPort\*.h\
         communication\*.h\
         communication\metran\*.h\
         communication\metran\funcs\*.h\
